@@ -1,0 +1,19 @@
+# Top-level environment specification for revision-infra-v1.
+#
+# This file pins the Python/build-tool layer and delegates the direct Python
+# requirements to requirements-revision.txt.  It is intentionally not a full
+# transitive, platform-specific lock.  Generate and archive a platform lock on
+# each actual Windows/Linux compute target before a scientific run.
+name: retrosynthesis-revision-py310
+
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  - python=3.10.14
+  - pip=24.3.1
+  - setuptools=75.3.0
+  - wheel=0.44.0
+  - pip:
+      - -r requirements-revision.txt

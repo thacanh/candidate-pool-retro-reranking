@@ -1,0 +1,129 @@
+{
+  "candidate_generation_performed": false,
+  "comparator": "expanded-pool effect minus matched historical effect",
+  "environment": {
+    "packages": {
+      "numpy": "2.2.6",
+      "rdkit": "2025.9.6",
+      "scipy": "1.15.3"
+    },
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]"
+  },
+  "inputs": {
+    "m2_manifest": {
+      "mtime_ns": 1787771868998897900,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\manifest.json",
+      "sha256": "cbf8a78b2387b9e661d6f59ebfd2aa401d42663622b77b5c937b41484ca4a350",
+      "size_bytes": 35939
+    },
+    "m2_transfer_loss_reactions": {
+      "mtime_ns": 1787771868675250000,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_transfer_loss_reactions.csv",
+      "sha256": "d87ca6528763afcbf0cc6830ac2127050bf32857863d944d50c348648082b284",
+      "size_bytes": 1575558
+    }
+  },
+  "outputs": {
+    "transfer_loss_inference": {
+      "mtime_ns": 1787773417910006300,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2b_transfer_inference\\m2b_transfer_loss_inference.csv",
+      "sha256": "e9ab4bc0e6246d0d3b0b39dfb7ccffa877d15891cfcb1454b073590f70b5c709",
+      "size_bytes": 1191
+    }
+  },
+  "protocol_id": "dd-candidate-pool-transfer-inference-v1",
+  "record_kind": "dd_exploratory_direct_transfer_loss_inference",
+  "retuning_performed": false,
+  "round_jk_approval": {
+    "analysis_plan": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\analysis_plan.md",
+      "sha256": "e83fb9230b1ec5da79b33a2bcc547aa84c8dce2967c250d31328ee1e6d6cbab5",
+      "size_bytes": 53402
+    },
+    "analysis_plan_commit": "b374a91dfaa8a5ce6e14205de0d324555ea3d808",
+    "approval_date": "2026-08-26",
+    "approval_record": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\round_jk_approval.json",
+      "sha256": "32ea5e48546f29b0f2eb606aa8e818d82b836113eae82753e0797b8270003e82",
+      "size_bytes": 2082
+    },
+    "j4_bin_assignment": "median_across_seeds_worse_bin_on_half_tie",
+    "m2b_approval_date": "2026-08-27",
+    "m2b_approval_quote": "th\u1ef1c hi\u1ec7n n\u1ed1t M2b, \u0111\u1ed3ng b\u1ed9 J1/J2 \u0111i",
+    "m2b_protocol_id": "dd-candidate-pool-transfer-inference-v1",
+    "platform_lock": {
+      "environment-revision.yml": {
+        "sha256": "30897f3a9ca7f8cf7b6b1d273eced180786a5e7c8f60ab647354710b387736b6",
+        "size_bytes": 576
+      },
+      "pyproject.toml": {
+        "sha256": "51c3df839b96c7847f248ebb3465369606a994080f0f046af456b325de423381",
+        "size_bytes": 730
+      },
+      "requirements-revision.txt": {
+        "sha256": "da6cac03d97b16a0a11ffd88c709123ccde5fc18a22843983304f1e6cbda4f62",
+        "size_bytes": 1296
+      },
+      "runtime": {
+        "numpy": "2.2.6",
+        "pandas": "2.3.3",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu"
+      }
+    },
+    "supervisor": "repository owner",
+    "width128_d1_resolution": "approved"
+  },
+  "runtime_seconds": 58.02532172203064,
+  "schema_version": 1,
+  "settings": {
+    "bootstrap_rng_seeds": [
+      2050,
+      2051,
+      2052,
+      2053,
+      2054,
+      2055
+    ],
+    "bootstrap_samples": 10000,
+    "claim_status": "exploratory_post_hoc",
+    "common_covered_reactions": 3814,
+    "inference_unit": "unique canonical product/reaction after averaging 20 paired seeds",
+    "seeds_already_averaged_in_frozen_m2": [
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61
+    ],
+    "sign_flip_draws": 100000,
+    "sign_flip_rng_seeds": [
+      2060,
+      2061,
+      2062,
+      2063,
+      2064,
+      2065
+    ]
+  },
+  "single_intended_change": "add direct paired frozen-reaction inference to the approved M2 transfer-loss estimand",
+  "test_partition_loaded_from_frozen_m2_only": true,
+  "training_performed": false
+}

@@ -1,0 +1,178 @@
+{
+  "candidate_generation_performed": false,
+  "comparator": "frozen cap-10 candidate-prior score order",
+  "counts": {
+    "reactions": 3985,
+    "seed_reaction_pairs": 11955,
+    "seeds": 3
+  },
+  "environment": {
+    "packages": {
+      "numpy": "2.2.6",
+      "pandas": "2.3.3",
+      "scipy": "1.15.3",
+      "torch": "2.10.0"
+    },
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]"
+  },
+  "fingerprint_generation_performed": false,
+  "inputs": {
+    "analysis_code": {
+      "mtime_ns": 1787758949621744200,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\src\\rerank\\analysis\\analyze_round_jk.py",
+      "sha256": "5ffae9913181dfa6869476699cb1080fde4c8facf6164eb6cd4fc0778925c3bc",
+      "size_bytes": 40469
+    },
+    "d5_checkpoints": {
+      "0": {
+        "mtime_ns": 1787299395000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\external_rerankers\\rxn_ebm_ff_cap10\\fit\\seed_0\\best_checkpoint.pt",
+        "sha256": "c7affb2391302e28648667c2114ac530fb15469f661704a6d2912cb95863fee9",
+        "size_bytes": 203316514
+      },
+      "20210423": {
+        "mtime_ns": 1787299940000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\external_rerankers\\rxn_ebm_ff_cap10\\fit\\seed_20210423\\best_checkpoint.pt",
+        "sha256": "b9f09fd2ff6d187fa330a6b82e64ee1ce55e606669b003bfe5ab99be53425779",
+        "size_bytes": 203316514
+      },
+      "77777777": {
+        "mtime_ns": 1787300260000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\external_rerankers\\rxn_ebm_ff_cap10\\fit\\seed_77777777\\best_checkpoint.pt",
+        "sha256": "875543e09b0f37036aad49414853db5c141e1546b880b040e72e5225c532813c",
+        "size_bytes": 203316514
+      }
+    },
+    "d5_model_freeze": {
+      "mtime_ns": 1787300413000000000,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\external_rerankers\\rxn_ebm_ff_cap10\\freeze\\model_selection.json",
+      "sha256": "ea3a2dd8f8ec58cfedfbdcf7c3a812bf82c6da57bbcfe1b7bea0ce9e23d3ac32",
+      "size_bytes": 15808
+    },
+    "d5_test_fingerprints": {
+      "mtime_ns": 1787300446000000000,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\external_rerankers\\rxn_ebm_ff_cap10\\test_results\\test_fingerprints.npz",
+      "sha256": "2c145288a500fcf2470a3a33c0da29ec36bdf7ea7cf7b3411a170e8d292c8e8b",
+      "size_bytes": 13289067
+    },
+    "d5_test_manifest": {
+      "mtime_ns": 1787300476000000000,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\external_rerankers\\rxn_ebm_ff_cap10\\test_results\\manifest.json",
+      "sha256": "16f0250f50a94faf89b1569b45f44240bcd49bca349e58fd18326bcff9eda1dc",
+      "size_bytes": 3553
+    },
+    "rxn_ebm_repository": {
+      "commit": "1919eeccdd31e16ec7a44478b756bcd974c35a3c",
+      "core_files": {
+        "rxnebm/data/fp_utils.py": {
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\assets\\rxn_ebm_official\\rxnebm\\data\\fp_utils.py",
+          "sha256": "e25bb718e7f4ee4edcb89a7bc0f5ac36fa4ad5a615d63427b5901df212c38087",
+          "size_bytes": 3309
+        },
+        "rxnebm/model/FF.py": {
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\assets\\rxn_ebm_official\\rxnebm\\model\\FF.py",
+          "sha256": "76e75791d8bd49e66f6e24edb57ce2c630aeef6807166ff8d6335af6e6801a8f",
+          "size_bytes": 4515
+        },
+        "rxnebm/model/model_utils.py": {
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\assets\\rxn_ebm_official\\rxnebm\\model\\model_utils.py",
+          "sha256": "34e147410b38b84082326d61f4b2212253c2db62a51a40a14e06c79885a54dae",
+          "size_bytes": 3518
+        },
+        "scripts/retrosim/FeedforwardEBM.sh": {
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\assets\\rxn_ebm_official\\scripts\\retrosim\\FeedforwardEBM.sh",
+          "sha256": "a7c5f073c614722abbdf88af09e3f2cb571f203d393668953115d3083d8e41c3",
+          "size_bytes": 1271
+        }
+      },
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\assets\\rxn_ebm_official"
+    }
+  },
+  "outputs": {
+    "per_list": {
+      "mtime_ns": 1787759083931220300,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\l1\\l1_per_list_diagnostics.csv",
+      "sha256": "d528ab971afecb945ec33b132c870c22407f5f309680064a68cf6b9369c89d99",
+      "size_bytes": 889256
+    },
+    "raw_scores": {
+      "mtime_ns": 1787759083889721400,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\l1\\l1_frozen_external_scores.npz",
+      "sha256": "46126be0e285ed9f69bd2a0dcda2af528a43a9c254bc9beb0f25d6f147945293",
+      "size_bytes": 372519
+    },
+    "summary": {
+      "mtime_ns": 1787759083931220300,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\l1\\l1_score_summary.csv",
+      "sha256": "b184098f4f70a2ff429382f9d07d6cb7205f77d0c1467b6b94cbd939e3e540ec",
+      "size_bytes": 2110
+    }
+  },
+  "protocol_id": "dd-rxn-ebm-score-diagnostic-v1",
+  "record_kind": "dd_round_l1_frozen_rxn_ebm_score_diagnostic",
+  "retuning_performed": false,
+  "round_jk_approval": {
+    "analysis_plan": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\analysis_plan.md",
+      "sha256": "23b74f79ff23b03c9a8a9701f49ea43ba977fa3ecccc92676d6e280c40c9230c",
+      "size_bytes": 44938
+    },
+    "analysis_plan_commit": "4cd8bc41519c99e33cb6d609b51ca24cbcc19ba7",
+    "approval_date": "2026-08-26",
+    "approval_record": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\round_jk_approval.json",
+      "sha256": "1587fd8c87e3dd8ec6aea7cb43ed37921526d587588be2ac1d3deae19f77d252",
+      "size_bytes": 1331
+    },
+    "j4_bin_assignment": "median_across_seeds_worse_bin_on_half_tie",
+    "l1_approval_date": "2026-08-26",
+    "l1_approval_quote": "ch\u1ea1y L1 c\u00f3 l\u00e2u k, ch\u1ea1y \u0111i",
+    "l1_protocol_id": "dd-rxn-ebm-score-diagnostic-v1",
+    "l1_status": "approved_forward_only_no_retraining_or_retuning",
+    "platform_lock": {
+      "environment-revision.yml": {
+        "sha256": "30897f3a9ca7f8cf7b6b1d273eced180786a5e7c8f60ab647354710b387736b6",
+        "size_bytes": 576
+      },
+      "pyproject.toml": {
+        "sha256": "51c3df839b96c7847f248ebb3465369606a994080f0f046af456b325de423381",
+        "size_bytes": 730
+      },
+      "requirements-revision.txt": {
+        "sha256": "da6cac03d97b16a0a11ffd88c709123ccde5fc18a22843983304f1e6cbda4f62",
+        "size_bytes": 1296
+      },
+      "runtime": {
+        "numpy": "2.2.6",
+        "pandas": "2.3.3",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu"
+      }
+    },
+    "supervisor": "repository owner",
+    "width128_d1_resolution": "approved"
+  },
+  "runtime_seconds": 91.52807259559631,
+  "schema_version": 1,
+  "settings": {
+    "batch_size": 32,
+    "device": "cpu",
+    "external_higher_is_better_score": "negative frozen model energy",
+    "inferential_test": null,
+    "prior_score": "1-(rank-1)/max(candidate_count-1,1)",
+    "score_range": "maximum minus minimum within each candidate list",
+    "score_sd": "population SD (ddof=0) within each candidate list",
+    "seeds": [
+      0,
+      20210423,
+      77777777
+    ],
+    "spearman": "within-list average ranks for exact ties",
+    "undefined_correlation": "singletons or constant external scores; excluded, not imputed"
+  },
+  "single_intended_change": "retain and descriptively analyze frozen D5 raw within-list energies",
+  "test_partition_loaded_from_frozen_post-selection_artifacts_only": true,
+  "training_performed": false
+}

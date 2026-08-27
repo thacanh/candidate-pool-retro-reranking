@@ -1,0 +1,38 @@
+# Direct, top-level Python requirements for the core revision environment.
+# Exact pins make the intended scientific stack explicit; the companion
+# constraints file protects compatibility-sensitive transitive dependencies.
+# This is not a hash-locked, platform-specific freeze.
+-c constraints-revision-py310.txt
+
+# Core arrays, chemistry, and model training.  NumPy/pandas satisfy the strict
+# upstream requirements of unimol-tools==0.1.3 (NumPy<2 and pandas<2).
+numpy==1.26.4
+pandas==1.5.3
+torch==2.2.2
+rdkit==2025.9.6
+unimol-tools==0.1.3
+
+# Revision rankers and statistical analysis.
+lightgbm==4.6.0
+scipy==1.12.0
+scikit-learn==1.4.2
+statsmodels==0.14.4
+
+# Uni-Mol runtime dependencies used directly by its inspected 0.1.3 source.
+addict==2.4.0
+joblib==1.4.2
+numba==0.59.1
+PyYAML==6.0.2
+tqdm==4.66.6
+huggingface-hub==0.26.5
+
+# Analysis figures and tests used by this repository.
+matplotlib==3.8.4
+seaborn==0.13.2
+pytest==8.3.3
+
+# Candidate generators and external rerankers are deliberately excluded.
+# In particular, a Python 3.10 pip dry-run showed that AiZynthFinder 4.4.1's
+# Dask/reaction-utils dependency graph conflicts with pandas<2 required by
+# unimol-tools 0.1.3.  AiZynthFinder, LocalRetro, GROVER, rxn-ebm,
+# RetroRanker, and Chemformer therefore require separate platform locks.

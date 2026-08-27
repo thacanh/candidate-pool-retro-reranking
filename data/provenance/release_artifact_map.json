@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "publication_target": "Digital Discovery",
+  "release_rule": "Copy each source byte-for-byte to its neutral public path and verify the recorded SHA256; do not rename the scientific protocol ID inside an artifact.",
+  "repository_url_source": "paper/digital_discovery/release_metadata.tex",
+  "artifacts": [
+    {
+      "role": "historical paired effects",
+      "source_path": "outputs/jcheminform_revision/numerical_freeze_v2/paired_effects.csv",
+      "public_path": "outputs/historical_anchor/numerical_freeze_v2/paired_effects.csv",
+      "size_bytes": 29983,
+      "sha256": "2d90b6de802c0e9d101e92a74f3274161e8bcae41ef0f97af794fea0f65631a1"
+    },
+    {
+      "role": "historical numerical manifest",
+      "source_path": "outputs/jcheminform_revision/numerical_freeze_v2/manifest.json",
+      "public_path": "outputs/historical_anchor/numerical_freeze_v2/manifest.json",
+      "size_bytes": 10331,
+      "sha256": "e41727fdb0dbfaf7768e25899df18111dc9edafad2e1f50abb71e5acbe911b5f"
+    },
+    {
+      "role": "expanded-pool K1 manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reanalysis/k1/manifest.json",
+      "public_path": "outputs/transfer_analysis/k1/manifest.json",
+      "size_bytes": 3282,
+      "sha256": "c5f2920f256d1ae733b73efee2e0fcde5c4fcc3b32019d64b473867f1c8ffb8f"
+    },
+    {
+      "role": "prior and headroom manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reanalysis/j1_j2_filtered_v2/manifest.json",
+      "public_path": "outputs/transfer_analysis/j1_j2_filtered_v2/manifest.json",
+      "size_bytes": 4425,
+      "sha256": "ac7d1be852f60e89ccc237940a3125f3706e63c13332503695f17a25a8dd728b"
+    },
+    {
+      "role": "pool-shift diagnostic manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reanalysis/m2_pool_shift/manifest.json",
+      "public_path": "outputs/transfer_analysis/m2_pool_shift/manifest.json",
+      "size_bytes": 35939,
+      "sha256": "cbf8a78b2387b9e661d6f59ebfd2aa401d42663622b77b5c937b41484ca4a350"
+    },
+    {
+      "role": "direct-transfer inference manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reanalysis/m2b_transfer_inference/manifest.json",
+      "public_path": "outputs/transfer_analysis/m2b_transfer_inference/manifest.json",
+      "size_bytes": 4229,
+      "sha256": "729a5839418f5c0c1ac6a97d7681d7d5e3c1479df2f76a83284b4500040bf330"
+    },
+    {
+      "role": "M1 heterogeneity manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reanalysis/m1_heterogeneity/manifest.json",
+      "public_path": "outputs/transfer_analysis/m1_heterogeneity/manifest.json",
+      "size_bytes": 4635,
+      "sha256": "93143346262bc5a981c66e33c1c83424a4be25606e0d8053ae33ede6b0fa22cb"
+    },
+    {
+      "role": "K2 complete reporting manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reanalysis/k2_full_reporting_v2/manifest.json",
+      "public_path": "outputs/transfer_analysis/k2_full_reporting_v2/manifest.json",
+      "size_bytes": 3120,
+      "sha256": "87a3b399f46727c8739cbf16086fb5da96fa5f835f254e282b37c31093237c3c"
+    }
+  ]
+}

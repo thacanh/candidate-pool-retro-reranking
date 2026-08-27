@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "controlled-retrosynthesis-reranking"
+version = "0.1.0"
+description = "Controlled evaluation of representation-assisted retrosynthesis candidate reranking"
+readme = "README.md"
+requires-python = ">=3.10,<3.12"
+dependencies = [
+  "numpy==1.26.4",
+  "pandas==1.5.3",
+  "torch==2.2.2",
+  "rdkit==2025.9.6",
+  "scipy==1.12.0",
+  "scikit-learn==1.4.2",
+  "statsmodels==0.14.4",
+]
+
+[project.optional-dependencies]
+analysis = [
+  "lightgbm==4.6.0",
+  "matplotlib==3.8.4",
+  "seaborn==0.13.2",
+]
+unimol = ["unimol-tools==0.1.3"]
+test = ["pytest==8.3.3"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["rerank*"]
+

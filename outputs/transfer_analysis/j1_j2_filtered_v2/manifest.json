@@ -1,0 +1,97 @@
+{
+  "candidate_generation_performed": false,
+  "common_covered_count": 3814,
+  "comparator": "four frozen candidate pools",
+  "inputs": {
+    "anchor_baseline_csv": {
+      "mtime_ns": 1786680389000000000,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_42.csv",
+      "sha256": "356e5a17424647e6fde75fa4a6150ac7725fbf78ed4f595fb9e0fe2a5b1cf423",
+      "size_bytes": 5150836
+    },
+    "anchor_prediction_root": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions",
+    "expanded_manifests": [
+      {
+        "mtime_ns": 1787751672215264100,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\aizynthfinder_only\\test_results\\manifest.json",
+        "sha256": "f740a8ae7933c1c5606db941ccc0028dde364fbc2ed794ea0c4b7af079de7c46",
+        "size_bytes": 31842
+      },
+      {
+        "mtime_ns": 1787752832939789500,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\localretro_only\\test_results\\manifest.json",
+        "sha256": "c371f626052b39e4725f2668015e50eb722c9bb4e3e24afe0bb3c03563bd9a05",
+        "size_bytes": 31849
+      },
+      {
+        "mtime_ns": 1787753995005461500,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\merged\\test_results\\manifest.json",
+        "sha256": "37cc5b5d2bcf95bbe4d3099012ab60166381e5978c820a3f9dea311e077f230b",
+        "size_bytes": 31798
+      }
+    ]
+  },
+  "outputs": {
+    "j1": {
+      "mtime_ns": 1787773431069430300,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\j1_j2_filtered_v2\\j1_prior_only.csv",
+      "sha256": "abce576622f75b885028eefc89cb52753e853e8f893f1dfeff6d3652b69edf2d",
+      "size_bytes": 1000
+    },
+    "j2": {
+      "mtime_ns": 1787773431069430300,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\j1_j2_filtered_v2\\j2_headroom_capture.csv",
+      "sha256": "27751f67b6257440333c57cde5e68e9b8a8e27ecd9de64c0d6a27184d504ae88",
+      "size_bytes": 682
+    }
+  },
+  "protocol_id": "dd-round-jk-j1-j2-filtered-v2",
+  "record_kind": "dd_round_j1_j2",
+  "retuning_performed": false,
+  "round_jk_approval": {
+    "analysis_plan": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\analysis_plan.md",
+      "sha256": "e83fb9230b1ec5da79b33a2bcc547aa84c8dce2967c250d31328ee1e6d6cbab5",
+      "size_bytes": 53402
+    },
+    "analysis_plan_commit": "b374a91dfaa8a5ce6e14205de0d324555ea3d808",
+    "approval_date": "2026-08-26",
+    "approval_record": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\round_jk_approval.json",
+      "sha256": "32ea5e48546f29b0f2eb606aa8e818d82b836113eae82753e0797b8270003e82",
+      "size_bytes": 2082
+    },
+    "j12_sync_approval_date": "2026-08-27",
+    "j12_sync_approval_quote": "th\u1ef1c hi\u1ec7n n\u1ed1t M2b, \u0111\u1ed3ng b\u1ed9 J1/J2 \u0111i",
+    "j12_sync_protocol_id": "dd-round-jk-j1-j2-filtered-v2",
+    "j4_bin_assignment": "median_across_seeds_worse_bin_on_half_tie",
+    "platform_lock": {
+      "environment-revision.yml": {
+        "sha256": "30897f3a9ca7f8cf7b6b1d273eced180786a5e7c8f60ab647354710b387736b6",
+        "size_bytes": 576
+      },
+      "pyproject.toml": {
+        "sha256": "51c3df839b96c7847f248ebb3465369606a994080f0f046af456b325de423381",
+        "size_bytes": 730
+      },
+      "requirements-revision.txt": {
+        "sha256": "da6cac03d97b16a0a11ffd88c709123ccde5fc18a22843983304f1e6cbda4f62",
+        "size_bytes": 1296
+      },
+      "runtime": {
+        "numpy": "2.2.6",
+        "pandas": "2.3.3",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu"
+      }
+    },
+    "supervisor": "repository owner",
+    "width128_d1_resolution": "approved"
+  },
+  "schema_version": 1,
+  "single_intended_change": "align J1/J2 reporting to the final frozen filtered-v2 K1 cap-10 pools",
+  "supersedes_for_reporting": "dd-round-jk-reanalysis-v1 J1/J2 with 3,939 common reactions; old output preserved",
+  "test_partition_loaded_from_frozen_predictions_only": true,
+  "training_performed": false
+}

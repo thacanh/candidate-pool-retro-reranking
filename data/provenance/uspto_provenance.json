@@ -1,0 +1,63 @@
+{
+  "dataset": "USPTO-50K (Chemformer distribution)",
+  "repository": "https://github.com/MolecularAI/Chemformer",
+  "public_dataset_page": "https://az.box.com/s/7eci3nd9vy0xplqniitpk02rbg9q2zcq",
+  "box_file_id": "854847820319",
+  "official_filename": "uspto_50.pickle",
+  "official_pickle_sha256": "b069af6e459e7deead8ef3d820b5984b0379230944a3fe511aed0fc8ff8c07a2",
+  "official_pickle_size_bytes": 40245659,
+  "local_source_csv_sha256": "688c5b8ea7c3269b53ae15ffca9ec98f51fd29ea3fc25edc8fa66cabe9042d6a",
+  "n_reactions": 50037,
+  "split_counts": {
+    "train": 40029,
+    "valid": 5004,
+    "test": 5004
+  },
+  "reaction_class_counts": {
+    "1": 15122,
+    "2": 11913,
+    "3": 5639,
+    "4": 900,
+    "5": 650,
+    "6": 8353,
+    "7": 4585,
+    "8": 814,
+    "9": 1834,
+    "10": 227
+  },
+  "canonical_product_matches": 50037,
+  "canonical_reactant_matches": 50037,
+  "source_lineage": {
+    "raw_patent_reaction_corpus": {
+      "title": "Chemical reactions from US patents (1976-Sep2016)",
+      "doi": "10.6084/m9.figshare.5104873.v1",
+      "license": "CC0"
+    },
+    "reaction_role_assignment_and_random_subset": {
+      "paper_doi": "10.1021/acs.jcim.6b00564"
+    },
+    "retrosynthesis_benchmark": {
+      "paper_doi": "10.1021/acscentsci.7b00303"
+    },
+    "chemformer_distribution": {
+      "paper_doi": "10.1088/2632-2153/ac3ffb"
+    }
+  },
+  "independent_archive_crosscheck": {
+    "record_url": "https://zenodo.org/records/14280768",
+    "associated_paper_doi": "10.1021/acs.jcim.1c01467",
+    "archive_filename": "USPTO_50k.tar.bz2",
+    "archive_size_bytes": 913111,
+    "archive_md5": "44a5f3ae08fe55933404c9398be22f5b",
+    "split_counts": {
+      "train": 40029,
+      "valid": 5004,
+      "test": 5004
+    },
+    "raw_smiles_pair_matches": 49606,
+    "canonical_product_matches": 50037,
+    "canonical_reactant_matches": 50037,
+    "comparison_date": "2026-08-09",
+    "comparison_note": "All rows match in split order after RDKit canonicalization; 431 rows use non-byte-identical but canonically equivalent SMILES. The archive does not supply the Chemformer reaction-class labels."
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "bootstrap_samples": 10000,
+  "comparator": "frozen 20-seed historical cap-10 paired predictions",
+  "input_prediction_root": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions",
+  "j3_singleton_gate": "pass",
+  "j4_bin_assignment": "ceil of median prior+2D reference rank across seeds",
+  "outputs": {
+    "j3": {
+      "mtime_ns": 1787733918160303800,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\j3_j4\\j3_candidate_count_strata.csv",
+      "sha256": "dfbf19ee0adfffb8da7e54f2c81f82c2cb14bf0cce82897ef15dc6a32e3774e9",
+      "size_bytes": 793
+    },
+    "j4": {
+      "mtime_ns": 1787733918160303800,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\j3_j4\\j4_baseline_rank_strata.csv",
+      "sha256": "b04076fb694af9c5a85d56d04b106ce125e427bfeec85b7c02daf0f8d5e9ae8e",
+      "size_bytes": 339
+    }
+  },
+  "protocol_id": "dd-round-jk-reanalysis-v1",
+  "record_kind": "dd_round_j3_j4",
+  "rng_seed": 2026,
+  "round_jk_approval": {
+    "analysis_plan": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\analysis_plan.md",
+      "sha256": "34c75056916adc2d4502c7a19b471e3918d30cb41f45db39fbc5c29ad735bb3c",
+      "size_bytes": 42884
+    },
+    "analysis_plan_commit": "cdb4e37ca365726887677549d309a7ec04733273",
+    "approval_date": "2026-08-26",
+    "approval_record": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\round_jk_approval.json",
+      "sha256": "55bd3fcd6926c4f96455fdc054ddc82c0b87bb95a47302121a178d130a73e846",
+      "size_bytes": 1116
+    },
+    "j4_bin_assignment": "median_across_seeds_worse_bin_on_half_tie",
+    "platform_lock": {
+      "environment-revision.yml": {
+        "sha256": "30897f3a9ca7f8cf7b6b1d273eced180786a5e7c8f60ab647354710b387736b6",
+        "size_bytes": 576
+      },
+      "pyproject.toml": {
+        "sha256": "51c3df839b96c7847f248ebb3465369606a994080f0f046af456b325de423381",
+        "size_bytes": 730
+      },
+      "requirements-revision.txt": {
+        "sha256": "da6cac03d97b16a0a11ffd88c709123ccde5fc18a22843983304f1e6cbda4f62",
+        "size_bytes": 1296
+      },
+      "runtime": {
+        "numpy": "2.2.6",
+        "pandas": "2.3.3",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu"
+      }
+    },
+    "supervisor": "repository owner",
+    "width128_d1_resolution": "approved"
+  },
+  "schema_version": 1,
+  "single_intended_change": "prespecified diagnostic stratum",
+  "test_partition_loaded_from_frozen_predictions_only": true
+}

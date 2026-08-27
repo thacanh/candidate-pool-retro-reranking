@@ -1,0 +1,19 @@
+# Compatibility constraints for requirements-revision.txt.
+#
+# This is intentionally a selective constraint set, not a complete transitive
+# lock.  A full lock must include artifact hashes/build tags and must be
+# generated separately for the actual OS, architecture, and CPU/CUDA target.
+
+# Frozen scientific ABI/API boundary.
+numpy==1.26.4
+pandas==1.5.3
+torch==2.2.2
+rdkit==2025.9.6
+scipy==1.12.0
+scikit-learn==1.4.2
+
+# Compatibility-sensitive dependencies of Uni-Mol, scikit-learn, and
+# statsmodels.  These pins were included in the Python 3.10 resolver check.
+llvmlite==0.42.0
+joblib==1.4.2
+patsy==0.5.6

@@ -1,0 +1,34 @@
+{
+  "output": {
+    "path": "outputs/transfer_analysis/figure_inputs/operational_performance.csv",
+    "sha256": "1208eef21f7793ba9817279975538933c32c2879e0a63a532486b0c77d7274a2",
+    "size_bytes": 852
+  },
+  "protocol_id": "dd-public-figure-inputs-v1",
+  "row_count": 12,
+  "schema_version": 1,
+  "scientific_computation": false,
+  "single_intended_change": "model-free public packaging of frozen figure inputs",
+  "sources": [
+    {
+      "research_worktree_path": "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/manifest.json",
+      "sha256": "fdc89a0e20a29076ce28c3d5d826ccea513458d19303d7ee2e78e253a466d20b",
+      "size_bytes": 14015
+    },
+    {
+      "research_worktree_path": "outputs/digital_discovery_round_jk/k1/aizynthfinder_only/test_results/manifest.json",
+      "sha256": "f740a8ae7933c1c5606db941ccc0028dde364fbc2ed794ea0c4b7af079de7c46",
+      "size_bytes": 31842
+    },
+    {
+      "research_worktree_path": "outputs/digital_discovery_round_jk/k1/localretro_only/test_results/manifest.json",
+      "sha256": "c371f626052b39e4725f2668015e50eb722c9bb4e3e24afe0bb3c03563bd9a05",
+      "size_bytes": 31849
+    },
+    {
+      "research_worktree_path": "outputs/digital_discovery_round_jk/k1/merged/test_results/manifest.json",
+      "sha256": "37cc5b5d2bcf95bbe4d3099012ab60166381e5978c820a3f9dea311e077f230b",
+      "size_bytes": 31798
+    }
+  ]
+}

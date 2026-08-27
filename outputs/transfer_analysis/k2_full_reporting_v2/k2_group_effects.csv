@@ -1,0 +1,7 @@
+group,metric,n_reactions,effect,ci95_low,ci95_high,analysis_role
+a_identical_set_and_order,top1,1222,0.006301145662847791,-0.0013502454991816692,0.013543371522094925,prespecified_inferential
+a_identical_set_and_order,mrr,1222,0.004379432624113475,-3.0003020029616502e-05,0.008783545871976722,prespecified_inferential
+b_identical_set_different_order,top1,487,0.01868583162217659,,,supplementary_descriptive
+b_identical_set_different_order,mrr,487,0.008514634464326456,,,supplementary_descriptive
+c_different_set,top1,2276,0.004349736379613357,,,supplementary_descriptive
+c_different_set,mrr,2276,0.004312006583535583,,,supplementary_descriptive

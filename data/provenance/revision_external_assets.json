@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "recorded_date": "2026-08-09",
+  "purpose": "Prespecified external identities for Journal of Cheminformatics revision infrastructure",
+  "assets": {
+    "unimol_tools_sdist": {
+      "package": "unimol-tools",
+      "version": "0.1.3",
+      "filename": "unimol_tools-0.1.3.tar.gz",
+      "source_url": "https://pypi.org/project/unimol-tools/0.1.3/",
+      "sha256": "d00b86bebd556d7c82c10b36c019599d58f71e1c7d1b71dcfc51cd1ae6f8125e"
+    },
+    "unimol_molecular_no_h_checkpoint": {
+      "filename": "mol_pre_no_h_220816.pt",
+      "source_url": "https://github.com/deepmodeling/Uni-Mol/releases/download/v0.1/mol_pre_no_h_220816.pt",
+      "size_bytes": 190540187,
+      "sha256": "da27196af09a8c6d089e10b7764b6a716bcc33da227fc118f5b45b0e484585e9"
+    },
+    "grover_base_checkpoint": {
+      "repository": "https://github.com/tencent-ailab/grover",
+      "repository_commit": "40b6d97098e4508687912f3c05eca369fc2c6213",
+      "filename_recorded": "grover_base.pt",
+      "source_url": "https://drive.google.com/uc?id=1hiGwOzoRfbJQPWj0V_mtOffsqIIAMgjl",
+      "size_bytes": 193589423,
+      "sha256": "47e095880d71baf29ea6f6253473cd56d5406213fa82959c6e14ea469e06b1de"
+    },
+    "chemformer_uspto50k_source": {
+      "repository": "https://github.com/MolecularAI/Chemformer",
+      "filename": "uspto_50.pickle",
+      "source_url": "https://az.box.com/s/7eci3nd9vy0xplqniitpk02rbg9q2zcq",
+      "box_file_id": "854847820319",
+      "size_bytes": 40245659,
+      "sha256": "b069af6e459e7deead8ef3d820b5984b0379230944a3fe511aed0fc8ff8c07a2",
+      "rows": 50037,
+      "atom_mapped_atoms": 0
+    },
+    "rxnmapper_publication_model": {
+      "repository": "https://github.com/rxn4chemistry/rxnmapper",
+      "repository_commit": "a01ecdcd5ac944850e9691739c1df858e005fd39",
+      "license": "MIT",
+      "model_directory": "rxnmapper/models/transformers/albert_heads_8_uspto_all_1310k",
+      "model_weight_filename": "pytorch_model.bin",
+      "model_weight_size_bytes": 3212952,
+      "model_weight_sha256": "8541f3f500dae71abe678d546bd035ca946e2d1c819f6b2cf41a97faedd7e6a2",
+      "vocab_sha256": "99e9ad4949844c56205ed51dc62edaecb69787d63c6c74d607116c93eb2a5738",
+      "paper_doi": "10.1126/sciadv.abe4166"
+    },
+    "chemformer_uspto50k_forward": {
+      "doi": "10.6084/m9.figshare.23960724.v1",
+      "record_id": 23960724,
+      "record_version": 1,
+      "license": "Apache-2.0",
+      "repository": "https://github.com/MolecularAI/Chemformer",
+      "repository_commit": "53a2819076bd16f36131839c7fb88157cfc2ce92",
+      "repository_local_path": "assets/chemformer_official",
+      "runtime_repository": "https://github.com/MolecularAI/AiZynthModels",
+      "runtime_repository_commit": "f9262c2c44720a194ae67a37c35b411b20aec2c8",
+      "runtime_repository_local_path": "assets/aizynthmodels_official",
+      "runtime_checkpoint_migration": "rename hyper_parameters.vocab_size to hyper_parameters.vocabulary_size; preserve state_dict byte values",
+      "checkpoint_deserialization_repository_commit": "0ca3c1b5f810a0ff106bbb846f511629eac3b4a5",
+      "checkpoint_deserialization_repository_tag": "1.0",
+      "checkpoint_deserialization_repository_local_path": "assets/chemformer_checkpoint_source",
+      "archive_filename": "chemformer_forward.zip",
+      "figshare_file_id": 42012708,
+      "source_url": "https://ndownloader.figshare.com/files/42012708",
+      "archive_size_bytes": 490543340,
+      "archive_md5": "f0bf5b9f49037c31efe90e48ec7ab16e",
+      "archive_sha256": "1ee180c898d87b770b98d2ee60035cf594cb897990d675230c7e9453e8a4cab4",
+      "checkpoint_filename": "last.ckpt",
+      "checkpoint_local_path": "assets/chemformer_forward/last.ckpt",
+      "checkpoint_size_bytes": 537441893,
+      "checkpoint_sha256": "44203e603e0ed9919213fdd822cb0bff844bd9fbae6f5f5882e1771046f0b287",
+      "task": "forward_prediction",
+      "vocabulary_filename": "bart_vocab_downstream.json",
+      "vocabulary_local_path": "assets/chemformer_official/bart_vocab_downstream.json",
+      "vocabulary_size_bytes": 16588,
+      "vocabulary_sha256": "39bd8a0343cd88aeeb8b23e74189bc14b994f1461ad2979d8fcb41ef05068cd3",
+      "legacy_vocabulary_filename": "bart_vocab_downstream.txt",
+      "legacy_vocabulary_size_bytes": 5949,
+      "legacy_vocabulary_sha256": "faf1d7cec83558a4aa4065b1b4e89847b0d5a83724f2218e52f5bee4442969fb",
+      "vocabulary_order_equivalence": "523/523 tokens are identical and in the same order between the legacy TXT and AiZynthModels JSON vocabulary"
+    }
+  },
+  "pinned_repositories": {
+    "rxn_ebm": {
+      "url": "https://github.com/coleygroup/rxn-ebm",
+      "commit": "1919eeccdd31e16ec7a44478b756bcd974c35a3c"
+    },
+    "retroranker": {
+      "url": "https://github.com/catalystforyou/RetroRanker",
+      "commit": "22b5765743f3325b0e3b51b0cb9cf2d908081399"
+    },
+    "localretro": {
+      "url": "https://github.com/kaist-amsg/LocalRetro",
+      "commit": "eba83e72efabeb854fec86c865e8743c295a8a1e",
+      "license": "CC-BY-NC-SA-4.0",
+      "upstream_pretrained_checkpoint_audit_only": {
+        "filename": "LocalRetro_USPTO_50K.pth",
+        "size_bytes": 34591950,
+        "sha256": "7222daea795d23d1c56850857de85b0d2e7250ef52b9ffaf4958bf9f19be28d1"
+      }
+    }
+  }
+}

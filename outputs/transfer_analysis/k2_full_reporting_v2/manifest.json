@@ -1,0 +1,73 @@
+{
+  "comparator": "historical cap-10 versus clean regenerated cap-50 truncated to ten",
+  "group_sizes": {
+    "a_identical_set_and_order": 1222,
+    "b_identical_set_different_order": 487,
+    "c_different_set": 2276
+  },
+  "inferential_scope": "Only group A retains the prespecified product-cluster interval; groups B and C are descriptive point estimates.",
+  "legacy_anchored_cap50_forbidden": true,
+  "outputs": {
+    "group_effects": {
+      "mtime_ns": 1787796729029027600,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\k2_full_reporting_v2\\k2_group_effects.csv",
+      "sha256": "ac025e4f65c0d7b9958f7e2d8d0ecf59190e98ecd00c6bf516d4168192b8f560",
+      "size_bytes": 651
+    },
+    "groups": {
+      "mtime_ns": 1787796729029027600,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\k2_full_reporting_v2\\k2_group_sizes.csv",
+      "sha256": "9db19dfa49490f196bb0785668fa8f4dcf45397ff8e15f21ca950373d845ce48",
+      "size_bytes": 110
+    }
+  },
+  "protocol_id": "dd-posthoc-k2-full-reporting-v2",
+  "record_kind": "dd_round_k2",
+  "regenerated_source": {
+    "mtime_ns": 1786715939000000000,
+    "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\imports\\aizynth_cap10_cap50_20260814_135947\\candidates_cap50.jsonl",
+    "sha256": "95d405be98f4f16b16c8fb0a7dc2c90962ebef7e9a20abf0de41655525d61b8e",
+    "size_bytes": 197125913
+  },
+  "round_jk_approval": {
+    "analysis_plan": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\analysis_plan.md",
+      "sha256": "6e400aedeb41c201d844e073a5afe4196b8045871ce65f5d32716e0917731c6d",
+      "size_bytes": 54015
+    },
+    "analysis_plan_commit": "b374a91dfaa8a5ce6e14205de0d324555ea3d808",
+    "approval_date": "2026-08-26",
+    "approval_record": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\round_jk_approval.json",
+      "sha256": "2f3e19a18fd151eb88dd758b28abba2a1e87e116eea002f675ac8d16e38a20fc",
+      "size_bytes": 2682
+    },
+    "j4_bin_assignment": "median_across_seeds_worse_bin_on_half_tie",
+    "platform_lock": {
+      "environment-revision.yml": {
+        "sha256": "30897f3a9ca7f8cf7b6b1d273eced180786a5e7c8f60ab647354710b387736b6",
+        "size_bytes": 576
+      },
+      "pyproject.toml": {
+        "sha256": "51c3df839b96c7847f248ebb3465369606a994080f0f046af456b325de423381",
+        "size_bytes": 730
+      },
+      "requirements-revision.txt": {
+        "sha256": "da6cac03d97b16a0a11ffd88c709123ccde5fc18a22843983304f1e6cbda4f62",
+        "size_bytes": 1296
+      },
+      "runtime": {
+        "numpy": "2.2.6",
+        "pandas": "2.3.3",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu"
+      }
+    },
+    "supervisor": "repository owner",
+    "width128_d1_resolution": "approved"
+  },
+  "schema_version": 1,
+  "single_intended_change": "complete supplementary reporting across the three frozen K2 identity/order groups",
+  "test_partition_loaded_from_frozen_predictions_only": true
+}

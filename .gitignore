@@ -1,0 +1,51 @@
+modelchem/
+outputs/atom_embeddings.pkl
+outputs/study_2d/
+outputs/study_3d/
+outputs/study_analysis/
+outputs/study_cache/
+outputs/pytest_tmp_*/
+__pycache__/
+*.pyc
+.pytest_cache/
+.pytest_tmp*/
+
+# Local and generated release state.
+archive/
+tmp/
+output/
+release/
+
+# Third-party repositories/checkpoints are recorded by checksum, not vendored.
+assets/
+data/external/
+
+# Heavy scientific artifacts stay local or belong in the archival data deposit.
+outputs/*
+!outputs/README.md
+!outputs/jcheminform_revision/
+outputs/jcheminform_revision/*
+!outputs/jcheminform_revision/numerical_freeze_v2/
+!outputs/jcheminform_revision/numerical_freeze_v2/**
+!outputs/revision_analysis/
+!outputs/revision_analysis/**
+
+# Neutral paths used only by the clean public release.
+!outputs/historical_anchor/
+!outputs/historical_anchor/**
+!outputs/transfer_analysis/
+!outputs/transfer_analysis/**
+
+# Local manuscript build and visual-QA products.
+paper/digital_discovery/render/
+paper/digital_discovery/*.aux
+paper/digital_discovery/*.bbl
+paper/digital_discovery/*.blg
+paper/digital_discovery/*.log
+paper/digital_discovery/*.out
+
+# Safety net against accidentally committing regenerated binary caches/models.
+*.sqlite
+*.pkl
+*.pt
+*.pth

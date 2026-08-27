@@ -1,0 +1,96 @@
+{
+  "bootstrap_samples": 10000,
+  "comparator": "frozen D1 baseline and augmented arms at cap 10",
+  "inputs": {
+    "aizynthfinder_only": {
+      "mtime_ns": 1787751672215264100,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\aizynthfinder_only\\test_results\\manifest.json",
+      "sha256": "f740a8ae7933c1c5606db941ccc0028dde364fbc2ed794ea0c4b7af079de7c46",
+      "size_bytes": 31842
+    },
+    "localretro_only": {
+      "mtime_ns": 1787752832939789500,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\localretro_only\\test_results\\manifest.json",
+      "sha256": "c371f626052b39e4725f2668015e50eb722c9bb4e3e24afe0bb3c03563bd9a05",
+      "size_bytes": 31849
+    },
+    "merged": {
+      "mtime_ns": 1787753995005461500,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\merged\\test_results\\manifest.json",
+      "sha256": "37cc5b5d2bcf95bbe4d3099012ab60166381e5978c820a3f9dea311e077f230b",
+      "size_bytes": 31798
+    }
+  },
+  "output": {
+    "mtime_ns": 1787754150434538000,
+    "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\k1\\k1_truncated_pool_effects.csv",
+    "sha256": "b76d5c696993ffcad6193aa296b1e57944c84b559181af699224362cff7c487c",
+    "size_bytes": 1184
+  },
+  "protocol_id": "dd-expanded-pool-cap10-d1-v1",
+  "record_kind": "dd_round_k1_analysis",
+  "rng_seed": 2026,
+  "round_jk_approval": {
+    "analysis_plan": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\analysis_plan.md",
+      "sha256": "34c75056916adc2d4502c7a19b471e3918d30cb41f45db39fbc5c29ad735bb3c",
+      "size_bytes": 42884
+    },
+    "analysis_plan_commit": "cdb4e37ca365726887677549d309a7ec04733273",
+    "approval_date": "2026-08-26",
+    "approval_record": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\round_jk_approval.json",
+      "sha256": "55bd3fcd6926c4f96455fdc054ddc82c0b87bb95a47302121a178d130a73e846",
+      "size_bytes": 1116
+    },
+    "j4_bin_assignment": "median_across_seeds_worse_bin_on_half_tie",
+    "platform_lock": {
+      "environment-revision.yml": {
+        "sha256": "30897f3a9ca7f8cf7b6b1d273eced180786a5e7c8f60ab647354710b387736b6",
+        "size_bytes": 576
+      },
+      "pyproject.toml": {
+        "sha256": "51c3df839b96c7847f248ebb3465369606a994080f0f046af456b325de423381",
+        "size_bytes": 730
+      },
+      "requirements-revision.txt": {
+        "sha256": "da6cac03d97b16a0a11ffd88c709123ccde5fc18a22843983304f1e6cbda4f62",
+        "size_bytes": 1296
+      },
+      "runtime": {
+        "numpy": "2.2.6",
+        "pandas": "2.3.3",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu"
+      }
+    },
+    "supervisor": "repository owner",
+    "width128_d1_resolution": "approved"
+  },
+  "schema_version": 1,
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
+  ],
+  "single_intended_change": "expanded-pool candidate composition at fixed list cap",
+  "test_partition_loaded_from_post_freeze_predictions_only": true
+}

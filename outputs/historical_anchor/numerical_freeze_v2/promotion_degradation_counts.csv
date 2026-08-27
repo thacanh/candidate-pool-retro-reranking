@@ -1,0 +1,13 @@
+workstream,analysis_id,protocol_id,scope,count_name,count,source_file,source_locator
+G,G3,cap10-final-statistics-v1,20_seeds_x_3985_reactions,improved,2184,outputs/jcheminform_revision/final_statistics_20seed/manifest.json,$.net_flip_totals.improved
+G,G3,cap10-final-statistics-v1,20_seeds_x_3985_reactions,degraded,1650,outputs/jcheminform_revision/final_statistics_20seed/manifest.json,$.net_flip_totals.degraded
+G,G3,cap10-final-statistics-v1,20_seeds_x_3985_reactions,unchanged,75866,outputs/jcheminform_revision/final_statistics_20seed/manifest.json,$.net_flip_totals.unchanged
+G,G3,cap10-final-statistics-v1,20_seeds_x_3985_reactions,net,534,outputs/jcheminform_revision/final_statistics_20seed/manifest.json,$.net_flip_totals.net
+D,D5,D-EXTERNAL-RXN-EBM-FF-CAP10-v1,3_seeds_x_3985_reactions,rank_degraded,3809,outputs/jcheminform_revision/external_rerankers/rxn_ebm_ff_cap10/analysis/paired_inference.json,$.rank_shift_totals_across_seed_reaction_pairs.rank_degraded
+D,D5,D-EXTERNAL-RXN-EBM-FF-CAP10-v1,3_seeds_x_3985_reactions,rank_improved,1723,outputs/jcheminform_revision/external_rerankers/rxn_ebm_ff_cap10/analysis/paired_inference.json,$.rank_shift_totals_across_seed_reaction_pairs.rank_improved
+D,D5,D-EXTERNAL-RXN-EBM-FF-CAP10-v1,3_seeds_x_3985_reactions,rank_net_improvements,-2086,outputs/jcheminform_revision/external_rerankers/rxn_ebm_ff_cap10/analysis/paired_inference.json,$.rank_shift_totals_across_seed_reaction_pairs.rank_net_improvements
+D,D5,D-EXTERNAL-RXN-EBM-FF-CAP10-v1,3_seeds_x_3985_reactions,rank_unchanged,6423,outputs/jcheminform_revision/external_rerankers/rxn_ebm_ff_cap10/analysis/paired_inference.json,$.rank_shift_totals_across_seed_reaction_pairs.rank_unchanged
+D,D5,D-EXTERNAL-RXN-EBM-FF-CAP10-v1,3_seeds_x_3985_reactions,top1_degraded,3025,outputs/jcheminform_revision/external_rerankers/rxn_ebm_ff_cap10/analysis/paired_inference.json,$.rank_shift_totals_across_seed_reaction_pairs.top1_degraded
+D,D5,D-EXTERNAL-RXN-EBM-FF-CAP10-v1,3_seeds_x_3985_reactions,top1_net_promotions,-1864,outputs/jcheminform_revision/external_rerankers/rxn_ebm_ff_cap10/analysis/paired_inference.json,$.rank_shift_totals_across_seed_reaction_pairs.top1_net_promotions
+D,D5,D-EXTERNAL-RXN-EBM-FF-CAP10-v1,3_seeds_x_3985_reactions,top1_promoted,1161,outputs/jcheminform_revision/external_rerankers/rxn_ebm_ff_cap10/analysis/paired_inference.json,$.rank_shift_totals_across_seed_reaction_pairs.top1_promoted
+D,D5,D-EXTERNAL-RXN-EBM-FF-CAP10-v1,3_seeds_x_3985_reactions,top1_unchanged,7769,outputs/jcheminform_revision/external_rerankers/rxn_ebm_ff_cap10/analysis/paired_inference.json,$.rank_shift_totals_across_seed_reaction_pairs.top1_unchanged

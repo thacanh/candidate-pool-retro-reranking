@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "decision_date": "2026-08-14",
+  "decision_status": "approved_before_feature_generation",
+  "protocol_id": "cap10-tuned-grover-concatenation-v1",
+  "comparator": "frozen cap10-tuned-v1 2D baseline and Uni-Mol-derived augmented arm",
+  "single_intended_change": "replace the three Uni-Mol-derived scalar inputs with the same three scalar formulas computed from frozen GROVER-base 2D atom states",
+  "grover_atom_state_choice": "concatenation",
+  "atom_state_components": [
+    "atom_from_atom",
+    "atom_from_bond"
+  ],
+  "rationale": "Concatenation is the complete official two-view GROVER atom representation and avoids selecting one internal message-passing view after observing results.",
+  "feature_generation": {
+    "stochastic_seed_replicates": 0,
+    "reason": "The frozen pretrained 2D encoder is evaluated deterministically and uses no conformer or coordinate generation. Features are generated once.",
+    "parallelization": "four independent query-scoped GPU workers over contiguous query ranges",
+    "worker_count": 4,
+    "cross_query_encoder_batches": false,
+    "encoder_batch_size": 32,
+    "retain_atom_embedding_cache": false,
+    "retain_scalar_shards": true
+  },
+  "matched_ranker": {
+    "training_seeds": [42, 43, 44, 45, 46],
+    "reuse_primary_prior_transform": true,
+    "reuse_primary_augmented_hyperparameters": true,
+    "ranker_input_dimension": 7,
+    "new_hyperparameter_search": false
+  },
+  "official_test_partition_loaded": false,
+  "environment_lock_status": "parallel_linux_cuda_benchmark_pending"
+}

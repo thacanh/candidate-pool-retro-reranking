@@ -1,0 +1,15 @@
+# Top-level Linux runtime specification for A-CAP10-REPRO/A-CAP50.
+# SETUP_AIZYNTH_ENV.sh records the complete resolved environment after install.
+aizynthfinder==4.4.1
+numpy==1.26.4
+pandas==2.2.3
+rdkit==2023.9.6
+onnxruntime==1.23.2
+reaction-utils==1.9.3
+networkx==2.8.8
+dask==2024.12.1
+distributed==2024.12.1
+tables==3.10.1
+tqdm==4.67.1
+psutil==7.0.0
+pytest==8.3.3

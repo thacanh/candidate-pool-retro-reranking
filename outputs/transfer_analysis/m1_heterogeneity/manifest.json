@@ -1,0 +1,134 @@
+{
+  "candidate_generation_performed": false,
+  "comparator": "frozen historical cap-10 baseline versus augmented predictions",
+  "environment": {
+    "packages": {
+      "numpy": "2.2.6",
+      "rdkit": "2025.9.6",
+      "scipy": "1.15.3"
+    },
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]"
+  },
+  "input_prediction_root": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions",
+  "outputs": {
+    "omnibus": {
+      "mtime_ns": 1787760583124264400,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m1_heterogeneity\\m1_omnibus.csv",
+      "sha256": "94972471afbf077268851adc94e3102437df3dd6af695a88ec7dc8d5b4a894fc",
+      "size_bytes": 379
+    },
+    "pairwise_contrasts": {
+      "mtime_ns": 1787760583124264400,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m1_heterogeneity\\m1_pairwise_contrasts.csv",
+      "sha256": "50e99e78d0fd149902f11d418842571012c51e42acc792779b6b4a661cd0ddfe",
+      "size_bytes": 597
+    },
+    "primary_contrast": {
+      "mtime_ns": 1787760583124264400,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m1_heterogeneity\\m1_primary_contrast.csv",
+      "sha256": "35cc651ccba847efbf835a8950947891f63fd562454778b4860db92165443ffe",
+      "size_bytes": 383
+    },
+    "reaction_effects": {
+      "mtime_ns": 1787760583124264400,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m1_heterogeneity\\m1_reaction_effects.csv",
+      "sha256": "0f64bff23463829ebc5e774e4bf5512aed79ac4aae63dcc3ff447c901e04b33e",
+      "size_bytes": 277963
+    }
+  },
+  "protocol_id": "dd-mechanism-heterogeneity-v1",
+  "record_kind": "dd_exploratory_mechanism_heterogeneity",
+  "retuning_performed": false,
+  "round_jk_approval": {
+    "analysis_plan": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\analysis_plan.md",
+      "sha256": "8fbf7ff403f3b6c5a2fbd023411ccbeaa77f606f5756780a2a0ee41712b433f9",
+      "size_bytes": 48836
+    },
+    "analysis_plan_commit": "8a14e3ccb12996c6ca25fb1303f810d37112da24",
+    "approval_date": "2026-08-26",
+    "approval_record": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\round_jk_approval.json",
+      "sha256": "d7b2bf528df3fd8793f7093bc01adf1541091c7465c4459d015b5e286542c854",
+      "size_bytes": 1582
+    },
+    "j4_bin_assignment": "median_across_seeds_worse_bin_on_half_tie",
+    "m1_protocol_id": "dd-mechanism-heterogeneity-v1",
+    "m_approval_date": "2026-08-26",
+    "m_approval_quote": "tri\u1ec3n khai \u0111i",
+    "m_status": "approved_exploratory_frozen_artifacts_only",
+    "platform_lock": {
+      "environment-revision.yml": {
+        "sha256": "30897f3a9ca7f8cf7b6b1d273eced180786a5e7c8f60ab647354710b387736b6",
+        "size_bytes": 576
+      },
+      "pyproject.toml": {
+        "sha256": "51c3df839b96c7847f248ebb3465369606a994080f0f046af456b325de423381",
+        "size_bytes": 730
+      },
+      "requirements-revision.txt": {
+        "sha256": "da6cac03d97b16a0a11ffd88c709123ccde5fc18a22843983304f1e6cbda4f62",
+        "size_bytes": 1296
+      },
+      "runtime": {
+        "numpy": "2.2.6",
+        "pandas": "2.3.3",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu"
+      }
+    },
+    "supervisor": "repository owner",
+    "width128_d1_resolution": "approved"
+  },
+  "runtime_seconds": 312.53698205947876,
+  "schema_version": 1,
+  "settings": {
+    "bootstrap_rng_seeds": [
+      2040,
+      2041
+    ],
+    "bootstrap_samples": 10000,
+    "candidate_count_bins": [
+      "1",
+      "2-3",
+      "4-6",
+      "7-9",
+      "10"
+    ],
+    "claim_status": "exploratory_post_hoc",
+    "multiplicity": "Holm within endpoint for three secondary pairwise contrasts",
+    "permutation_rng_seeds": [
+      2030,
+      2031
+    ],
+    "permutations": 100000,
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61
+    ]
+  },
+  "single_intended_change": "formal exploratory inference across frozen J3 candidate-count bins",
+  "singleton_structural_audit": "pass",
+  "test_partition_loaded_from_frozen_predictions_only": true,
+  "training_performed": false
+}

@@ -1,0 +1,44 @@
+{
+  "framework": "AiZynthFinder",
+  "audited_workspace_version": "4.4.1",
+  "historical_python_package_lock_retained": false,
+  "configuration": {
+    "path": "modelchem/config.yml",
+    "sha256": "8d04a70d140725bfc40841d2b34a69418c5099ffa2dc286e1721504259f2e2e3"
+  },
+  "expansion_policies": {
+    "uspto": {
+      "model_path": "modelchem/uspto_model.onnx",
+      "model_sha256": "bd0a3cb74cd7068de474c8fb789a00a66bc42c75636d66510ccac585ebe928f8",
+      "templates_path": "modelchem/uspto_templates.csv.gz",
+      "templates_sha256": "a4f1945e90cfa195538320833d68aed38f14e2fcc2f8afb5d958bc920edcafbe",
+      "model_architecture_and_training_dataset": "not retained in the historical candidate artifact"
+    },
+    "ringbreaker": {
+      "model_path": "modelchem/uspto_ringbreaker_model.onnx",
+      "model_sha256": "1bf0690352d9e9212d7dbe8b35649caf74f73ef0b30edefdfdac37fce38085be",
+      "templates_path": "modelchem/uspto_ringbreaker_templates.csv.gz",
+      "templates_sha256": "5616a056454b10a2f044e69e027422128986856ebd958541a3bf9f837e3a0d14",
+      "model_architecture_and_training_dataset": "not retained in the historical candidate artifact"
+    }
+  },
+  "configured_filter": {
+    "path": "modelchem/uspto_filter_model.onnx",
+    "sha256": "ad29aa32bdfcbe37065045546493806cf04899c55386c438905d83fb14bb6320",
+    "called_during_candidate_generation": false
+  },
+  "generation_behavior": {
+    "selected_expansion_policies": ["uspto", "ringbreaker"],
+    "maximum_actions_visited_per_product": 50,
+    "maximum_outcomes_stored_per_product": 10,
+    "candidate_prior": "expansion-policy action prior; shared by multiple outcomes from the same action",
+    "initial_exact_string_deduplication": "after outcome truncation",
+    "controlled_loader_deduplication": "canonical fragment-set identity; retain largest prior",
+    "tie_breaking": "stable policy-return order after decreasing-prior sort"
+  },
+  "candidate_jsonl": {
+    "sha256": "9ec1cf192c49eeb7d74a320dd721287fabdef9863cc06f95d0f13baab8c3ff85",
+    "raw_records": 396219,
+    "products_with_records": 49584
+  }
+}

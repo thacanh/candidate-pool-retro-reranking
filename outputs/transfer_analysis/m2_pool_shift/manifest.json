@@ -1,0 +1,646 @@
+{
+  "candidate_generation_performed": false,
+  "comparator": "four frozen candidate pools truncated to cap 10",
+  "effect_outcomes_loaded_from_frozen_predictions": true,
+  "environment": {
+    "packages": {
+      "numpy": "2.2.6",
+      "rdkit": "2025.9.6",
+      "scipy": "1.15.3"
+    },
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]"
+  },
+  "inputs": {
+    "anchor_prediction_files": {
+      "augmented_seed_42": {
+        "mtime_ns": 1786680411000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_42.csv",
+        "sha256": "3620641edde4477a92419c75cef536eb966709441dbce70b7424cb6da085e13b",
+        "size_bytes": 5159967
+      },
+      "augmented_seed_43": {
+        "mtime_ns": 1786680412000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_43.csv",
+        "sha256": "b99902cb20387a01d81e9d7834e719a16b2622762c7f4942dcf14e870f0f4cc8",
+        "size_bytes": 5160420
+      },
+      "augmented_seed_44": {
+        "mtime_ns": 1786680413000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_44.csv",
+        "sha256": "9bc591ff89a7e4e9c26a137a777c619cb52f14d960400ca9ca4653388ca6939c",
+        "size_bytes": 5160878
+      },
+      "augmented_seed_45": {
+        "mtime_ns": 1786680414000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_45.csv",
+        "sha256": "42333e3ced11a9acbed941bfc2b9f5e1c8af5929829bd8bcf6c420cc2db1c1ea",
+        "size_bytes": 5160652
+      },
+      "augmented_seed_46": {
+        "mtime_ns": 1786680415000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_46.csv",
+        "sha256": "517dd37f4b675a21d9cc03e756af57bfd1576288d1a6d8b3a7a11d2d98d5d6b4",
+        "size_bytes": 5159845
+      },
+      "augmented_seed_47": {
+        "mtime_ns": 1786680416000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_47.csv",
+        "sha256": "93a26677600450f1f84e225c2167f77c56d7e4af34c5e8db75217a0534086a08",
+        "size_bytes": 5159610
+      },
+      "augmented_seed_48": {
+        "mtime_ns": 1786680417000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_48.csv",
+        "sha256": "73262b00c525551d4388a99d0219c74d02eba98a6d3d91a08496225aa9d1304c",
+        "size_bytes": 5160463
+      },
+      "augmented_seed_49": {
+        "mtime_ns": 1786680419000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_49.csv",
+        "sha256": "494abbe686c5ed26e7508f8ab788d28e89f3ee315aca82acc58a4552da89af47",
+        "size_bytes": 5158923
+      },
+      "augmented_seed_50": {
+        "mtime_ns": 1786680420000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_50.csv",
+        "sha256": "f2f028e18ca6b14060ea82f8e6a384851727f5f0fa118d6cc1e62b65348fcf6b",
+        "size_bytes": 5160236
+      },
+      "augmented_seed_51": {
+        "mtime_ns": 1786680421000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_51.csv",
+        "sha256": "c0d63a4b805de9c6598578b185e6373ef6db2ed1e04ff07b327fa28f6f59aaa9",
+        "size_bytes": 5160121
+      },
+      "augmented_seed_52": {
+        "mtime_ns": 1786680422000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_52.csv",
+        "sha256": "b7d995a4eeed38da44967cf67209da5d66a3730ec3153a8b18a9b738b20c2a19",
+        "size_bytes": 5160284
+      },
+      "augmented_seed_53": {
+        "mtime_ns": 1786680423000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_53.csv",
+        "sha256": "f0b2cd31320c9054f9c197aa588fbc8966d38c96d5604daf889f105b53b8d72c",
+        "size_bytes": 5160445
+      },
+      "augmented_seed_54": {
+        "mtime_ns": 1786680424000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_54.csv",
+        "sha256": "2188d184035e234e0991c21b612c02f1ef294515d4ebd1c694f71b901c64efaf",
+        "size_bytes": 5159488
+      },
+      "augmented_seed_55": {
+        "mtime_ns": 1786680425000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_55.csv",
+        "sha256": "3ff516dc7100839d060ab09ff1380fa2e713d6290b70dd07c5320491172100b7",
+        "size_bytes": 5159726
+      },
+      "augmented_seed_56": {
+        "mtime_ns": 1786680426000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_56.csv",
+        "sha256": "cd1f18455c7caa98b3a9ffb504ffdef4a98b47d313f872ec94bf1729849404d1",
+        "size_bytes": 5159535
+      },
+      "augmented_seed_57": {
+        "mtime_ns": 1786680427000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_57.csv",
+        "sha256": "bd94985efd847c89670b2a3d3cf841a5523d4ae3e2a0c6cded1b22bda6c4b29a",
+        "size_bytes": 5160403
+      },
+      "augmented_seed_58": {
+        "mtime_ns": 1786680429000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_58.csv",
+        "sha256": "678714fe5bdce09ee420c82b395cf15c890e55401a965e88feb895481c1691b3",
+        "size_bytes": 5159581
+      },
+      "augmented_seed_59": {
+        "mtime_ns": 1786680430000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_59.csv",
+        "sha256": "15ed7e1799e95202671a7aaf2e98484c9c7c5a3cdc2f0f444f2bd64ee16b1921",
+        "size_bytes": 5160576
+      },
+      "augmented_seed_60": {
+        "mtime_ns": 1786680431000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_60.csv",
+        "sha256": "42d995000785a1184fb143b27854a75cf82af9cd08456325bbfa10c6eed7b016",
+        "size_bytes": 5160776
+      },
+      "augmented_seed_61": {
+        "mtime_ns": 1786680432000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\augmented_seed_61.csv",
+        "sha256": "e0fe86b8127e499359b3faa0b40fa44212b9418d001adba224a53e3b1372c8c0",
+        "size_bytes": 5159765
+      },
+      "baseline_seed_42": {
+        "mtime_ns": 1786680389000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_42.csv",
+        "sha256": "356e5a17424647e6fde75fa4a6150ac7725fbf78ed4f595fb9e0fe2a5b1cf423",
+        "size_bytes": 5150836
+      },
+      "baseline_seed_43": {
+        "mtime_ns": 1786680391000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_43.csv",
+        "sha256": "54ab6399bf4c5127a1077043cd8e7e994d2a45c1f2e7a5f10745835181855383",
+        "size_bytes": 5151144
+      },
+      "baseline_seed_44": {
+        "mtime_ns": 1786680392000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_44.csv",
+        "sha256": "b1afa70b590e4de8b613d41429d41476431ce5ea970a7f2ab9755531d3b37f69",
+        "size_bytes": 5148100
+      },
+      "baseline_seed_45": {
+        "mtime_ns": 1786680393000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_45.csv",
+        "sha256": "96f6d26def786714731bc6b639ac08583aa5966c387244cf26fa8bb531f6330a",
+        "size_bytes": 5154089
+      },
+      "baseline_seed_46": {
+        "mtime_ns": 1786680394000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_46.csv",
+        "sha256": "572d084eb87b96c55fcf2dbcc4ce5618562e170c155b4268b149bdf286cc40f2",
+        "size_bytes": 5150484
+      },
+      "baseline_seed_47": {
+        "mtime_ns": 1786680395000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_47.csv",
+        "sha256": "e15909e400469e600dfc1de2293374a0dcb5f55d06b70a9a1c788706460f53cc",
+        "size_bytes": 5153484
+      },
+      "baseline_seed_48": {
+        "mtime_ns": 1786680396000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_48.csv",
+        "sha256": "ca3ea5c012f39aa4ee7b2834463b58cbb309bfd7dca34bf1c8820d76d7284570",
+        "size_bytes": 5149295
+      },
+      "baseline_seed_49": {
+        "mtime_ns": 1786680397000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_49.csv",
+        "sha256": "5c9ceee734282a4edb2e7b424bbb5bf8250ff597b9c5892f89e64ebe9aa22c72",
+        "size_bytes": 5154061
+      },
+      "baseline_seed_50": {
+        "mtime_ns": 1786680398000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_50.csv",
+        "sha256": "1ea0ab412e5eec4c54be22fa820621383f0332e376d94ddd4e0f1854f42f6240",
+        "size_bytes": 5153445
+      },
+      "baseline_seed_51": {
+        "mtime_ns": 1786680399000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_51.csv",
+        "sha256": "63414f2909d0fc3a8f2b71a681fce92763d4a8583439f517ce842df4411789f2",
+        "size_bytes": 5149364
+      },
+      "baseline_seed_52": {
+        "mtime_ns": 1786680400000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_52.csv",
+        "sha256": "0d95215e3993e7b172d45c4cf69276eb51a5a5d2ed745bfd28576f3eca69c844",
+        "size_bytes": 5153385
+      },
+      "baseline_seed_53": {
+        "mtime_ns": 1786680401000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_53.csv",
+        "sha256": "d23844d0ff56bd4b2213d7b9b5398b6236b533deb8db610b522487173a08cada",
+        "size_bytes": 5152832
+      },
+      "baseline_seed_54": {
+        "mtime_ns": 1786680402000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_54.csv",
+        "sha256": "3ea1ca9af2722ea5a1b55c12e1bfaad6c3d0682142bd325c08da23d52566ef63",
+        "size_bytes": 5154357
+      },
+      "baseline_seed_55": {
+        "mtime_ns": 1786680403000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_55.csv",
+        "sha256": "8db30b3a7e66f6c07f570e8b0f9acb5ffc4715cd30dce3edd26af2b2274297d8",
+        "size_bytes": 5152232
+      },
+      "baseline_seed_56": {
+        "mtime_ns": 1786680404000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_56.csv",
+        "sha256": "a4bc76237574cd36651357a6c49904e070a7bd3eb608f15d1424c282e1094db6",
+        "size_bytes": 5152165
+      },
+      "baseline_seed_57": {
+        "mtime_ns": 1786680405000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_57.csv",
+        "sha256": "a5b8e2df429fd367653043a2044e3a5f3ffa09625fe0dadeb72016d256476509",
+        "size_bytes": 5153409
+      },
+      "baseline_seed_58": {
+        "mtime_ns": 1786680407000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_58.csv",
+        "sha256": "36547e3782e6716e761db7ddc301752227f4bbe4068b92a99cda40b7a8df08ef",
+        "size_bytes": 5153733
+      },
+      "baseline_seed_59": {
+        "mtime_ns": 1786680408000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_59.csv",
+        "sha256": "e558e08addd8ad592a32701dc5858e3d75b2967cf158fa2810f4441ba83f9b1b",
+        "size_bytes": 5151467
+      },
+      "baseline_seed_60": {
+        "mtime_ns": 1786680409000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_60.csv",
+        "sha256": "dcbfe04b363d4ae2b9d07180e62662068d94fa59e9879a5ee95a35e6d134d179",
+        "size_bytes": 5155394
+      },
+      "baseline_seed_61": {
+        "mtime_ns": 1786680410000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\tuned_primary\\conformer_seed_42\\g1_20seed\\test_results\\predictions\\baseline_seed_61.csv",
+        "sha256": "6e6716b663e79c8049b44996fc03269b859dc7ab70e3ef0e58e332dd3eb48680",
+        "size_bytes": 5151708
+      }
+    },
+    "candidate_pools": {
+      "aizynthfinder_only": {
+        "mtime_ns": 1786775236000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\candidate_pools\\ws_e_three_pools_filtered_v2\\aizynthfinder_only.jsonl",
+        "sha256": "6868ec2ce83ca64aed14d7ed6ca3537e7e0b711c236e1d36dcc40d61a371f2c0",
+        "size_bytes": 357771009
+      },
+      "historical_cap10": {
+        "mtime_ns": 1777617573528613300,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\rerank_dataset.jsonl",
+        "sha256": "9ec1cf192c49eeb7d74a320dd721287fabdef9863cc06f95d0f13baab8c3ff85",
+        "size_bytes": 68234466
+      },
+      "localretro_only": {
+        "mtime_ns": 1786775260000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\candidate_pools\\ws_e_three_pools_filtered_v2\\localretro_only.jsonl",
+        "sha256": "621bfdaab072ca9050bf73b8d753c6cef521d982729f146b7d50eefeb9b728cc",
+        "size_bytes": 801998876
+      },
+      "merged": {
+        "mtime_ns": 1786775290000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\candidate_pools\\ws_e_three_pools_filtered_v2\\merged_canonical_union.jsonl",
+        "sha256": "57c2a055871e3639a1e1cc4b0aa346e2581a3bad8073294ded2646f22cf57a79",
+        "size_bytes": 976252284
+      }
+    },
+    "k1_frozen_chains": {
+      "aizynthfinder_only": {
+        "covered_reactions": 4012,
+        "feature_freeze": {
+          "mtime_ns": 1787244311220797800,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\ws_e_streaming\\pool_features_canonical_identity\\aizynthfinder_only\\manifest.json",
+          "sha256": "2f69989f50b6939f8f76225542fd24e60157d19af38793f607fc9bd7fecabda8",
+          "size_bytes": 41684
+        },
+        "feature_freeze_path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\ws_e_streaming\\pool_features_canonical_identity\\aizynthfinder_only\\manifest.json",
+        "metadata_csv": {
+          "mtime_ns": 1785747509540216500,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\data\\uspto_reaction_metadata.csv",
+          "sha256": "c9f3c5f01e64cc9192f20f9889694b85d83986f4e991d2ee5bb52b5db8e08e52",
+          "size_bytes": 734709
+        },
+        "model_freeze": {
+          "mtime_ns": 1787751611750810700,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\aizynthfinder_only\\models\\freeze.json",
+          "sha256": "f027b6b8964a0ba9356d31864a6a94baa278ad661c5b7f2f0bcb46fd5eb7a779",
+          "size_bytes": 15736
+        },
+        "pool": {
+          "mtime_ns": 1786775236000000000,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\candidate_pools\\ws_e_three_pools_filtered_v2\\aizynthfinder_only.jsonl",
+          "sha256": "6868ec2ce83ca64aed14d7ed6ca3537e7e0b711c236e1d36dcc40d61a371f2c0",
+          "size_bytes": 357771009
+        },
+        "predictions": {
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\aizynthfinder_only\\test_results\\reaction_ranks.jsonl",
+          "sha256": "39fb677d75dc97b11fff1647e41495359340233d8a647a6ae109ac6423fe72c9",
+          "size_bytes": 5383882
+        },
+        "selection_manifest": {
+          "mtime_ns": 1787734325520976500,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\aizynthfinder_only\\selection\\manifest.json",
+          "sha256": "aedf91bbd2edebdea166eda6c962389124f82b5074bdbe91a201a09cbf9c826c",
+          "size_bytes": 13642
+        },
+        "source_csv": {
+          "mtime_ns": 1770308156466795200,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\data\\uspto_smiles.csv",
+          "sha256": "688c5b8ea7c3269b53ae15ffca9ec98f51fd29ea3fc25edc8fa66cabe9042d6a",
+          "size_bytes": 5269731
+        },
+        "test_manifest": {
+          "mtime_ns": 1787751672215264100,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\aizynthfinder_only\\test_results\\manifest.json",
+          "sha256": "f740a8ae7933c1c5606db941ccc0028dde364fbc2ed794ea0c4b7af079de7c46",
+          "size_bytes": 31842
+        }
+      },
+      "localretro_only": {
+        "covered_reactions": 4462,
+        "feature_freeze": {
+          "mtime_ns": 1787244968521110100,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\ws_e_streaming\\pool_features_canonical_identity\\localretro_only\\manifest.json",
+          "sha256": "70adef8dd2a8d613f5aa50ecebaa40e08527955c0f35784da5a23e90417f4753",
+          "size_bytes": 41357
+        },
+        "feature_freeze_path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\ws_e_streaming\\pool_features_canonical_identity\\localretro_only\\manifest.json",
+        "metadata_csv": {
+          "mtime_ns": 1785747509540216500,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\data\\uspto_reaction_metadata.csv",
+          "sha256": "c9f3c5f01e64cc9192f20f9889694b85d83986f4e991d2ee5bb52b5db8e08e52",
+          "size_bytes": 734709
+        },
+        "model_freeze": {
+          "mtime_ns": 1787752788573287200,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\localretro_only\\models\\freeze.json",
+          "sha256": "e08062708c11c8b0cd55e106950aff4cfe2683263dbb1b2c841c3585b8390bec",
+          "size_bytes": 15589
+        },
+        "pool": {
+          "mtime_ns": 1786775260000000000,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\candidate_pools\\ws_e_three_pools_filtered_v2\\localretro_only.jsonl",
+          "sha256": "621bfdaab072ca9050bf73b8d753c6cef521d982729f146b7d50eefeb9b728cc",
+          "size_bytes": 801998876
+        },
+        "predictions": {
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\localretro_only\\test_results\\reaction_ranks.jsonl",
+          "sha256": "2f8a26897f0db5fd92d793fba27a6dde131ea02b704095c17c58b79eb5a1d68e",
+          "size_bytes": 5883849
+        },
+        "selection_manifest": {
+          "mtime_ns": 1787751750713518900,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\localretro_only\\selection\\manifest.json",
+          "sha256": "e77449f02f1a2eaf87ad6943f0401e4b302dda891519e6011dd4fb717ec60ca5",
+          "size_bytes": 13530
+        },
+        "source_csv": {
+          "mtime_ns": 1770308156466795200,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\data\\uspto_smiles.csv",
+          "sha256": "688c5b8ea7c3269b53ae15ffca9ec98f51fd29ea3fc25edc8fa66cabe9042d6a",
+          "size_bytes": 5269731
+        },
+        "test_manifest": {
+          "mtime_ns": 1787752832939789500,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\localretro_only\\test_results\\manifest.json",
+          "sha256": "c371f626052b39e4725f2668015e50eb722c9bb4e3e24afe0bb3c03563bd9a05",
+          "size_bytes": 31849
+        }
+      },
+      "merged": {
+        "covered_reactions": 4584,
+        "feature_freeze": {
+          "mtime_ns": 1787245537425465900,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\ws_e_streaming\\pool_features_canonical_identity\\merged\\manifest.json",
+          "sha256": "161a1698545b5be8bcdadd84cc2a7ac2448b786d912cabb3a12fbd402e2b3f77",
+          "size_bytes": 40187
+        },
+        "feature_freeze_path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\ws_e_streaming\\pool_features_canonical_identity\\merged\\manifest.json",
+        "metadata_csv": {
+          "mtime_ns": 1785747509540216500,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\data\\uspto_reaction_metadata.csv",
+          "sha256": "c9f3c5f01e64cc9192f20f9889694b85d83986f4e991d2ee5bb52b5db8e08e52",
+          "size_bytes": 734709
+        },
+        "model_freeze": {
+          "mtime_ns": 1787753944247394700,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\merged\\models\\freeze.json",
+          "sha256": "fab1ca8e3916e00eed7ab4160ff1edc9f82e26635bbf8774f2910033dfe7e97c",
+          "size_bytes": 15219
+        },
+        "pool": {
+          "mtime_ns": 1786775290000000000,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\candidate_pools\\ws_e_three_pools_filtered_v2\\merged_canonical_union.jsonl",
+          "sha256": "57c2a055871e3639a1e1cc4b0aa346e2581a3bad8073294ded2646f22cf57a79",
+          "size_bytes": 976252284
+        },
+        "predictions": {
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\merged\\test_results\\reaction_ranks.jsonl",
+          "sha256": "31da412347a144058d47aab49a2e216b2be1962eebaa3d0c2681ea624b6201c4",
+          "size_bytes": 5977164
+        },
+        "selection_manifest": {
+          "mtime_ns": 1787752902290674800,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\merged\\selection\\manifest.json",
+          "sha256": "04256b4cf948878e39d6dd6e37b2cba08b8ad5fb8ef6ee9af10f498bcebe97d2",
+          "size_bytes": 13330
+        },
+        "source_csv": {
+          "mtime_ns": 1770308156466795200,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\data\\uspto_smiles.csv",
+          "sha256": "688c5b8ea7c3269b53ae15ffca9ec98f51fd29ea3fc25edc8fa66cabe9042d6a",
+          "size_bytes": 5269731
+        },
+        "test_manifest": {
+          "mtime_ns": 1787753995005461500,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\k1\\merged\\test_results\\manifest.json",
+          "sha256": "37cc5b5d2bcf95bbe4d3099012ab60166381e5978c820a3f9dea311e077f230b",
+          "size_bytes": 31798
+        }
+      }
+    },
+    "l1_d5_frozen_chain": {
+      "d5_predictions": {
+        "0": {
+          "mtime_ns": 1787300456000000000,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\external_rerankers\\rxn_ebm_ff_cap10\\test_results\\predictions_seed_0.csv",
+          "sha256": "4eb71eaff91f576deb6850e1fb369a0481faf5a398312d56b46a04e28ca463d9",
+          "size_bytes": 264170
+        },
+        "20210423": {
+          "mtime_ns": 1787300466000000000,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\external_rerankers\\rxn_ebm_ff_cap10\\test_results\\predictions_seed_20210423.csv",
+          "sha256": "4ac4f3da64a896e09e06d1bb5799ce84c264eba7679d06007e002774be0f117b",
+          "size_bytes": 291044
+        },
+        "77777777": {
+          "mtime_ns": 1787300476000000000,
+          "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\external_rerankers\\rxn_ebm_ff_cap10\\test_results\\predictions_seed_77777777.csv",
+          "sha256": "666ec40581e198e840d06f5fe39516ec75573f7fcaabb936ea95e31003ef7c74",
+          "size_bytes": 291753
+        }
+      },
+      "d5_test_manifest": {
+        "mtime_ns": 1787300476000000000,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\jcheminform_revision\\external_rerankers\\rxn_ebm_ff_cap10\\test_results\\manifest.json",
+        "sha256": "16f0250f50a94faf89b1569b45f44240bcd49bca349e58fd18326bcff9eda1dc",
+        "size_bytes": 3553
+      },
+      "l1_manifest": {
+        "mtime_ns": 1787759083979174800,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\l1\\manifest.json",
+        "sha256": "da95472fd6c4f86648cc8315b10648c852ca8c68d293bd7786853940e13c9fbf",
+        "size_bytes": 7968
+      },
+      "l1_per_list_diagnostics": {
+        "mtime_ns": 1787759083931220300,
+        "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\l1\\l1_per_list_diagnostics.csv",
+        "sha256": "d528ab971afecb945ec33b132c870c22407f5f309680064a68cf6b9369c89d99",
+        "size_bytes": 889256
+      }
+    },
+    "metadata_csv": {
+      "mtime_ns": 1785747509540216500,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\data\\uspto_reaction_metadata.csv",
+      "sha256": "c9f3c5f01e64cc9192f20f9889694b85d83986f4e991d2ee5bb52b5db8e08e52",
+      "size_bytes": 734709
+    },
+    "source_csv": {
+      "mtime_ns": 1770308156466795200,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\data\\uspto_smiles.csv",
+      "sha256": "688c5b8ea7c3269b53ae15ffca9ec98f51fd29ea3fc25edc8fa66cabe9042d6a",
+      "size_bytes": 5269731
+    }
+  },
+  "official_test_label_use": "reference-containment audit and label-aware non-reference-candidate similarity on the frozen common-covered subset",
+  "official_test_labels_loaded_post_freeze": true,
+  "official_test_labels_used_for_training_selection_or_retuning": false,
+  "outputs": {
+    "coverage_selection_audit": {
+      "mtime_ns": 1787771868680166800,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_coverage_selection_audit.csv",
+      "sha256": "64bde5d4eaedb0eadac2c8c292882296d704c049069ed412d64811499f0173be",
+      "size_bytes": 502
+    },
+    "descriptor_effect_associations": {
+      "mtime_ns": 1787771868589018800,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_descriptor_effect_associations.csv",
+      "sha256": "3c85ee1eeef1786f7282fb5651f2cf89743ea4c0067009e20447d1a7f4168742",
+      "size_bytes": 5167
+    },
+    "descriptor_effect_quartiles": {
+      "mtime_ns": 1787771868589018800,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_descriptor_effect_quartiles.csv",
+      "sha256": "505f706b31778deb4533b28f3c0c5f6af6b20c92e01907832f0fec44bc75c1e4",
+      "size_bytes": 24031
+    },
+    "l1_external_associations": {
+      "mtime_ns": 1787771868609829400,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_l1_external_associations.csv",
+      "sha256": "748f39a752131c148ebbd5ea12b3894c572b9fac67c0abd68782e944ae901a86",
+      "size_bytes": 482
+    },
+    "l1_external_reaction_links": {
+      "mtime_ns": 1787771868609829400,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_l1_external_reaction_links.csv",
+      "sha256": "91516b909a223d3c01abc256f8d5063f0fe92dd331f996cc7efd41b825e1873a",
+      "size_bytes": 310557
+    },
+    "pool_summary": {
+      "mtime_ns": 1787771868589018800,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_pool_summary.csv",
+      "sha256": "81977a90aca40b05b160740a75dff2c069a3b7b40defe9a9237fb68a0a4ee8ec",
+      "size_bytes": 2022
+    },
+    "reaction_pool_descriptors": {
+      "mtime_ns": 1787771868589018800,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_reaction_pool_descriptors.csv",
+      "sha256": "bee100a74bc439bc9eabffbaeb96357d568f463f8a1c2d991967468d40185239",
+      "size_bytes": 2449287
+    },
+    "transfer_loss_associations": {
+      "mtime_ns": 1787771868677219500,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_transfer_loss_associations.csv",
+      "sha256": "d144922e6165f50214bd78666f05c3da69ba90c96010324ed7146e4a1450ef98",
+      "size_bytes": 3477
+    },
+    "transfer_loss_quartiles": {
+      "mtime_ns": 1787771868679215400,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_transfer_loss_quartiles.csv",
+      "sha256": "23fec27226152ecea7ede084f7695bc2bbdaaf8fdcccc65f8cacb66ed1805b0d",
+      "size_bytes": 16240
+    },
+    "transfer_loss_reactions": {
+      "mtime_ns": 1787771868675250000,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_transfer_loss_reactions.csv",
+      "sha256": "d87ca6528763afcbf0cc6830ac2127050bf32857863d944d50c348648082b284",
+      "size_bytes": 1575558
+    },
+    "transfer_loss_summary": {
+      "mtime_ns": 1787771868676177200,
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_transfer_loss_summary.csv",
+      "sha256": "0a2b277eae016b97368d1dfb907da9affd60e31096eb530e17fa2e7c1dff514b",
+      "size_bytes": 260
+    }
+  },
+  "protocol_id": "dd-candidate-pool-shift-diagnostic-v2",
+  "record_kind": "dd_exploratory_candidate_pool_shift_diagnostic",
+  "retuning_performed": false,
+  "round_jk_approval": {
+    "analysis_plan": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\analysis_plan.md",
+      "sha256": "a739c7fac9bebfbc446f681a08616e1350bf6111c81cc4b789c13c2a14168a85",
+      "size_bytes": 51355
+    },
+    "analysis_plan_commit": "bdbf02302126fa0ccfbe1b2bab45e7580a9fcc03",
+    "approval_date": "2026-08-26",
+    "approval_record": {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\docs\\round_jk_approval.json",
+      "sha256": "537a3ce6533c973eb3e024c9d2ca6108caf6a888ddf0dbe0e7ecf031c175aa91",
+      "size_bytes": 1663
+    },
+    "j4_bin_assignment": "median_across_seeds_worse_bin_on_half_tie",
+    "m2_protocol_id": "dd-candidate-pool-shift-diagnostic-v2",
+    "m_approval_date": "2026-08-26",
+    "m_approval_quote": "tri\u1ec3n khai \u0111i",
+    "m_status": "approved_exploratory_frozen_artifacts_only",
+    "platform_lock": {
+      "environment-revision.yml": {
+        "sha256": "30897f3a9ca7f8cf7b6b1d273eced180786a5e7c8f60ab647354710b387736b6",
+        "size_bytes": 576
+      },
+      "pyproject.toml": {
+        "sha256": "51c3df839b96c7847f248ebb3465369606a994080f0f046af456b325de423381",
+        "size_bytes": 730
+      },
+      "requirements-revision.txt": {
+        "sha256": "da6cac03d97b16a0a11ffd88c709123ccde5fc18a22843983304f1e6cbda4f62",
+        "size_bytes": 1296
+      },
+      "runtime": {
+        "numpy": "2.2.6",
+        "pandas": "2.3.3",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu"
+      }
+    },
+    "supervisor": "repository owner",
+    "width128_d1_resolution": "approved"
+  },
+  "runtime_seconds": 77.04929971694946,
+  "schema_version": 1,
+  "settings": {
+    "association": "Spearman; descriptive/post hoc; undefined values excluded without imputation",
+    "candidate_cap": 10,
+    "candidate_identity": "canonical isomeric SMILES; fragment-order invariant",
+    "claim_status": "exploratory_post_hoc",
+    "common_covered_reactions": 3814,
+    "historical_anchor_covered_reactions": 3985,
+    "morgan": "radius=2; fpSize=2048; includeChirality=True",
+    "official_test_reactions": 5004,
+    "quartiles": "average-rank quartiles; constant descriptors omitted",
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61
+    ],
+    "stored_prior_mass_entropy": "within-pool dispersion only; not calibrated confidence and not used as a cross-pool shift",
+    "transfer_loss": "expanded-pool mean 20-seed effect minus matched historical mean 20-seed effect"
+  },
+  "single_intended_change": "descriptive measurement of frozen candidate-list composition and its association with frozen within-pool effect and paired loss of transfer",
+  "training_performed": false
+}
