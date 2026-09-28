@@ -4,6 +4,33 @@ This document defines the clean Git release for the active *Digital Discovery*
 paper. It does not alter a scientific protocol or recompute a scientific
 result.
 
+## Current local organization and release hold (2026-09-24)
+
+### Code update authorized 2026-09-28
+
+The user authorized preparation and incremental upload of code and compact
+results. GitHub Release/tag creation and archival DOI deposition remain on
+hold pending author metadata and the user's final instruction. No manuscript,
+private PowerPoint/PDF figure, author placeholder or DOI field is part of this
+update. Preserve the existing code-only Git history; do not force-push again.
+The new staging payload is `release/public_repository_staging_20260928/`.
+
+Returned ZIPs and their original receipts are stored together under
+`archive/imports/dd_final_round/{N3,N3_S4,N4}/`; the original manuscript ZIP is
+under `archive/imports/manuscripts/`. The organization ledger records before/
+after SHA256 checks at `archive/imports/organization_20260924.json`.
+Local import/audit helpers resolve these paths and still support newly
+downloaded root files, but reject ambiguous duplicate copies.
+
+No public release or upload was performed during organization. Existing
+`release/public_repository*` directories and TAR exports are historical,
+potentially stale snapshots (some contain paper material), not the latest
+approved code-only payload. Preserve their Git histories. Build a new empty
+staging directory with the allowlist below for the authorized code update;
+verify its current N2/N3/N4/S4 coverage and exclude all paper
+material before publishing. DOI and private manuscript metadata remain
+untouched. The current private Overleaf ZIP is indexed in `release/README.md`.
+
 ## Build
 
 From the research worktree, with `PYTHONPATH=src` when the package is not
@@ -28,6 +55,20 @@ material, and writes both `release_manifest.json` and `checksums.sha256`.
 - the signed analysis plan and provenance records;
 - model-free CSV/JSON numerical summaries used by the paper; and
 - file sizes and SHA256 values for every release payload.
+
+Final-round summaries include N1, N2 and its prior diagnostics, N3-S1--S4,
+N4, N5, corrected headroom and the exploratory prior-gap supplement. Selected
+CSV files are copied byte-for-byte. Public copies of final-round JSON files
+remove machine-local user-path prefixes and are reserialized; numerical
+values, protocol IDs and scientific settings are not changed. Both original
+and public SHA256 values are recorded in
+`data/provenance/final_round_artifact_map.json`. Do not treat those redacted
+JSON files as the original byte-identical manifests. Original manifest
+references to excluded heavy inputs remain provenance, not download links.
+
+The compact `figure_inputs/adaptation.csv` is assembled from existing N5,
+N3-S3 and N3-S4 statistics, with no new fit or resampling. Its source artifacts
+are included under `outputs/transfer_analysis/final_round/`.
 
 ## Excluded
 
@@ -68,8 +109,9 @@ python -m rerank.data.build_public_release --verify .
 ## Clean Git history and upload
 
 Do not push the current 30-GiB research worktree. Its Git object database also
-contains old heavyweight blobs. Initialize a new history inside the generated
-release only:
+contains old heavyweight blobs. The commands below apply to an initial
+publication only. For the existing public repository, synchronize a verified
+payload into its clean checkout and make a normal fast-forward commit instead:
 
 ```powershell
 cd release\public_repository

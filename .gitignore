@@ -8,6 +8,8 @@ outputs/pytest_tmp_*/
 __pycache__/
 *.pyc
 .pytest_cache/
+.ipynb_checkpoints/
+figures_rebuilt/
 .pytest_tmp*/
 
 # Local and generated release state.
@@ -15,6 +17,12 @@ archive/
 tmp/
 output/
 release/
+
+# Downloaded result transports are private imports, never root Git payloads.
+/*.zip
+/*.tar
+/*.tar.gz
+/*.receipt.json
 
 # Third-party repositories/checkpoints are recorded by checksum, not vendored.
 assets/

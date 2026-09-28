@@ -59,6 +59,27 @@
       "public_path": "outputs/transfer_analysis/k2_full_reporting_v2/manifest.json",
       "size_bytes": 3120,
       "sha256": "87a3b399f46727c8739cbf16086fb5da96fa5f835f254e282b37c31093237c3c"
+    },
+    {
+      "role": "shared-hyperparameter sensitivity manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reviewer_sensitivity/shared_hyperparameters/analysis/manifest.json",
+      "public_path": "outputs/transfer_analysis/shared_hyperparameter_sensitivity/manifest.json",
+      "size_bytes": 11312,
+      "sha256": "6f7f1d7fbbca96a37e048eb6f6656295de6a5f5df9d45bc4ca36f2a6ac1826ed"
+    },
+    {
+      "role": "shared-hyperparameter within-pool effects",
+      "source_path": "outputs/digital_discovery_round_jk/reviewer_sensitivity/shared_hyperparameters/analysis/within_pool_effects.csv",
+      "public_path": "outputs/transfer_analysis/shared_hyperparameter_sensitivity/within_pool_effects.csv",
+      "size_bytes": 3137,
+      "sha256": "78e04d596a09b04fccf3dc44a482329863adb8c63ee57a16c1811eca2f6b95e3"
+    },
+    {
+      "role": "shared-hyperparameter direct-transfer effects",
+      "source_path": "outputs/digital_discovery_round_jk/reviewer_sensitivity/shared_hyperparameters/analysis/direct_transfer_effects.csv",
+      "public_path": "outputs/transfer_analysis/shared_hyperparameter_sensitivity/direct_transfer_effects.csv",
+      "size_bytes": 2004,
+      "sha256": "02b4609c33b68897e00fb6e84a6e01f6638c3b5bdd12bb7309ef575ffe3bdfa0"
     }
   ]
 }

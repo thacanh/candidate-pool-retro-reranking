@@ -30,6 +30,23 @@ pools.
 
 ## Public release layout
 
+Local research-worktree organization (not the public upload payload):
+
+| Location | Purpose |
+| --- | --- |
+| `src/`, `tests/`, `scripts/` | Implementation, validation, and task entry points |
+| `outputs/` | Frozen scientific results and active caches; preserve in place |
+| `archive/imports/dd_final_round/` | Original N3, N3-S4 and N4 result ZIPs with paired receipts |
+| `archive/imports/manuscripts/` | Original user-supplied manuscript ZIP; private |
+| `paper/digital_discovery/` | Canonical private main/SI sources |
+| `release/README.md` | Index identifying current delivery versus historical packages |
+| `output/pdf/` | Compiled private manuscript review copies |
+| `tmp/`, `logs/` | Build scratch, QA renders, and execution logs |
+
+Do not push the whole research worktree. Existing `release/public_repository*`
+directories are historical snapshots, not an automatically current release.
+Use the allowlisted builder and review the new payload before publishing.
+
 The clean release produced by
 `python -m rerank.data.build_public_release` has this structure:
 
@@ -40,6 +57,8 @@ docs/                       Prespecification, provenance, and release guide
 data/provenance/            Dataset, model, and generator identity records
 outputs/historical_anchor/  Small read-only historical numerical summaries
 outputs/transfer_analysis/  Small transfer-analysis CSV/JSON artifacts
+                            Includes final_round/N1--N5, S4 and prior-gap
+notebooks/                 Editable, data-only plotting notebook
 release_manifest.json       SHA256 and size of every released payload file
 checksums.sha256             Transport checksums for the complete release
 ```
@@ -75,16 +94,23 @@ python -m rerank.figures.plot_digital_discovery_figures \
 
 The plotting code prefers the neutral public artifact paths and falls back to
 the read-only local provenance paths when run in the research worktree.
+For interactive style changes, open `notebooks/rebuild_data_figures.ipynb`.
+The conceptual PowerPoint figure is intentionally private and is not part of
+this data-plot reproduction. Rendering does not rerun models or bootstrap tests.
 
 ## Validation
 
 ```bash
-python -m pytest -q
+python -m pytest -q tests/test_public_release.py tests/test_dd_unified_figures.py
+python -m rerank.data.build_public_release --verify .
 ```
 
-Some integration tests require non-redistributable datasets, third-party model
-weights, or heavyweight local caches. The release guide identifies the compact
-test gate that runs using only public payload files.
+These are the compact public checks. The full `python -m pytest -q` research
+suite additionally requires private manuscript inputs, datasets, third-party
+model weights and heavyweight caches; it is not a clean-code-only test gate.
+The repository supports numerical-table inspection and data-figure rebuilding
+now. It does not claim one-command, from-scratch reproduction of every model
+without the separately obtained inputs.
 
 ## Data and heavyweight artifacts
 

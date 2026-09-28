@@ -1,0 +1,187 @@
+{
+  "approval_fingerprint": "sha256:552d76f2080cc62cae34e665061fd027e1a17b7d848a4eccdc4e649da87c26cb",
+  "created_at_utc": "2026-08-27T10:41:28.829074+00:00",
+  "direct_transfer_effects": {
+    "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\analysis\\direct_transfer_effects.csv",
+    "sha256": "02b4609c33b68897e00fb6e84a6e01f6638c3b5bdd12bb7309ef575ffe3bdfa0",
+    "size_bytes": 2004
+  },
+  "holm_family": "six pool-by-endpoint transfer tests separately within each config stratum",
+  "n_bootstrap": 10000,
+  "n_sign_flips": 100000,
+  "post_hoc_reviewer_sensitivity": true,
+  "prediction_inputs": [
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\data\\uspto_smiles.csv",
+      "sha256": "688c5b8ea7c3269b53ae15ffca9ec98f51fd29ea3fc25edc8fa66cabe9042d6a",
+      "size_bytes": 5269731
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\data\\uspto_reaction_metadata.csv",
+      "sha256": "c9f3c5f01e64cc9192f20f9889694b85d83986f4e991d2ee5bb52b5db8e08e52",
+      "size_bytes": 734709
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\historical\\test_results\\predictions\\baseline_seed_42.csv",
+      "sha256": "a0b6fffa93f3304487e6b7ab33210f90d3ae5f8bcb936a501b1d13ba1f0dd7f7",
+      "size_bytes": 5154763
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\historical\\test_results\\predictions\\baseline_seed_43.csv",
+      "sha256": "72a69fd3f35e896d7fd43a66d8518a2d3eadbf9f8cefab8766bfee4d7a822d08",
+      "size_bytes": 5155062
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\historical\\test_results\\predictions\\baseline_seed_44.csv",
+      "sha256": "84ba345f29d472c93ce05347064a31d4320004cd3e73a04e499230e5a75a742d",
+      "size_bytes": 5152178
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\historical\\test_results\\predictions\\baseline_seed_45.csv",
+      "sha256": "22e861728edcd2a520c4eb133ea878e019a637f550c5523477a087f79cc0f17b",
+      "size_bytes": 5158046
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\historical\\test_results\\predictions\\baseline_seed_46.csv",
+      "sha256": "5c260a07d3e59c2b6b7798b35c876905d7bacc01918a8e6002785b5a5882fa27",
+      "size_bytes": 5154516
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\historical\\test_results\\predictions\\augmented_seed_42.csv",
+      "sha256": "549f1c3ed4433a3b8ccad470e528e6f76d5fbadd762aa21d981ac5eeddd23526",
+      "size_bytes": 5158541
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\historical\\test_results\\predictions\\augmented_seed_43.csv",
+      "sha256": "86c8f9988ce4371ff5705c2330e149f767f967cfe1bd8e75a21ccd45fb92f0ec",
+      "size_bytes": 5160431
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\historical\\test_results\\predictions\\augmented_seed_44.csv",
+      "sha256": "dd6cea5594be444c640a5aa6023162049e6b09d4b0dc9c3707b3aece78faa822",
+      "size_bytes": 5158325
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\historical\\test_results\\predictions\\augmented_seed_45.csv",
+      "sha256": "71b9f684f576b85657d19e84cdad3aa91d8edc2a5df55e4f45f1108b3d16b97d",
+      "size_bytes": 5159848
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\historical\\test_results\\predictions\\augmented_seed_46.csv",
+      "sha256": "7e0cf7a3178ec162ce7121332e553af61c282fd2fa65ae29667e1d29e24a6a3a",
+      "size_bytes": 5158237
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\pools\\aizynthfinder_only\\test_results\\reaction_ranks.jsonl",
+      "sha256": "ff327f9ef78a1841f946f9bc4ba87fbcf61382e1005946162d00e96c60711b1e",
+      "size_bytes": 1953274
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\pools\\localretro_only\\test_results\\reaction_ranks.jsonl",
+      "sha256": "0645b0c260df3707effbf94ad6506d5b81630bf920f20ecfdbfc0d9319a975f9",
+      "size_bytes": 2067751
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\baseline_selected\\pools\\merged\\test_results\\reaction_ranks.jsonl",
+      "sha256": "c7ba7f6bcd7086b988771c4fb3389ca22af252143ec0b4f872807e3e87d51e97",
+      "size_bytes": 2057310
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\historical\\test_results\\predictions\\baseline_seed_42.csv",
+      "sha256": "e4a8a46ca0a08ca34b49f13ec9ff866e24d71f62482a76ca93d59bcd2f411ceb",
+      "size_bytes": 5164462
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\historical\\test_results\\predictions\\baseline_seed_43.csv",
+      "sha256": "26b58e2fb1dd981d88586f9d865a0463ab240e1857ad41320059ac05e7d33cde",
+      "size_bytes": 5164486
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\historical\\test_results\\predictions\\baseline_seed_44.csv",
+      "sha256": "ad98604063e84606a700ad6e1bbe0910e66b1bf1b3de64374120bcad8f4feed6",
+      "size_bytes": 5163776
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\historical\\test_results\\predictions\\baseline_seed_45.csv",
+      "sha256": "ba9010ceca4b66a9014d637758c9ad30bb7455aec06e969543ab3f2dc6cb1728",
+      "size_bytes": 5163576
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\historical\\test_results\\predictions\\baseline_seed_46.csv",
+      "sha256": "7c3a2e67609ce5ad91227c89cc33d8b35bed3e7e6b09797302c648592d9734c4",
+      "size_bytes": 5164711
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\historical\\test_results\\predictions\\augmented_seed_42.csv",
+      "sha256": "6fb15d67b7a6d534b244485354a1eab37e7063ae3be42623c0da0baec394adbe",
+      "size_bytes": 5164000
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\historical\\test_results\\predictions\\augmented_seed_43.csv",
+      "sha256": "fc01f96d0be1b3b9527f1365c3921ab7b155c57eb9a109806c3d1729f4dcfeb3",
+      "size_bytes": 5164325
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\historical\\test_results\\predictions\\augmented_seed_44.csv",
+      "sha256": "a6c994ce7e4efe38f9c2b1e114e34df71c87df0d5a35391a454e2d6e1beb9b35",
+      "size_bytes": 5164806
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\historical\\test_results\\predictions\\augmented_seed_45.csv",
+      "sha256": "47667822a1cea5b3d869554ac54a4a730fd0cf7069043571215c85dc11f50d32",
+      "size_bytes": 5164539
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\historical\\test_results\\predictions\\augmented_seed_46.csv",
+      "sha256": "ac7c00e0b9cf5e5ccc8a261b8eed0ceaec68558dd9240206c3db5f3bd87b343d",
+      "size_bytes": 5163773
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\pools\\aizynthfinder_only\\test_results\\reaction_ranks.jsonl",
+      "sha256": "9f511b4bc368e1baf5c881b6b5567fc35fc20f9801c99598135fa21cb3a437ae",
+      "size_bytes": 1953278
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\pools\\localretro_only\\test_results\\reaction_ranks.jsonl",
+      "sha256": "2d9cbc78f9dc2ee02d4f4d50342d2b3e64548fa32650f110823d5b4bf13db4f2",
+      "size_bytes": 2067728
+    },
+    {
+      "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\strata\\augmented_selected\\pools\\merged\\test_results\\reaction_ranks.jsonl",
+      "sha256": "0bbab5d24b398db04fa403f1857a4267b24be9952d585a4974ae4cd13948da59",
+      "size_bytes": 2057262
+    }
+  ],
+  "protocol_id": "dd-shared-hyperparameter-feature-only-v1",
+  "record_kind": "shared_hyperparameter_sensitivity_analysis",
+  "schema_version": 1,
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "strata": {
+    "augmented_selected": {
+      "dropout": 0.1,
+      "hidden_width": 128,
+      "index": 70,
+      "learning_rate": 0.001,
+      "margin": 0.1
+    },
+    "baseline_selected": {
+      "dropout": 0.0,
+      "hidden_width": 128,
+      "index": 62,
+      "learning_rate": 0.001,
+      "margin": 0.3
+    }
+  },
+  "test_partition_used_for_training_or_selection": false,
+  "within_pool_effects": {
+    "path": "C:\\Users\\thaca\\Documents\\Retrosynthesis\\outputs\\digital_discovery_round_jk\\reviewer_sensitivity\\shared_hyperparameters\\analysis\\within_pool_effects.csv",
+    "sha256": "78e04d596a09b04fccf3dc44a482329863adb8c63ee57a16c1811eca2f6b95e3",
+    "size_bytes": 3137
+  }
+}

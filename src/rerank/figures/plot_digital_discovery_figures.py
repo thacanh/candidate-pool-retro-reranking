@@ -16,20 +16,28 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.text import Text
 import numpy as np
 import pandas as pd
 
 
-NAVY = "#16324F"
-BLUE = "#2F6690"
-TEAL = "#2A9D8F"
-ORANGE = "#E9A23B"
-RED = "#C94C4C"
-PURPLE = "#735DA5"
-GREY = "#667085"
-LIGHT = "#E8EDF2"
-INK = "#1D2939"
+NAVY = "#253344"
+BLUE = "#4477AA"
+TEAL = "#559977"
+ORANGE = "#CC8844"
+RED = "#BB6677"
+PURPLE = "#8877AA"
+GREY = "#83909B"
+LIGHT = "#E9EDF0"
+INK = "#253344"
 WHITE = "#FFFFFF"
+PALE_BLUE = "#B9CCDF"
+PANEL_FILL = "#F2F6FA"
+FONT_FAMILY = "Arial"
+FONT_SCALE = 1.0
+HEIGHT_SCALE = 1.0
+GRID_ALPHA = 0.35
 FULL_WIDTH_IN = 174.0 / 25.4
 RASTER_DPI = 600
 TOC_WIDTH_IN = 8.0 / 2.54
@@ -50,14 +58,27 @@ def artifact_path(repo: Path, public_path: str, local_path: str) -> Path:
     )
 
 
-def configure_style() -> None:
+def configure_style(settings: dict | None = None) -> None:
+    """Apply notebook-editable cosmetics only; scientific selectors stay fixed."""
+    allowed = {"NAVY", "BLUE", "TEAL", "ORANGE", "RED", "PURPLE", "GREY",
+               "LIGHT", "INK", "PALE_BLUE", "PANEL_FILL", "FONT_FAMILY",
+               "FONT_SCALE", "HEIGHT_SCALE", "GRID_ALPHA", "FULL_WIDTH_IN", "RASTER_DPI"}
+    for key, value in (settings or {}).items():
+        if key not in allowed:
+            raise ValueError(f"Unknown style setting: {key}")
+        globals()[key] = value
     plt.rcParams.update(
         {
-            "font.family": "DejaVu Sans",
+            "font.family": FONT_FAMILY,
             "font.size": 8.0,
+            "text.color": INK,
+            "axes.labelcolor": INK,
+            "xtick.color": INK,
+            "ytick.color": INK,
             "axes.titlesize": 9.0,
             "axes.labelsize": 8.0,
-            "axes.edgecolor": "#98A2B3",
+            "axes.edgecolor": GREY,
+            "axes.axisbelow": True,
             "axes.linewidth": 0.7,
             "xtick.labelsize": 7.5,
             "ytick.labelsize": 7.5,
@@ -82,6 +103,13 @@ def one(frame: pd.DataFrame, **filters: object) -> pd.Series:
 
 def save(fig: plt.Figure, output_dir: Path, stem: str) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
+    fig.set_figheight(fig.get_figheight() * HEIGHT_SCALE)
+    for text in fig.findobj(Text):
+        text.set_fontsize(text.get_fontsize() * FONT_SCALE)
+    for axis in fig.axes:
+        for line in axis.get_xgridlines() + axis.get_ygridlines():
+            line.set_alpha(GRID_ALPHA)
+            line.set_linewidth(0.45)
     metadata = {
         "Creator": "rerank.figures.plot_digital_discovery_figures",
         "Subject": "Frozen Digital Discovery candidate-pool analysis",
@@ -107,73 +135,129 @@ def panel_label(ax: plt.Axes, label: str) -> None:
 
 
 def figure_design(output_dir: Path) -> None:
-    fig, ax = plt.subplots(figsize=(FULL_WIDTH_IN, 3.5))
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
+    """Conceptual diagram: glyphs are illustrative, not measured candidate lists."""
+    fig, ax = plt.subplots(figsize=(FULL_WIDTH_IN, 4.8))
+    ax.set(xlim=(0, 1), ylim=(0, 1))
     ax.axis("off")
 
-    stages = [
-        (0.03, 0.57, 0.18, 0.28, "Frozen benchmark", "USPTO-50K\nofficial test: 5,004\n20 paired seeds"),
-        (0.27, 0.57, 0.18, 0.28, "Candidate pools", "Historical cap-10\nAiZynthFinder-only\nLocalRetro-only\nmerged union"),
-        (0.51, 0.57, 0.18, 0.28, "Matched reranking", "Prior + 2D\nversus\nPrior + 2D + Uni-Mol"),
-        (0.75, 0.57, 0.22, 0.28, "Separated outcomes", "Coverage\nWithin-pool Top-1 / MRR\nHeadroom capture"),
-    ]
-    colors = [NAVY, BLUE, TEAL, PURPLE]
-    for (x, y, w, h, title, body), color in zip(stages, colors):
-        box = FancyBboxPatch(
-            (x, y),
-            w,
-            h,
-            boxstyle="round,pad=0.012,rounding_size=0.018",
-            linewidth=1.0,
-            edgecolor=color,
-            facecolor=WHITE,
-        )
-        ax.add_patch(box)
-        ax.add_patch(
-            FancyBboxPatch(
-                (x, y + h - 0.07),
-                w,
-                0.07,
-                boxstyle="round,pad=0.012,rounding_size=0.018",
-                linewidth=0,
-                facecolor=color,
-            )
-        )
-        ax.text(x + w / 2, y + h - 0.035, title, ha="center", va="center", color=WHITE, fontsize=8.0, fontweight="bold")
-        ax.text(x + w / 2, y + 0.095, body, ha="center", va="center", color=INK, fontsize=7.0, linespacing=1.25)
+    def text(x, y, label, size=7.4, **kw):
+        return ax.text(x, y, label, fontsize=size, color=INK, va="center", **kw)
 
-    for left, right in zip(stages[:-1], stages[1:]):
-        start = (left[0] + left[2] + 0.008, left[1] + left[3] / 2)
-        end = (right[0] - 0.008, right[1] + right[3] / 2)
-        ax.add_patch(FancyArrowPatch(start, end, arrowstyle="-|>", mutation_scale=11, linewidth=1.2, color=GREY))
+    def box(x, y, w, h, color=LIGHT, fill=WHITE):
+        ax.add_patch(FancyBboxPatch((x, y), w, h,
+            boxstyle="round,pad=0.007,rounding_size=0.01",
+            edgecolor=color, facecolor=fill, linewidth=.8))
 
-    lower = FancyBboxPatch(
-        (0.12, 0.12),
-        0.76,
-        0.24,
-        boxstyle="round,pad=0.018,rounding_size=0.022",
-        linewidth=1.2,
-        edgecolor=RED,
-        facecolor="#FFF7F4",
-    )
-    ax.add_patch(lower)
-    ax.text(0.50, 0.295, "Matched transfer test on 3,814 commonly covered reactions", ha="center", va="center", fontsize=8.8, fontweight="bold", color=RED)
-    ax.text(
-        0.50,
-        0.205,
-        "Expanded-pool effect minus historical-pool effect\n"
-        "paired product-cluster bootstrap + sign-flip inference",
-        ha="center",
-        va="center",
-        fontsize=7.2,
-        linespacing=1.25,
-        color=INK,
-    )
-    for x in (0.36, 0.60):
-        ax.add_patch(FancyArrowPatch((x, 0.57), (x, 0.37), arrowstyle="-|>", mutation_scale=10, linewidth=1.0, color=RED))
+    def arrow(a, b, color=GREY):
+        ax.add_patch(FancyArrowPatch(a, b, arrowstyle="-|>",
+            mutation_scale=9, lw=.9, color=color))
 
+    text(.015, .965, "A", 11, fontweight="bold")
+    text(.065, .965, "Candidate pools define the ranking problem", 9, fontweight="bold")
+    text(.065, .925, "One official split  ·  5,004 test reactions  ·  cap 10 throughout", 7.5)
+    pools = [("Historical anchor", "original probabilities", NAVY),
+             ("Anchored AiZ", "historical-first construction", BLUE),
+             ("LocalRetro", "separate frozen generator", ORANGE),
+             ("Merged union", "maximum rank-based prior", PURPLE)]
+    for i, (name, detail, color) in enumerate(pools):
+        x = .025 + .245 * i
+        box(x, .676, .215, .195, color)
+        text(x+.1075, .844, name, 7.8, ha="center", fontweight="bold")
+        # Ranked-list glyph: a filled marker denotes the recorded reference.
+        for j in range(4):
+            y = .811 - .026*j
+            ax.plot([x+.05, x+.177], [y, y], color=color if j == (i+1)%4 else LIGHT, lw=2.0)
+            ax.plot(x+.034, y, marker="o", ms=3.2,
+                    mfc=color if j == (i+1)%4 else WHITE, mec=color, mew=.7)
+        text(x+.1075, .696, detail, 5.9, ha="center")
+    text(.025, .645, "Filled dot: reference candidate (schematic). Coverage is measured before reranking.", 6.7)
+    arrow((.50, .624), (.50, .588))
+
+    text(.015, .565, "B", 11, fontweight="bold")
+    text(.065, .565, "Paired comparison within each frozen pool", 9, fontweight="bold")
+    box(.027, .393, .285, .125, BLUE, PANEL_FILL)
+    text(.17, .474, "Prior + 2D", 9, ha="center", fontweight="bold")
+    text(.17, .43, "baseline arm", 7.1, ha="center")
+    box(.345, .393, .285, .125, ORANGE, PANEL_FILL)
+    text(.487, .474, "+ Uni-Mol scalars", 9, ha="center", fontweight="bold")
+    text(.487, .43, "augmented arm", 7.1, ha="center")
+    text(.328, .455, "vs", 7.4, ha="center")
+    text(.675, .512, "20 paired seeds", 8, fontweight="bold")
+    text(.675, .438, "same lists and negatives\ntraining-only normalization\nvalidation-selected checkpoints", 6.7, linespacing=1.4)
+    text(.027, .357, "Pool effect  =  augmented − baseline     |     Conditional Top-1 and MRR", 7.4)
+    arrow((.50, .333), (.50, .303))
+
+    text(.015, .28, "C", 11, fontweight="bold")
+    text(.065, .28, "Evidence hierarchy: primary result, then sensitivity", 9, fontweight="bold")
+    box(.027, .116, .58, .125, NAVY, PANEL_FILL)
+    text(.046, .216, "PRIMARY  ·  same 3,814 covered reactions", 7.7, fontweight="bold")
+    text(.046, .174, r"Transfer loss = $\Delta_{\mathrm{pool}} - \Delta_{\mathrm{historical}}$", 9)
+    text(.046, .133, "Original frozen ranking procedure; paired uncertainty", 6.7)
+    box(.637, .116, .335, .125, GREY)
+    text(.655, .216, "SECONDARY  ·  post hoc", 7.4, fontweight="bold")
+    text(.655, .167, "Fixed checkpoints / prior re-selection\nFull-grid adaptation / Morgan control", 6.7, linespacing=1.5)
+    text(.50, .055, "Separate coverage, conditional ranking and end-to-end performance", 7.7,
+         ha="center", fontweight="bold")
+    fig.subplots_adjust(left=.015, right=.985, top=.99, bottom=.01)
     save(fig, output_dir, "figure1_dd_design")
+
+
+def adaptation_frame(repo: Path) -> pd.DataFrame:
+    compact = repo / "outputs/transfer_analysis/figure_inputs/adaptation.csv"
+    if compact.exists():
+        frame = pd.read_csv(compact)
+    else:
+        original = pd.read_csv(repo / "outputs/digital_discovery_final_round/n5_crossed_transfer/n5_crossed_transfer_intervals.csv")
+        prior = pd.read_csv(repo / "outputs/dd_final_round/N3_S3/transfer_effects.csv")
+        rows = []
+        for pool in ("localretro_only", "merged"):
+            full = json.loads((repo / f"outputs/dd_final_round/N3_S4_final/{pool}/statistics.json").read_text())
+            for metric in ("top1", "mrr"):
+                first = one(original, pool=pool, metric=metric)
+                second = one(prior, pool=pool, metric=metric)
+                third = one(pd.DataFrame(full["common_transfer"]), pool=pool, metric=metric)
+                for stage, r, effect, low, high in [
+                    ("original", first, "mean_transfer_loss", "crossed_product_seed_ci95_low", "crossed_product_seed_ci95_high"),
+                    ("prior_reselected", second, "transfer_loss", "crossed_ci95_low", "crossed_ci95_high"),
+                    ("full_grid", third, "transfer_loss", "crossed_ci95_low", "crossed_ci95_high")]:
+                    rows.append(dict(pool=pool, metric=metric, stage=stage, effect=r[effect], low=r[low], high=r[high]))
+        frame = pd.DataFrame(rows)
+    assert len(frame) == 12
+    assert np.all(frame.low <= frame.effect) and np.all(frame.effect <= frame.high)
+    return frame
+
+
+def figure_adaptation(repo: Path, output_dir: Path) -> None:
+    frame = adaptation_frame(repo)
+    fig, axes = plt.subplots(2, 2, figsize=(FULL_WIDTH_IN, 4.5), sharex=True)
+    names = ["Original (primary)", "Prior reselected", "Full grid"]
+    for i, metric in enumerate(("top1", "mrr")):
+        for j, (pool, poolname) in enumerate((("localretro_only", "LocalRetro-only"), ("merged", "Merged"))):
+            ax = axes[i, j]
+            for k, stage in enumerate(("original", "prior_reselected", "full_grid")):
+                row = one(frame, pool=pool, metric=metric, stage=stage)
+                value, low, high = np.array([row.effect, row.low, row.high], float)*100
+                color = (BLUE, ORANGE, TEAL)[k]
+                ax.errorbar(value, 2-k, xerr=[[value-low], [high-value]], fmt=("o","s","D")[k],
+                            color=color, capsize=3, ms=4.5, lw=1.25)
+            ax.axvline(0, color=GREY, lw=.8)
+            ax.set_ylim(-.6, 2.6)
+            ax.set_yticks([2, 1, 0], names)
+            ax.tick_params(axis="y", length=0, labelsize=7)
+            ax.tick_params(axis="x", labelbottom=True)
+            ax.set_title('Top-1' if metric=='top1' else 'MRR', loc="left", fontsize=9, pad=10)
+            ax.set_xlim(-3, 1.2)
+            ax.set_xticks([-3,-2,-1,0,1])
+            ax.spines[["top", "right", "left"]].set_visible(False)
+            ax.grid(axis="x", color=LIGHT)
+            ax.text(-.52, 1.12, "abcd"[i*2+j], transform=ax.transAxes,
+                    fontsize=10, fontweight="bold", color=INK)
+            ax.set_xlabel("Transfer loss (percentage points)", fontsize=7.5)
+            if i==0:
+                ax.text(.5, 1.40, poolname, transform=ax.transAxes, ha="center",
+                        fontsize=10, fontweight="bold", color=INK)
+    fig.subplots_adjust(left=.18, right=.98, top=.83, bottom=.16, wspace=.86, hspace=.88)
+    save(fig, output_dir, "figure4_dd_adaptation")
 
 
 def figure_coverage_effects(repo: Path, output_dir: Path) -> None:
@@ -203,8 +287,8 @@ def figure_coverage_effects(repo: Path, output_dir: Path) -> None:
     if list(j2["pool"]) != expected:
         raise ValueError("J2 pool order or membership differs from the frozen four-pool protocol")
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(FULL_WIDTH_IN, 3.75), gridspec_kw={"width_ratios": [0.92, 1.25]})
-    labels = ["Historical\nanchor", "AiZ-only", "LocalRetro-\nonly", "Merged\nunion"]
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(FULL_WIDTH_IN, 3.75), gridspec_kw={"width_ratios": [1.08, 1.25]})
+    labels = ["Historical\nanchor", "Anchored\nAiZ", "LocalRetro\nonly", "Merged\nunion"]
     colors = [NAVY, BLUE, ORANGE, PURPLE]
     x = np.arange(4)
     coverage = j2["coverage"].to_numpy(float) * 100
@@ -212,7 +296,10 @@ def figure_coverage_effects(repo: Path, output_dir: Path) -> None:
     for bar, value in zip(bars, coverage):
         ax1.text(bar.get_x() + bar.get_width() / 2, value + 0.65, f"{value:.1f}%", ha="center", va="bottom", fontsize=7.4, fontweight="bold")
     ax1.set_xticks(x, labels)
-    ax1.set_ylim(74, 95)
+    ax1.tick_params(axis="x", labelsize=6.5)
+    # Coverage is an absolute percentage.  Start the quantitative axis at zero
+    # so the visual area is not inflated by a truncated bar baseline.
+    ax1.set_ylim(0, 100)
     ax1.set_ylabel("Official-test coverage (%)")
     ax1.set_title("Candidate-pool coverage", pad=10)
     ax1.grid(axis="y", color=LIGHT, linewidth=0.7)
@@ -222,7 +309,7 @@ def figure_coverage_effects(repo: Path, output_dir: Path) -> None:
     hist = one(ledger, analysis_id="G1", scope="seed_marginal", metric="top1")
     rows = [("Historical cap-10", hist)] + [
         (name, one(k1, pool=pool, metric="top1"))
-        for name, pool in zip(["AiZynthFinder-only", "LocalRetro-only", "Merged union"], expected[1:])
+        for name, pool in zip(["Anchored AiZ", "LocalRetro-only", "Merged union"], expected[1:])
     ]
     y = np.arange(4)[::-1]
     for yi, (label, row), color in zip(y, rows, colors):
@@ -234,19 +321,20 @@ def figure_coverage_effects(repo: Path, output_dir: Path) -> None:
             low = float(row["seed_marginal_ci95_low"]) * 100
             high = float(row["seed_marginal_ci95_high"]) * 100
         ax2.errorbar(estimate, yi, xerr=[[estimate - low], [high - estimate]], fmt="o", color=color, ecolor=color, ms=5.5, capsize=3, lw=1.3)
-        ax2.text(high + 0.05, yi, f"{estimate:+.2f} [{low:+.2f}, {high:+.2f}]", va="center", fontsize=7.0, color=INK)
-    ax2.axvline(0, color="#98A2B3", lw=0.9, ls="--")
+        ax2.text(0.98, yi - 0.25, f"{estimate:+.2f} [{low:+.2f}, {high:+.2f}]",
+                 transform=ax2.get_yaxis_transform(), ha="right", va="center", fontsize=6.5, color=INK)
+    ax2.axvline(0, color=GREY, lw=0.8, ls=":")
     ax2.set_yticks(y, [r[0] for r in rows])
     ax2.set_xlim(-1.25, 1.40)
     ax2.set_ylim(-0.65, 3.65)
-    ax2.set_xlabel("Uni-Mol-augmented minus 2D Top-1 (percentage points)")
+    ax2.set_xlabel("Uni-Mol-augmented minus 2D Top-1\n(percentage points)")
     ax2.set_title("Matched 20-seed reranking effect", pad=10)
     ax2.grid(axis="x", color=LIGHT, linewidth=0.7)
     ax2.spines[["top", "right", "left"]].set_visible(False)
-    ax2.tick_params(axis="y", length=0)
+    ax2.tick_params(axis="y", length=0, labelsize=6.8)
     panel_label(ax2, "B")
 
-    fig.subplots_adjust(left=0.09, right=0.98, bottom=0.22, top=0.86, wspace=0.38)
+    fig.subplots_adjust(left=0.09, right=0.98, bottom=0.22, top=0.86, wspace=0.80)
     save(fig, output_dir, "figure2_dd_coverage_effects")
 
 
@@ -266,7 +354,7 @@ def figure_transfer_shift(repo: Path, output_dir: Path) -> None:
         )
     )
     pools = ["aizynthfinder_only", "localretro_only", "merged"]
-    labels = ["AiZynthFinder-only", "LocalRetro-only", "Merged union"]
+    labels = ["Anchored AiZ", "LocalRetro-only", "Merged union"]
     colors = [BLUE, ORANGE, PURPLE]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(FULL_WIDTH_IN, 4.0), gridspec_kw={"width_ratios": [1.22, 0.95]})
@@ -280,7 +368,7 @@ def figure_transfer_shift(repo: Path, output_dir: Path) -> None:
             low = float(row["product_cluster_ci95_low"]) * 100
             high = float(row["product_cluster_ci95_high"]) * 100
             ax1.errorbar(est, pos + offsets[metric], xerr=[[est - low], [high - est]], fmt=markers[metric], color=color, ecolor=color, ms=5.0, capsize=2.5, lw=1.2)
-    ax1.axvline(0, color="#98A2B3", lw=0.9, ls="--")
+    ax1.axvline(0, color=GREY, lw=0.8, ls=":")
     ax1.set_yticks(positions, labels)
     ax1.set_xlim(-2.75, 0.30)
     ax1.set_xlabel("Expanded-pool minus historical effect (percentage points)")
@@ -290,15 +378,15 @@ def figure_transfer_shift(repo: Path, output_dir: Path) -> None:
     ax1.tick_params(axis="y", length=0)
     ax1.scatter([], [], marker="o", color=GREY, label="Top-1")
     ax1.scatter([], [], marker="s", color=GREY, label="MRR")
-    ax1.legend(loc="lower left", frameon=False, ncol=2, bbox_to_anchor=(0.0, -0.23))
+    ax1.legend(loc="lower left", frameon=False, ncol=2, bbox_to_anchor=(0.0, -0.28))
     panel_label(ax1, "A")
 
     shifted = summary[summary["pool"].isin(pools)].set_index("pool").loc[pools]
     x = np.arange(3)
     width = 0.34
-    ax2.bar(x - width / 2, shifted["jaccard_vs_historical_mean"], width, label="Candidate-set Jaccard", color=colors, edgecolor=WHITE)
-    ax2.bar(x + width / 2, shifted["kendall_order_vs_historical_mean"], width, label="Shared-order concordance", color=colors, alpha=0.45, hatch="//", edgecolor=WHITE)
-    ax2.set_xticks(x, ["AiZ", "LocalRetro", "Merged"])
+    ax2.bar(x - width / 2, shifted["jaccard_vs_historical_mean"], width, label="Candidate-set Jaccard", color=BLUE)
+    ax2.bar(x + width / 2, shifted["kendall_order_vs_historical_mean"], width, label="Shared-order concordance", color=PALE_BLUE)
+    ax2.set_xticks(x, ["Anchored AiZ", "LocalRetro", "Merged"])
     ax2.set_ylim(0, 1.05)
     ax2.set_ylabel("Mean similarity to historical pool")
     ax2.set_title("Candidate-list shift", pad=10)
@@ -320,7 +408,7 @@ def figure_descriptor_diagnostics(repo: Path, output_dir: Path) -> None:
         )
     )
     pools = ["aizynthfinder_only", "localretro_only", "merged"]
-    pool_labels = ["AiZ", "LocalRetro", "Merged"]
+    pool_labels = ["Anchored\nAiZ", "LocalRetro", "Merged"]
     metrics = ["transfer_delta_top1", "transfer_delta_mrr"]
     metric_labels = ["Top-1", "MRR"]
     features = [
@@ -354,7 +442,13 @@ def figure_descriptor_diagnostics(repo: Path, output_dir: Path) -> None:
         raise ValueError(f"Frozen M2 association exceeds reported bound: {max_abs}")
 
     fig, ax = plt.subplots(figsize=(FULL_WIDTH_IN, 3.75))
-    image = ax.imshow(values, cmap="RdBu_r", vmin=-0.04, vmax=0.04, aspect="auto")
+    # Keep the diagnostic heat map on a deliberately broad, fixed scale.  The
+    # observed |rho| values are all <= 0.031; a +/-0.04 scale made those small
+    # descriptive associations look visually saturated.
+    cmap = LinearSegmentedColormap.from_list("muted_diverging", [BLUE, WHITE, ORANGE])
+    image = ax.imshow(values, cmap=cmap, vmin=-0.30, vmax=0.30, aspect="auto")
+    for spine in ax.spines.values():
+        spine.set_visible(False)
     ax.set_xticks(np.arange(len(columns)), columns)
     ax.set_yticks(np.arange(len(feature_labels)), feature_labels)
     ax.tick_params(axis="both", length=0)
@@ -406,7 +500,7 @@ def figure_operational_performance(repo: Path, output_dir: Path) -> None:
         system_order = ["candidate_prior", "prior_2d", "prior_2d_unimol"]
         if set(compact["pool"]) != set(pool_order) or set(compact["system"]) != set(system_order):
             raise ValueError("Compact operational-performance table has unexpected pools or systems")
-        labels = ["Historical", "AiZ-only", "LocalRetro-only", "Merged union"]
+        labels = ["Historical", "Anchored AiZ", "LocalRetro-only", "Merged union"]
         within = []
         end_to_end = []
         for pool in pool_order:
@@ -432,7 +526,7 @@ def figure_operational_performance(repo: Path, output_dir: Path) -> None:
     hist_2d = float(np.mean([float(row["top1"]) for row in historical_per_seed["baseline"].values()]))
     hist_aug = float(np.mean([float(row["top1"]) for row in historical_per_seed["augmented"].values()]))
 
-    labels = ["Historical", "AiZ-only", "LocalRetro-only", "Merged union"]
+    labels = ["Historical", "Anchored AiZ", "LocalRetro-only", "Merged union"]
     within = [[hist_prior, hist_2d, hist_aug]]
     end_to_end = [[hist_prior * hist_coverage, hist_2d * hist_coverage, hist_aug * hist_coverage]]
     for pool in ("aizynthfinder_only", "localretro_only", "merged"):
@@ -468,15 +562,28 @@ def _plot_operational_performance(
     x = np.arange(len(labels))
     width = 0.24
     systems = ["Generator prior", "Prior + 2D", "Prior + 2D + Uni-Mol"]
-    colors = ["#98A2B3", BLUE, TEAL]
+    colors = [GREY, BLUE, ORANGE]
     for system_index, (system, color) in enumerate(zip(systems, colors)):
         offset = (system_index - 1) * width
-        ax1.bar(x + offset, within_values[:, system_index], width, color=color, label=system)
-        ax2.bar(x + offset, end_values[:, system_index], width, color=color, label=system)
+        within_bars = ax1.bar(
+            x + offset, within_values[:, system_index], width, color=color, label=system
+        )
+        end_bars = ax2.bar(
+            x + offset, end_values[:, system_index], width, color=color, label=system
+        )
+        for axis, bars in ((ax1, within_bars), (ax2, end_bars)):
+            axis.bar_label(
+                bars,
+                labels=[f"{bar.get_height():.1f}" for bar in bars],
+                padding=2,
+                fontsize=5.8,
+                rotation=90,
+                color=INK,
+            )
 
     for ax, title, ylabel, limits in (
-        (ax1, "Conditional ranking on covered reactions", "Within-pool Top-1 (%)", (52, 78)),
-        (ax2, "End-to-end benchmark score", "End-to-end Top-1 (%)", (44, 66)),
+        (ax1, "Conditional ranking on covered reactions", "Within-pool Top-1 (%)", (0, 100)),
+        (ax2, "End-to-end benchmark score", "End-to-end Top-1 (%)", (0, 100)),
     ):
         ax.set_xticks(x, labels, rotation=16, ha="right")
         ax.set_ylabel(ylabel)
@@ -589,13 +696,19 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", type=Path, default=Path(__file__).resolve().parents[3])
     parser.add_argument("--output-dir", type=Path)
+    parser.add_argument("--legacy-design", action="store_true",
+                        help="Explicitly regenerate the retired code-only conceptual layout")
     args = parser.parse_args()
     repo = args.repo_root.resolve()
     output_dir = args.output_dir or repo / "paper/digital_discovery/figures"
     configure_style()
-    figure_design(output_dir)
+    # Fig. 1 is an independently edited conceptual diagram. Never overwrite it
+    # when regenerating the five data-driven figures.
+    if args.legacy_design:
+        figure_design(output_dir)
     figure_coverage_effects(repo, output_dir)
     figure_transfer_shift(repo, output_dir)
+    figure_adaptation(repo, output_dir)
     figure_descriptor_diagnostics(repo, output_dir)
     figure_operational_performance(repo, output_dir)
     toc_graphical_abstract(output_dir)

@@ -1,8 +1,8 @@
 {
   "output": {
     "path": "outputs/transfer_analysis/figure_inputs/operational_performance.csv",
-    "sha256": "1208eef21f7793ba9817279975538933c32c2879e0a63a532486b0c77d7274a2",
-    "size_bytes": 852
+    "sha256": "217c13f2d635caaf9fc21d388056a3f9db97e35129c4fc797dc948ce58a96a5f",
+    "size_bytes": 853
   },
   "protocol_id": "dd-public-figure-inputs-v1",
   "row_count": 12,

@@ -52,6 +52,8 @@ SOURCE_TREES = (
     "aizynth_jobs",
     "chemformer_jobs",
     "conformer_jobs",
+    "scripts",
+    "notebooks",
 )
 REANALYSIS_DIRS = (
     "j1_j2_filtered_v2",
@@ -85,10 +87,22 @@ TEXT_SUFFIXES = {
 }
 PRIVATE_PATTERNS = (
     re.compile(r"C:\\Users\\[^\\\s]+", re.IGNORECASE),
+    re.compile(r"[A-Z]:/Users/[^/\s]+", re.IGNORECASE),
     re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
     re.compile(r"\bgh[oprsu]_[A-Za-z0-9]{20,}\b"),
     re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),
 )
+
+# Explicit compact final-round payload. Never recursively copy model trees.
+FINAL_ROUND_GROUPS = {
+    "outputs/digital_discovery_final_round/n1_matched_list_joint_sensitivity_v2": "N1",
+    "outputs/digital_discovery_final_round/n5_crossed_transfer": "N5",
+    "outputs/digital_discovery_final_round/p1_headroom_corrected": "P1",
+    "outputs/dd_final_round/N2": "N2",
+    "outputs/dd_final_round/N2_prior_distribution_v1": "N2_prior_distribution",
+    "outputs/dd_final_round/prior_gap_supplement_v1": "prior_gap_supplement",
+}
+PRIVATE_SCRIPT_NAMES = {"organize_private_imports.ps1", "package_dd_overleaf.py"}
 
 
 def sha256(path: Path) -> str:
@@ -105,7 +119,9 @@ def relative_files(root: Path) -> list[Path]:
         if not path.is_file():
             continue
         relative = path.relative_to(root)
-        if any(part in {".git", ".pytest_cache", "__pycache__"} for part in relative.parts):
+        if any(part in {".git", ".pytest_cache", "__pycache__", ".ipynb_checkpoints"} for part in relative.parts):
+            continue
+        if relative.parts[0] == "figures_rebuilt":
             continue
         files.append(relative)
     return sorted(files)
@@ -128,6 +144,8 @@ def copy_tree(repo: Path, output: Path, source_rel: str, destination_rel: str | 
     for source in sorted(path for path in source_root.rglob("*") if path.is_file()):
         relative = source.relative_to(source_root)
         if any(part in SKIP_PARTS for part in relative.parts) or source.suffix.lower() in SKIP_SUFFIXES:
+            continue
+        if source_rel == "scripts" and source.name in PRIVATE_SCRIPT_NAMES:
             continue
         destination = destination_root / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -254,6 +272,14 @@ the manuscript and figure code.
 
 - `historical_anchor/` is a read-only numerical anchor from the same study.
 - `transfer_analysis/` contains the candidate-pool transfer analyses.
+- `transfer_analysis/final_round/` includes N1--N5, corrected headroom,
+  full-grid adaptation and prior-gap summaries. These are secondary analyses;
+  they do not replace the frozen primary comparison.
+
+CSV payloads retain original bytes. Final-round JSON manifests are public
+copies with local user-path prefixes removed, not byte-identical originals.
+`data/provenance/final_round_artifact_map.json` records both hashes and the
+path-only transformation. Original scientific artifacts remain unchanged.
 
 Raw reactions, candidate-level prediction archives, checkpoints, and embedding
 caches are intentionally excluded from Git. See `docs/public_release.md`.
@@ -261,6 +287,86 @@ caches are intentionally excluded from Git. See `docs/public_release.md`.
     path = output / "outputs/README.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
+
+
+def public_metadata(value: object) -> object:
+    """Redact only local path prefixes; preserve numeric values and protocol IDs."""
+    if isinstance(value, dict):
+        return {key: public_metadata(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [public_metadata(item) for item in value]
+    if isinstance(value, str):
+        path = value.replace("\\", "/")
+        if re.match(r"^[A-Za-z]:/Users/", path):
+            marker = "/Retrosynthesis/"
+            return (path.split(marker, 1)[1] if marker in path
+                    else "<local-user-path>/" + path.rsplit("/", 1)[-1])
+    return value
+
+
+def build_final_round_payload(repo: Path, output: Path) -> None:
+    selected: list[tuple[str, str]] = []
+    for source, alias in FINAL_ROUND_GROUPS.items():
+        directory = repo / source
+        if not directory.is_dir():
+            raise FileNotFoundError(source)
+        for path in sorted(directory.iterdir()):
+            if path.suffix in {".csv", ".json"} and path.name != "reaction_diagnostics.csv":
+                selected.append((path.relative_to(repo).as_posix(), f"{alias}/{path.name}"))
+    selected.extend([
+        ("outputs/dd_final_round/N3_S1/manifest.json", "N3_S1/manifest.json"),
+        ("outputs/dd_final_round/N3_S2/choice_freeze.json", "N3_S2/choice_freeze.json"),
+        ("outputs/dd_final_round/N3_S3/transfer_effects.csv", "N3_S3/transfer_effects.csv"),
+        ("outputs/dd_final_round/N4/transfer_effects.csv", "N4/transfer_effects.csv"),
+        ("outputs/dd_final_round/N3_S4_statistics_recheck/manifest.json", "N3_S4/statistics_recheck.json"),
+    ])
+    for pool in ("localretro_only", "merged"):
+        for name in ("statistics.json", "models/freeze.json", "test_results/manifest.json"):
+            selected.append((f"outputs/dd_final_round/N3_S4_final/{pool}/{name}", f"N3_S4/{pool}/{name}"))
+    records = []
+    for source, alias in selected:
+        path = repo / source
+        dest = output / "outputs/transfer_analysis/final_round" / alias
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if path.suffix == ".json":
+            original = json.loads(path.read_text(encoding="utf-8"))
+            public = public_metadata(original)
+            dest.write_text(json.dumps(public, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            policy = "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+        else:
+            shutil.copy2(path, dest)
+            policy = "byte-identical"
+        records.append({"source_path": source, "source_sha256": sha256(path),
+                        "public_path": dest.relative_to(output).as_posix(),
+                        "sha256": sha256(dest), "size_bytes": dest.stat().st_size,
+                        "transformation": policy})
+    mapping = {"schema_version": 1, "scientific_computation": False, "artifacts": records}
+    (output / "data/provenance/final_round_artifact_map.json").write_text(
+        json.dumps(mapping, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    # Assemble plotted values only; no model inference or statistical resampling.
+    with (repo / "outputs/digital_discovery_final_round/n5_crossed_transfer/n5_crossed_transfer_intervals.csv").open(encoding="utf-8", newline="") as handle:
+        original_rows = list(csv.DictReader(handle))
+    with (repo / "outputs/dd_final_round/N3_S3/transfer_effects.csv").open(encoding="utf-8", newline="") as handle:
+        prior_rows = list(csv.DictReader(handle))
+    rows = []
+    for pool in ("localretro_only", "merged"):
+        full = json.loads((repo / f"outputs/dd_final_round/N3_S4_final/{pool}/statistics.json").read_text(encoding="utf-8"))
+        for metric in ("top1", "mrr"):
+            for stage, candidates, keys in (
+                ("original", original_rows, ("mean_transfer_loss", "crossed_product_seed_ci95_low", "crossed_product_seed_ci95_high")),
+                ("prior_reselected", prior_rows, ("transfer_loss", "crossed_ci95_low", "crossed_ci95_high")),
+                ("full_grid", full["common_transfer"], ("transfer_loss", "crossed_ci95_low", "crossed_ci95_high")),
+            ):
+                matched = [r for r in candidates if r["pool"] == pool and r["metric"] == metric]
+                if len(matched) != 1:
+                    raise ValueError(f"Ambiguous adaptation row: {pool}/{metric}/{stage}")
+                rows.append(dict(pool=pool, metric=metric, stage=stage,
+                                 **{k: float(matched[0][v]) for k, v in zip(("effect", "low", "high"), keys)}))
+    with (output / "outputs/transfer_analysis/figure_inputs/adaptation.csv").open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=("pool", "metric", "stage", "effect", "low", "high"))
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 def normalize_release_text(output: Path) -> None:
@@ -309,6 +415,8 @@ def git_state(repo: Path) -> dict[str, object]:
 
 def scan_release(output: Path) -> None:
     failures: list[str] = []
+    if (output / "paper").exists():
+        failures.append("private manuscript directory: paper/")
     for relative in relative_files(output):
         path = output / relative
         if path.suffix.lower() in FORBIDDEN_PAYLOAD_SUFFIXES:
@@ -392,9 +500,13 @@ def verify_release(output: Path) -> dict[str, int]:
         raise FileNotFoundError(f"Missing release checksum ledger: {checksum_path}")
     checked = 0
     bytes_checked = 0
+    listed = set()
     for line in checksum_path.read_text(encoding="utf-8").splitlines():
         expected, relative = line.split("  ", 1)
         path = output / relative
+        if not path.resolve().is_relative_to(output) or relative in listed:
+            raise ValueError(f"Unsafe or duplicate checksum path: {relative}")
+        listed.add(relative)
         if not path.is_file():
             raise FileNotFoundError(f"Release file is absent: {relative}")
         actual = sha256(path)
@@ -402,6 +514,9 @@ def verify_release(output: Path) -> dict[str, int]:
             raise ValueError(f"Release checksum differs: {relative}")
         checked += 1
         bytes_checked += path.stat().st_size
+    actual_files = {p.as_posix() for p in relative_files(output)} - {"checksums.sha256"}
+    if actual_files != listed:
+        raise ValueError(f"Release contains unlisted or missing files: {sorted(actual_files ^ listed)}")
     verify_mapped_artifacts(output)
     scan_release(output)
     return {"verified_files": checked, "verified_bytes": bytes_checked}
@@ -437,7 +552,12 @@ def build_release(repo: Path, output: Path) -> dict[str, int]:
             f"outputs/transfer_analysis/{directory}",
         )
 
+    copy_tree(repo, output,
+              "outputs/digital_discovery_round_jk/reviewer_sensitivity/shared_hyperparameters/analysis",
+              "outputs/transfer_analysis/shared_hyperparameter_sensitivity")
+
     build_operational_table(repo, output)
+    build_final_round_payload(repo, output)
     write_outputs_readme(output)
     normalize_release_text(output)
     verify_mapped_artifacts(output)

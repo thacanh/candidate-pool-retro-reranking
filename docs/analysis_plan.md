@@ -843,3 +843,382 @@ J1/J2 artifact is preserved as superseded exploratory output and must not be
 mixed with the filtered-v2 tables.  The single intended change is alignment of
 J1/J2 reporting to the final frozen K1 pool version; no scientific prediction
 is recomputed.
+
+## Approved reviewer-requested shared-hyperparameter sensitivity
+
+- **Date approved:** 2026-08-27
+- **Status:** APPROVED AND SIGNED FOR ISOLATED POST-HOC EXECUTION
+- **Authorization:** repository owner instruction "ok triển khai thôi"
+- **Protocol ID:** `dd-shared-hyperparameter-feature-only-v1`
+
+This sensitivity addresses the post hoc reviewer concern that the tuned
+baseline and augmented primary arms selected different dropout and pairwise
+margin values.  It does not replace the validation-tuned 20-seed primary
+estimand.  It asks whether the direction of the representation-assisted
+increment and its pool dependence persist when all trainable settings are held
+identical within each arm pair.
+
+Two already-frozen D1 configurations are crossed symmetrically; neither is
+selected after viewing this sensitivity:
+
+1. `baseline_selected`: width 128, dropout 0, learning rate `1e-3`, margin 0.3;
+2. `augmented_selected`: width 128, dropout 0.1, learning rate `1e-3`, margin
+   0.1.
+
+For each configuration, both the baseline and augmented arm use the same
+hidden width, dropout, learning rate, pairwise margin, optimizer, scheduler,
+batch size, negative-pair sampling, normalization rules, epoch limit, patience
+and validation checkpoint rule.  The input dimension and consequent first-layer
+parameter count necessarily differ because the augmented arm adds exactly
+three representation features; the existing D-CAPACITY result remains the
+separate equal-parameter sensitivity.  The single intended arm change here is
+the addition of those three frozen features.
+
+The sensitivity covers the historical cap-10 pool, AiZynthFinder-only cap-10,
+LocalRetro-only cap-10 and merged cap-10 with paired seeds 42--46.  Candidate
+generation, feature generation, hyperparameter search, retuning, pool order,
+pair sampling and official split membership are prohibited.  Historical
+config-62/config-70 trials are imported from the complete D1 search.  For each
+expanded pool, the matching existing K1 arm is imported and only the opposite
+cross-configuration arm is fitted.  Imported checkpoints, normalizers and
+trial records must pass SHA-256 verification; no existing scientific artifact
+is copied over or modified.
+
+Official-test scoring may occur only after a complete sensitivity model freeze.
+All outputs are isolated under
+`outputs/digital_discovery_round_jk/reviewer_sensitivity/shared_hyperparameters/`.
+For each configuration and pool, report paired Top-1 and MRR effects over seeds
+42--46 with 10,000-draw independent canonical-product-cluster and paired-seed
+bootstrap percentile intervals.  On the fixed common-covered reaction set,
+report each expanded-pool effect minus the matched historical effect with a
+10,000-draw paired canonical-product bootstrap percentile interval and a
+100,000-draw two-sided canonical-product sign-flip test.  Holm adjustment is
+applied to the six pool-by-endpoint transfer tests separately within each of
+the two configuration strata.  RNG seeds, exact input hashes, imported versus
+new trial status, package versions and runtime are manifest fields.
+
+This is explicitly post hoc reviewer-requested sensitivity.  No configuration
+is promoted to a new primary result.  Concordant results can reduce concern
+that the primary direction is caused solely by independently selected
+hyperparameters; discordant or null results require narrowing the manuscript
+to independently tuned pipeline increments.  Every result is reported without
+result-dependent tuning or rescue analysis.
+
+### Shared-hyperparameter execution gate
+
+- [x] Repository owner approved the two-config symmetric design on 2026-08-27
+  with "ok triển khai thôi".
+- [x] Seeds are fixed to 42--46 and both frozen D1 configurations are reported.
+- [x] The historical and expanded candidate pools, representations and pair
+  samples remain immutable inputs.
+- [ ] This amendment and its runner must be committed before scientific fitting.
+- [ ] `docs/shared_hyperparameter_approval.json` must bind the committed plan,
+  runner, environment files and runtime before scientific fitting.
+
+## Digital Discovery final-submission checklist amendment
+
+- **Date prespecified:** 2026-09-22
+- **Source:** supervisor final-submission checklist supplied by the repository
+  owner
+- **Repository-owner authorization:** "ok triển khai cho tôi"
+- **Status:** PRESPECIFIED; SUPERVISOR SIGN-OFF AND COMMIT REQUIRED BEFORE N1--N5
+- **Output namespace:** `outputs/digital_discovery_final_round/`
+
+This amendment adds only secondary or sensitivity analyses.  It does not
+replace the frozen historical anchor, K1 own-pool effects, M2b primary transfer
+estimates, or their multiplicity family.  Selection remains validation-only;
+the official test partition may be loaded only after the relevant freeze.
+
+### Artifact correction established before execution
+
+The checklist's proposed N1 cohort cannot be taken directly from K2.  K2 uses
+the clean regenerated cap-50 pool truncated to ten, whereas the final K1/M2
+AiZynthFinder pool uses the separately frozen legacy-anchored cap-50 artifact.
+The K2 groups therefore describe a different candidate artifact and remain a
+standalone post hoc ordering control.
+
+For the actual K1 historical--AiZynthFinder comparison, the frozen audit found
+799 reactions with identical canonical candidates, order and stored prior
+values; 766 of these belong to the fixed 3,814-reaction common-covered subset.
+The complementary actual-K1 changed-input group contains 2,148 historical-
+covered reactions, or 2,069 on the common-covered subset.  These counts are
+execution gates and must be independently reproduced by the N1 runner before
+any effect is estimated.  No result may be substituted from the K2 1,222/487/
+2,276 partition.
+
+Historical cap-10 and final-K1 AiZynthFinder priors are not assumed to share a
+calibrated probability scale.  Historical priors preserve the original cap-10
+artifact; the alternative pool originates from cap-50 rank normalization and
+is truncated to ten.  N2 must therefore report normalizer clipping and label
+both off-diagonal cells as descriptive cross-distribution inference.  A cell
+with more than 10% prior values clipped at either boundary is uninterpretable.
+
+### N1 -- actual-pool identical-input decomposition
+
+- **Protocol ID:** `dd-n1-identical-input-decomposition-v1`
+- **Comparator:** frozen historical and final-K1 AiZynthFinder 20-seed arms
+- **Single intended change:** training-pool model/normalizer on an otherwise
+  identical candidate identity, order and stored-prior input
+- **Primary cohort:** 766 reactions in the 3,814-reaction common-covered set
+  that pass the byte-independent identity/order/prior equality audit
+- **Contrast cohort:** the 2,069 common-covered reactions whose actual-K1
+  candidate input differs; all residual/common reactions are reported
+  separately rather than silently discarded
+- **Endpoints:** augmented-minus-baseline Top-1 and MRR in each training pool,
+  the AiZynthFinder-trained minus historical-trained difference in increments,
+  and baseline-arm Top-1 agreement
+- **Inference:** 10,000 canonical-product-cluster bootstrap draws, 10,000
+  crossed product--seed bootstrap draws for each within-cohort effect, and a
+  100,000-draw canonical-product sign-flip test for the difference
+- **Decision rule:** a difference interval excluding zero localizes a
+  training-side contribution on identical inputs; an interval including zero
+  is inconclusive and is not evidence of equivalence
+- **Prohibited:** retraining, normalizer refitting, K2 group substitution, or
+  result-dependent cohort changes
+
+### N2 -- historical/AiZynthFinder train-by-test cross-inference
+
+- **Protocol ID:** `dd-n2-cross-inference-v1`
+- **Comparator:** the two existing diagonal historical/AiZynthFinder cells
+- **Single intended change:** apply the training pool's frozen checkpoint and
+  own normalizer to the other pool's frozen feature lists
+- **Scope:** required 2-by-2 matrix on the fixed 3,814 common reactions; the
+  LocalRetro/merged 4-by-4 extension is outside the initial execution
+- **Reporting:** both endpoints, all 20 seeds, product-cluster and crossed
+  product--seed intervals, prior/feature clipping frequencies and candidate
+  alignment audit
+- **Decision rule:** effect following the training pool supports training-
+  distribution dependence; effect following the evaluation pool supports
+  evaluation-distribution dependence; positivity only on the historical
+  diagonal supports joint development-distribution specificity
+- **Interpretation guard:** off-diagonal cells are descriptive because prior
+  calibration is not commensurate, even when clipping is below 10%
+- **Prohibited:** retraining, renormalization on the test pool, or test-based
+  threshold/transform selection
+
+### N3 -- prior-lock diagnostic and pool-specific validation re-selection
+
+- **Protocol ID:** `dd-n3-pool-specific-selection-v1`
+- **Step 1:** frozen-prediction prior-lock diagnostics for all four pools; no
+  training
+- **Step 2:** on each expanded pool's official validation split, select among
+  raw prior, `log(p + 1e-12)` and descending within-list midrank using the
+  baseline arm and seeds 42--46; freeze before test access
+- **Step 3:** only when the selected transform differs from raw, refit both
+  arms for seeds 42--61 with all other settings frozen
+- **Step 4:** the 81-configuration per-arm grid for LocalRetro and merged is a
+  separate recommended extension and requires an explicit compute go/no-go
+  after Steps 1--3 are reviewed
+- **Decision rule:** a positive reselected-pipeline interval excluding zero
+  shows pool-specific retuning is needed; a null-compatible result does not
+  establish equivalence but strengthens the non-transfer sensitivity
+
+### N4 -- Morgan-atom expanded-pool transfer
+
+- **Protocol ID:** `dd-n4-morgan-atom-transfer-v1`
+- **Comparator:** the frozen radius-2, 2,048-bit, atom-centred Morgan encoder
+  control with `fromAtoms=[atom_index]` and `useChirality=False`
+- **Single intended change:** candidate pool, while retaining the Morgan
+  feature definitions and matched ranking procedure
+- **Scope:** extend historical and each expanded pool to seeds 42--61 only
+  after feature-cache coverage is complete and checksummed
+- **Decision rule:** loss across Morgan and Uni-Mol supports a representation-
+  general pool-dependence statement; Morgan transfer with Uni-Mol non-transfer
+  requires a title/claim re-review before manuscript changes
+- **Fallback:** if compute is not approved, omit N4 and explicitly scope the
+  paper to the tested Uni-Mol-derived representation features
+
+### N5 -- crossed product--seed transfer-loss intervals
+
+- **Protocol ID:** `dd-n5-crossed-transfer-inference-v1`
+- **Comparator:** the six frozen M2b pool-by-endpoint transfer estimates
+- **Single intended change:** add seed-marginal uncertainty
+- **Inference:** 10,000 draws resampling canonical-product clusters jointly
+  across pools and seed indices independently by pool; RNG seeds are recorded
+  before execution
+- **Decision rule:** only contrasts whose crossed 95% interval remains below
+  zero may be described as resolved under seed uncertainty
+- **Prohibited:** changing point estimates, replacing product-cluster
+  intervals, or adding N5 to the primary Holm family
+
+### Numerical and presentation corrections
+
+- **P1:** headroom capture is
+  `(augmented Top-1 - prior+2D Top-1) / (1 - prior+2D Top-1)`.
+  The frozen corrected values are 2.697787% (historical), 0.086348%
+  (AiZynthFinder-only), -0.026537% (LocalRetro-only) and -0.999878% (merged).
+- **P2:** final-K1 shared-order Kendall is list-position concordance on shared
+  canonical identities; ties are absent after canonical deduplication.  The
+  AiZynthFinder value of 1.000 is valid for the actual K1 pool and must not be
+  reconciled against the distinct K2 clean-regeneration artifact.
+- **P3/P4:** Figure 4 uses a fixed symmetric +/-0.30 colour range; quantitative
+  bar axes in Figures 2A and 5 start at zero or are replaced by dot plots.
+- **P5:** singleton effects must remain exactly zero for every seed/endpoint.
+- **P6:** LocalRetro facts are frozen as class unknown, train-only fitting,
+  official-validation checkpoint selection, best epoch 14, freeze before
+  official test, coverage@10 89.17%, conditional prior Top-1 57.78%.
+- **P7:** submission uses the programmatic/vector Figure 1 and TOC graphic;
+  no unverified generative-image asset may enter the source package.
+
+### Final-round execution gate
+
+- [x] Task definitions, corrected cohorts and decision rules are written here.
+- [x] Repository owner authorized preparation on 2026-09-22.
+- [ ] Supervisor explicitly signs off this corrected amendment.
+- [ ] This amendment is committed before N1--N5 execute.
+- [ ] A final-round approval record binds the committed plan and runner hashes.
+- [ ] Each task writes a separate manifest with protocol ID, comparator,
+  single intended change, input fingerprints, environment and runtime.
+
+### N1 fail-closed audit correction (2026-09-22)
+
+The first direct pre-execution audit of the actual frozen feature inputs found
+that the earlier 799/766 counts were candidate-order matches under an
+insufficient prior audit, not exact-input matches.  Reading the stored prior
+floats from the historical official-test feature cache and the final K1
+AiZynthFinder pool established:
+
+- 1,837/3,985 historical-covered reactions have identical canonical candidate
+  identities and order;
+- 1,745/3,814 common-covered reactions have identical canonical candidate
+  identities and order; and
+- zero reactions have identical stored prior floats, because the historical
+  pool contains model probabilities whereas final-K1 AiZynthFinder contains
+  cap-50 rank-normalized priors before cap-10 truncation.
+
+Accordingly, the original N1 exact-input estimand has an empty cohort and must
+not execute or be described as a training-side isolation.  The fail-closed
+result itself is reported.  A replacement matched-list diagnostic would change
+both the training distribution/normalizer and prior calibration; it can be
+labelled only as a joint training-plus-prior sensitivity and requires a fresh
+supervisor decision rule before execution.  N2 remains permitted only as the
+already-prespecified descriptive cross-distribution inference with clipping
+audit.  N5 is unaffected by this correction.
+
+### Approval received for unaffected local final-round work
+
+- [x] Repository owner confirmed the amendment on 2026-09-22 with
+  "xác nhận nhé".
+- [x] N5 may execute from frozen predictions after this correction and its
+  runner are committed and bound in the approval record.
+- [ ] N1 replacement analysis remains blocked pending a new decision rule.
+- [ ] N2--N4 remain separate jobs and are not implicitly authorized by an N5
+  local-machine launch.
+
+### N1 replacement authorized: matched-list joint pipeline sensitivity (2026-09-22)
+
+The repository owner subsequently authorized the coordinator to choose and
+implement the most scientifically defensible N1 repair: "bạn cứ thấy cái nào
+hợp lý nhất mà sửa cho tôi".  The original empty exact-prior cohort remains
+invalid and is not revived.  It is replaced by the following secondary
+frozen-prediction sensitivity:
+
+- **Protocol ID:** `dd-n1-matched-list-joint-sensitivity-v1`
+- **Comparator:** the frozen historical cap-10 and final-K1 AiZynthFinder
+  20-seed baseline/augmented predictions
+- **Single intended change:** compare the two frozen pipelines within strata
+  defined by whether canonical candidate identities and ordering match; stored
+  prior calibration is known to differ for every reaction
+- **Matched-list cohort:** exactly 1,745 of the 3,814 common-covered reactions,
+  requiring equal candidate count, Jaccard 1, all candidates shared, and
+  Kendall order 1 (with the singleton case accepted by definition)
+- **Changed-list cohort:** the complementary 2,069 common-covered reactions
+- **Endpoints:** augmented-minus-baseline Top-1 and MRR in each frozen pipeline,
+  followed by the AiZynthFinder-pipeline minus historical-pipeline difference
+  in increments
+- **Inference:** 10,000 canonical-product-cluster bootstrap draws and 10,000
+  crossed product--seed bootstrap draws for each effect and difference, plus a
+  100,000-draw canonical-product sign-flip test for each pipeline difference
+- **Decision rule:** an interval excluding zero identifies joint sensitivity
+  to the historical-versus-AiZynthFinder pipeline under that candidate-list
+  stratum.  It cannot isolate training, normalization, or prior calibration;
+  an interval including zero is inconclusive and is not evidence of
+  equivalence
+- **Frozen-output limitation:** final-K1 reaction summaries retain reference
+  ranks but not the top-predicted candidate identity.  Baseline-arm top-1
+  candidate agreement is therefore recorded as unavailable rather than
+  reconstructed by new inference
+- **Prohibited:** retraining, inference, normalizer refitting, prior
+  recalibration, K2 cohort substitution, or result-dependent cohort changes
+
+This replacement is descriptive/secondary, does not enter the primary Holm
+family, and does not alter M2b or N5.  Its output must include input hashes,
+the reproduced 1,745/2,069 cohort gate, the known zero exact-prior-match audit,
+and the frozen-summary limitation above.
+
+### Updated final-round authorization
+
+- [x] N1 replacement decision rule is frozen before execution.
+- [x] Repository owner authorized this repair on 2026-09-22.
+- [x] N1 uses frozen predictions only and writes to a separate immutable
+  output namespace.
+- [ ] The approval record must be rebound to this committed amendment and the
+  implemented runner before N1 executes.
+
+### N1 interpretation correction before manuscript use (2026-09-23)
+
+The first completed N1 run reproduced the frozen cohorts, the zero exact-prior
+match gate and the M2b/N5 weighted point estimates.  Its row-level
+`interpretation_scope` label omitted candidate-list changes for the 2,069-row
+complement and did not explicitly allow for unverified feature-input changes.
+Those numerical outputs remain immutable as an audit trail.  Protocol
+`dd-n1-matched-list-joint-sensitivity-v2` repeats the same frozen analysis,
+random seeds and input gates in a new output directory, changing only the
+interpretation labels:
+
+- The 1,745 matched-list reactions support **joint frozen-pipeline
+  sensitivity conditional on matching canonical candidate identities and
+  order**.  Stored priors differ, and equality of all other feature inputs
+  has not been established.
+- The 2,069 changed-list reactions support **joint frozen-pipeline
+  sensitivity including candidate-list changes**.
+
+Neither stratum isolates training, the normalizer, prior calibration or
+representation features.  The v2 point estimates and interval limits must
+match v1 exactly; any numeric mismatch is a fail-closed discrepancy.
+
+## Approved manuscript prior supplement (2026-09-27)
+
+Repository-owner authorization: "thế cứ chạy đi", following the explicit
+proposal to compute prior-to-augmented intervals and prior-gap strata from
+frozen predictions. This is a secondary/post hoc reporting extension, not
+new fitting, model selection, candidate generation, calibration or inference.
+The coordinator records this user authorization; no new supervisor signature
+is asserted. Earlier frozen protocols and outputs remain unchanged.
+
+- Protocol: `dd-prior-increment-gap-supplement-v1`.
+- Comparator: unchanged historical and anchored K1/N2 diagonal predictions,
+  paired seeds 42--61 on exactly 3,814 distinct common canonical products.
+- Single intended change: supplement the manuscript with uncertainty for
+  prior-to-augmented Top-1 and historical raw-prior-gap stratification.
+- Top-1 only: historical prior-to-augmented and anchored prior-to-augmented,
+  and the direct anchored-minus-historical difference in these increments.
+  Use 10,000 percentile bootstrap draws with joint product resampling and
+  independent seed resampling by pool (seed 2026092701), retaining paired
+  arms within pool. Report pointwise 95% intervals, not equivalence tests.
+- Gap: highest minus second-highest stored historical raw prior (feature
+  column zero, before normalization). Only lists of size >=2 have a gap.
+  Compute linear-interpolated quartile cutpoints from common-cohort gaps,
+  without consulting prediction outcomes. Values equal to a cutpoint belong
+  to the lower group; duplicate cutpoints may leave empty groups, which are
+  reported rather than repaired. Exact top-prior ties (gap zero) are counted
+  explicitly. Singletons are reported separately and have zero paired effect.
+- Four historical gap groups report prior, baseline, augmented Top-1 and
+  prior-to-augmented and baseline-to-augmented increments. Cutpoints are
+  fixed during resampling. Seed resampling is shared across groups; products
+  are sampled independently within each group, using 10,000 draws and RNG
+  seed 2026092702. Report within-group intervals and direct Q4-minus-Q1
+  contrast intervals for both increments; no inference from comparing
+  separate group significance. No p-value family or mechanistic discovery
+  claim is introduced; all intervals are pointwise exploratory intervals.
+- This analysis conditions on coverage and the observed gap strata. Gap is
+  not calibrated confidence. Group differences can reflect headroom/list
+  composition and cannot isolate a causal prior effect. Negative, positive
+  and null-compatible results must all be retained; do not change bins after
+  observing results. No cross-pool gap-scale comparison is authorized here.
+- Record fingerprints, environment, seeds, bin rule/cutpoints and runtime;
+  verify diagonal ranks against frozen prediction files. Preserve the
+  audited N2 frozen tie policy. Stop if a pairing/fingerprint gate fails.
+- Commit this amendment, runner and focused tests before scientific
+  execution. Write only to a new supplement output namespace and one log.
+  Do not edit main/SI, release metadata or historical scientific outputs.

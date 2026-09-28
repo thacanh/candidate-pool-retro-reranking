@@ -1,0 +1,2903 @@
+{
+  "approval": {
+    "path": "/workspace/dd_n3/docs/dd_remote_approval.json",
+    "sha256": "4928226ca0f1369b9272bd42fa5cbe2e1d6dd9bab0824c9c605708bc343ca485",
+    "size_bytes": 3125
+  },
+  "comparator": "frozen learned ranking versus frozen raw prior on four candidate pools",
+  "environment": {
+    "device": "cpu",
+    "numpy": "1.26.4",
+    "python": "3.10.14",
+    "torch": "2.2.2+cpu"
+  },
+  "inputs": {
+    "historical_cache": {
+      "path": "/workspace/dd_n3/outputs/jcheminform_revision/conformers/seed_42/features/official_3d_prior_schema1.pkl",
+      "sha256": "9b3bf77dd1d721fb7b32b44b0a1be9511cd62a110ed271da34357d5f0de9319e",
+      "size_bytes": 48454998
+    },
+    "historical_freeze": {
+      "path": "/workspace/dd_n3/outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/freeze.json",
+      "sha256": "91d8f4f10d01c3a86631b53cdb264bed059f8727ef9d5223444de02ab4ce2de5",
+      "size_bytes": 602151
+    },
+    "historical_selection_bundle": {
+      "path": "/workspace/dd_n3/outputs/jcheminform_revision/tuned_primary/conformer_seed_42/selection/train_valid_only.pkl",
+      "sha256": "0ca95b00c90faea69e85d55aca1f85464028fa95c47e12abd4b159a355072b30",
+      "size_bytes": 48714232
+    },
+    "metadata_csv": {
+      "path": "/workspace/dd_n3/data/uspto_reaction_metadata.csv",
+      "sha256": "c9f3c5f01e64cc9192f20f9889694b85d83986f4e991d2ee5bb52b5db8e08e52",
+      "size_bytes": 734709
+    },
+    "products_jsonl": {
+      "path": "/workspace/dd_n3/outputs/jcheminform_revision/candidate_pools/ws_e_three_pools_filtered_v2/products.jsonl",
+      "sha256": "c462bb557271ab4d24fbe12c355d058b4f8ff3cddd573d33c1752a17c698be07",
+      "size_bytes": 7466712
+    },
+    "source_csv": {
+      "path": "/workspace/dd_n3/data/uspto_smiles.csv",
+      "sha256": "688c5b8ea7c3269b53ae15ffca9ec98f51fd29ea3fc25edc8fa66cabe9042d6a",
+      "size_bytes": 5269731
+    }
+  },
+  "normalizer_refit_performed": false,
+  "numerical_tie_audit": [
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 4.76837158203125e-07,
+      "seed": 43
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 4.76837158203125e-07,
+      "seed": 44
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 3.5762786865234375e-07,
+      "seed": 45
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 8,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 4.76837158203125e-07,
+      "pool": "historical_cap10",
+      "reaction_id": 49952,
+      "recomputed_rank": 7,
+      "reference_tied_rank_score_span": 0.0,
+      "seed": 45
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 1.1920928955078125e-07,
+      "seed": 46
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 7.152557373046875e-07,
+      "seed": 48
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 2.384185791015625e-07,
+      "seed": 49
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 7.152557373046875e-07,
+      "seed": 50
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 2.384185791015625e-07,
+      "seed": 53
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 4.76837158203125e-07,
+      "seed": 56
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 8,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 9.5367431640625e-07,
+      "pool": "historical_cap10",
+      "reaction_id": 49952,
+      "recomputed_rank": 7,
+      "reference_tied_rank_score_span": 0.0,
+      "seed": 56
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 1.1920928955078125e-07,
+      "seed": 57
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 2.384185791015625e-07,
+      "seed": 58
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 3.5762786865234375e-07,
+      "seed": 59
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 8,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 4.76837158203125e-07,
+      "pool": "historical_cap10",
+      "reaction_id": 49952,
+      "recomputed_rank": 7,
+      "reference_tied_rank_score_span": 0.0,
+      "seed": 59
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 2.384185791015625e-07,
+      "seed": 60
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 8,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 4.76837158203125e-07,
+      "pool": "historical_cap10",
+      "reaction_id": 49952,
+      "recomputed_rank": 7,
+      "reference_tied_rank_score_span": 0.0,
+      "seed": 60
+    },
+    {
+      "arm": "baseline",
+      "frozen_rank": 1,
+      "indistinguishable_candidate_count": 2,
+      "local_score_span": 0.0,
+      "pool": "historical_cap10",
+      "reaction_id": 46527,
+      "recomputed_rank": 2,
+      "reference_tied_rank_score_span": 4.76837158203125e-07,
+      "seed": 61
+    }
+  ],
+  "numerical_tie_policy": "N2 identical-input gate: contiguous indistinguishable arm-feature group; local and available historical score span <= 1e-6. Frozen ranks are not changed. Prior-agreement and Kendall diagnostics use recomputed scores and may vary at numerical ties across platforms. All other rank mismatches fail closed.",
+  "pools": {
+    "aizynthfinder_only": {
+      "arms": {
+        "augmented": {
+          "42": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7923694584071942,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9823030907278165,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005176180385622158,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "43": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7810118744081008,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9840478564307079,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005087614561533566,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "44": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8062427656767278,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.984297108673978,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005176180385622158,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "45": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7918388739143456,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9835493519441675,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005100735424361506,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "46": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7866176149195018,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9837986041874377,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005071213482998642,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "47": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.802707154593947,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.982801595214357,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005241784699761856,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "48": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7908695757752361,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9833000997008973,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005245064915468841,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "49": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7900564985470645,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9845463609172482,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005218823189812962,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "50": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.794983528002396,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9840478564307079,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005061372835877687,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "51": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7923815999287698,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9847956131605184,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0050974552086545215,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "52": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7967586184567316,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9847956131605184,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005008889384565929,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "53": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7757562144354596,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9837986041874377,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005084334345826581,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "54": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8108796127664052,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9847956131605184,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0051433782285523096,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "55": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7715609140137442,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9840478564307079,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005107295855775476,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "56": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7831710416616076,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9805583250249252,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005094174992947537,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "57": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8017969451931717,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9852941176470589,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.00513025736572437,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "58": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7762467319071092,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9837986041874377,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005166339738501204,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "59": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7904211489117148,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9840478564307079,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005163059522794219,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "60": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7786689654614183,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9833000997008973,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005090894777240552,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "61": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.7889560719749399,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9847956131605184,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005035131110221808,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          }
+        },
+        "baseline": {
+          "42": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8110240968731535,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9860418743768694,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005126977150017385,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "43": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8224775988926932,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9880358923230309,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005018730031686884,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "44": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.82963219283974,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9882851445663011,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005113856287189446,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "45": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.795977918619428,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9887836490528414,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005038411325928793,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "46": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8102729414050168,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9880358923230309,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005015449815979899,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "47": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8484653116728589,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9902791625124626,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005179460601329143,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "48": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8203536420517552,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9877866400797607,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005176180385622158,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "49": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8148571752345337,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9880358923230309,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005159779307087234,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "50": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8200391766429502,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9882851445663011,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.004992488306031005,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "51": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8218255991840897,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9900299102691924,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005025290463100854,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "52": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8269926260492297,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9885343968095713,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.004940004854719246,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "53": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8181050322559756,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9875373878364905,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005012169600272914,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "54": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.814171179265519,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9890329012961117,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005094174992947537,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "55": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8061828675036222,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9880358923230309,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005035131110221808,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "56": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8193932476951344,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9877866400797607,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0050285706788078385,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "57": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8064499809782829,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9887836490528414,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005061372835877687,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "58": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8288595873501534,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9885343968095713,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005094174992947537,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "59": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8208631812405398,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9890329012961117,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0050974552086545215,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "60": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8182559918408975,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9895314057826521,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0050285706788078385,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "61": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3922,
+            "kendall_tau_undefined_lists": 90,
+            "mean_kendall_tau_defined": 0.8243178488461506,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9875373878364905,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.00496296636466814,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          }
+        }
+      },
+      "covered_reactions": 4012,
+      "prior": {
+        "gap_defined_lists": 3922,
+        "mean_within_list_skew": -2.595352037983052e-08,
+        "median_top1_top2_gap": 0.06666666269302368,
+        "prior_tie_list_fraction": 0.0,
+        "skew_defined_lists": 3849
+      }
+    },
+    "historical_cap10": {
+      "arms": {
+        "augmented": {
+          "42": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6868190691717653,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9151819322459223,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005068980627000039,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "43": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.676931651817812,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.917189460476788,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005102176308905738,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "44": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6604734737792878,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9181932245922209,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0050623414906189,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "45": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6994285407184214,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.914930991217064,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005068980627000039,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "46": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6838160598715317,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9159347553324969,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0051619285363359935,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "47": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6868773074414629,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9179422835633626,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005072300195190609,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "48": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6882028528361098,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.916185696361355,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005035784945094342,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "49": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6922257849613404,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9174404015056462,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0049992696949980745,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "50": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6518088540763043,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9214554579673777,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0050025892631886445,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "51": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6908191380261045,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9181932245922209,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005019187104141494,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "52": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6784200898518684,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9156838143036387,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005039104513284912,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "53": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6807283609608927,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9166875784190716,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0050822588997623186,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "54": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6791052301970387,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.917189460476788,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005042424081475482,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "55": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6824811770736071,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9146800501882058,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005128732854430296,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "56": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.691874934484215,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9144291091593476,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0049992696949980745,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "57": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6758594241892968,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9159347553324969,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005049063217856621,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "58": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6822860054196953,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9217063989962359,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005032465376903772,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "59": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6789372675384087,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9154328732747804,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005118774149858586,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "60": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6912505635366999,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9191969887076537,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.004969393581282947,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "61": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.6910348178239657,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9129234629861982,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005092217604334029,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          }
+        },
+        "baseline": {
+          "42": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7306739630663676,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9317440401505647,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0049992696949980745,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "43": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7237785771417715,
+            "numerical_tie_count": 1,
+            "top1_equals_prior_fraction": 0.933249686323714,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005025826240522633,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "44": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7230928036628246,
+            "numerical_tie_count": 1,
+            "top1_equals_prior_fraction": 0.9370138017565872,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.004989310990426365,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "45": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.731939652994,
+            "numerical_tie_count": 2,
+            "top1_equals_prior_fraction": 0.9365119196988708,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0049959501268075045,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "46": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7211476608595895,
+            "numerical_tie_count": 1,
+            "top1_equals_prior_fraction": 0.936762860727729,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005088898036143459,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "47": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7171246547965779,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9370138017565872,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0050025892631886445,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "48": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7319811752996627,
+            "numerical_tie_count": 1,
+            "top1_equals_prior_fraction": 0.9319949811794228,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.004966074013092377,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "49": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.664034335498607,
+            "numerical_tie_count": 1,
+            "top1_equals_prior_fraction": 0.936762860727729,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0049295587629961096,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "50": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7340480605863274,
+            "numerical_tie_count": 1,
+            "top1_equals_prior_fraction": 0.9327478042659975,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0049295587629961096,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "51": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7114416203302978,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9327478042659975,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.004942837035758389,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "52": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7156430220315809,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9382685069008783,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.004966074013092377,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "53": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7155775264671868,
+            "numerical_tie_count": 1,
+            "top1_equals_prior_fraction": 0.9335006273525721,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0050059088313792145,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "54": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7119200097004852,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9337515683814304,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.004972713149473516,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "55": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7085034876968723,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9357590966122961,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0050623414906189,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "56": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7135408545765228,
+            "numerical_tie_count": 2,
+            "top1_equals_prior_fraction": 0.9362609786700126,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0049295587629961096,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "57": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7223882765177565,
+            "numerical_tie_count": 1,
+            "top1_equals_prior_fraction": 0.9380175658720201,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.004979352285854656,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "58": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.717417611566497,
+            "numerical_tie_count": 1,
+            "top1_equals_prior_fraction": 0.9329987452948557,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.004956115308520668,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "59": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.705678876790206,
+            "numerical_tie_count": 2,
+            "top1_equals_prior_fraction": 0.9337515683814304,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005045743649666051,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "60": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7143540548118891,
+            "numerical_tie_count": 2,
+            "top1_equals_prior_fraction": 0.9350062735257214,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.004903002217471551,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "61": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact_except_audited_identical_input_ties",
+            "kendall_tau_defined_lists": 3893,
+            "kendall_tau_undefined_lists": 92,
+            "mean_kendall_tau_defined": 0.7216375238098278,
+            "numerical_tie_count": 1,
+            "top1_equals_prior_fraction": 0.9327478042659975,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005022506672332063,
+              "prior_lower_fraction": 0.0,
+              "prior_total_clipped_fraction": 0.0,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          }
+        }
+      },
+      "covered_reactions": 3985,
+      "prior": {
+        "gap_defined_lists": 3895,
+        "mean_within_list_skew": 2.217024390369334,
+        "median_top1_top2_gap": 0.47640085220336914,
+        "prior_tie_list_fraction": 0.32471769134253453,
+        "skew_defined_lists": 3822
+      }
+    },
+    "localretro_only": {
+      "arms": {
+        "augmented": {
+          "42": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.965111685142532,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006562394833416131,
+              "prior_lower_fraction": 0.002409149426024156,
+              "prior_total_clipped_fraction": 0.002409149426024156,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "43": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.958947514460737,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006621154575514281,
+              "prior_lower_fraction": 0.002406478528656058,
+              "prior_total_clipped_fraction": 0.002406478528656058,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "44": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.958501775131089,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006525002270262763,
+              "prior_lower_fraction": 0.0023877822470793736,
+              "prior_total_clipped_fraction": 0.0023877822470793736,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "45": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9470797492760736,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006583762012360913,
+              "prior_lower_fraction": 0.002433187502337035,
+              "prior_total_clipped_fraction": 0.002433187502337035,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "46": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9447592723029746,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006570407525520424,
+              "prior_lower_fraction": 0.0024492128865456217,
+              "prior_total_clipped_fraction": 0.0024492128865456217,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "47": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9672880883498629,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006538356757103251,
+              "prior_lower_fraction": 0.0023877822470793736,
+              "prior_total_clipped_fraction": 0.0023877822470793736,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "48": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9575331013923573,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006533014962367056,
+              "prior_lower_fraction": 0.0024625673733861104,
+              "prior_total_clipped_fraction": 0.0024625673733861104,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "49": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9541101933078625,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006324684967655433,
+              "prior_lower_fraction": 0.002435858399705133,
+              "prior_total_clipped_fraction": 0.002435858399705133,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "50": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9621587586177456,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0063807738123854854,
+              "prior_lower_fraction": 0.002417162118128449,
+              "prior_total_clipped_fraction": 0.002417162118128449,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "51": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9490971377345201,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006527673167630861,
+              "prior_lower_fraction": 0.002494618141803283,
+              "prior_total_clipped_fraction": 0.002494618141803283,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "52": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.955331085071112,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0064795970150051015,
+              "prior_lower_fraction": 0.002435858399705133,
+              "prior_total_clipped_fraction": 0.002435858399705133,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "53": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9431982953049738,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006450217143956026,
+              "prior_lower_fraction": 0.002414491220760351,
+              "prior_total_clipped_fraction": 0.002414491220760351,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "54": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9684003087561879,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006530344064998958,
+              "prior_lower_fraction": 0.002355731478662201,
+              "prior_total_clipped_fraction": 0.002355731478662201,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "55": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9591552652735976,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006565065730784229,
+              "prior_lower_fraction": 0.002363744170766494,
+              "prior_total_clipped_fraction": 0.002363744170766494,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "56": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9540724851123775,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006367419325544996,
+              "prior_lower_fraction": 0.0024198330154965465,
+              "prior_total_clipped_fraction": 0.0024198330154965465,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "57": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9527754654827715,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006698610599189116,
+              "prior_lower_fraction": 0.002385111349711276,
+              "prior_total_clipped_fraction": 0.002385111349711276,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "58": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9585334357857889,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006500964193949884,
+              "prior_lower_fraction": 0.002393124041815569,
+              "prior_total_clipped_fraction": 0.002393124041815569,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "59": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9664594039017915,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006623825472882379,
+              "prior_lower_fraction": 0.002417162118128449,
+              "prior_total_clipped_fraction": 0.002417162118128449,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "60": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9576398227003338,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9988794262662484,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006554382141311838,
+              "prior_lower_fraction": 0.0024385292970732306,
+              "prior_total_clipped_fraction": 0.0024385292970732306,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "61": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9582232325172709,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006303317788710651,
+              "prior_lower_fraction": 0.002385111349711276,
+              "prior_total_clipped_fraction": 0.002385111349711276,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          }
+        },
+        "baseline": {
+          "42": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9828234896527549,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0064795970150051015,
+              "prior_lower_fraction": 0.002409149426024156,
+              "prior_total_clipped_fraction": 0.002409149426024156,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "43": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9689455865201814,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006530344064998958,
+              "prior_lower_fraction": 0.002406478528656058,
+              "prior_total_clipped_fraction": 0.002406478528656058,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "44": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9737807752510185,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006458229836060319,
+              "prior_lower_fraction": 0.0023877822470793736,
+              "prior_total_clipped_fraction": 0.0023877822470793736,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "45": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9697952900350557,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006511647783422274,
+              "prior_lower_fraction": 0.002433187502337035,
+              "prior_total_clipped_fraction": 0.002433187502337035,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "46": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9665022987674624,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006484938809741297,
+              "prior_lower_fraction": 0.0024492128865456217,
+              "prior_total_clipped_fraction": 0.0024492128865456217,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "47": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9554514960296294,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.00646891342553271,
+              "prior_lower_fraction": 0.0023877822470793736,
+              "prior_total_clipped_fraction": 0.0023877822470793736,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "48": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9725030006175582,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006442204451851733,
+              "prior_lower_fraction": 0.0024625673733861104,
+              "prior_total_clipped_fraction": 0.0024625673733861104,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "49": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9781384024452862,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006260583430821087,
+              "prior_lower_fraction": 0.002435858399705133,
+              "prior_total_clipped_fraction": 0.002435858399705133,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "50": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9621028662538063,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006303317788710651,
+              "prior_lower_fraction": 0.002417162118128449,
+              "prior_total_clipped_fraction": 0.002417162118128449,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "51": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9729625533490912,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006444875349219831,
+              "prior_lower_fraction": 0.002494618141803283,
+              "prior_total_clipped_fraction": 0.002494618141803283,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "52": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9693048571827005,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006396799196594072,
+              "prior_lower_fraction": 0.002435858399705133,
+              "prior_total_clipped_fraction": 0.002435858399705133,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "53": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9659807010774402,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006370090222913094,
+              "prior_lower_fraction": 0.002414491220760351,
+              "prior_total_clipped_fraction": 0.002414491220760351,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "54": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9564855952890783,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006458229836060319,
+              "prior_lower_fraction": 0.002355731478662201,
+              "prior_total_clipped_fraction": 0.002355731478662201,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "55": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9712984536362358,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006495622399213688,
+              "prior_lower_fraction": 0.002363744170766494,
+              "prior_total_clipped_fraction": 0.002363744170766494,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "56": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9717130708650676,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006273937917661576,
+              "prior_lower_fraction": 0.0024198330154965465,
+              "prior_total_clipped_fraction": 0.0024198330154965465,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "57": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9673229579130392,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006607800088673793,
+              "prior_lower_fraction": 0.002385111349711276,
+              "prior_total_clipped_fraction": 0.002385111349711276,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "58": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9715110363563518,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006426179067643147,
+              "prior_lower_fraction": 0.002393124041815569,
+              "prior_total_clipped_fraction": 0.002393124041815569,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "59": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9598286648474419,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006554382141311838,
+              "prior_lower_fraction": 0.002417162118128449,
+              "prior_total_clipped_fraction": 0.002417162118128449,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "60": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9732548049943959,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 1.0,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006471584322900808,
+              "prior_lower_fraction": 0.0024385292970732306,
+              "prior_total_clipped_fraction": 0.0024385292970732306,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "61": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4462,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.9680686807058185,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.9997758852532497,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.006225861765035817,
+              "prior_lower_fraction": 0.002385111349711276,
+              "prior_total_clipped_fraction": 0.002385111349711276,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          }
+        }
+      },
+      "covered_reactions": 4462,
+      "prior": {
+        "gap_defined_lists": 4462,
+        "mean_within_list_skew": 9.754758051607025e-09,
+        "median_top1_top2_gap": 0.02173912525177002,
+        "prior_tie_list_fraction": 0.0,
+        "skew_defined_lists": 4462
+      }
+    },
+    "merged": {
+      "arms": {
+        "augmented": {
+          "42": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8509352936576655,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7532722513089005,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0053436930151431064,
+              "prior_lower_fraction": 0.0012315336028964825,
+              "prior_total_clipped_fraction": 0.0012315336028964825,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "43": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8709876864918388,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7515270506108203,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005597399508443669,
+              "prior_lower_fraction": 0.0012685324665028146,
+              "prior_total_clipped_fraction": 0.0012685324665028146,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "44": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8575561685968712,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7554537521815009,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005404476862496366,
+              "prior_lower_fraction": 0.001257961362615291,
+              "prior_total_clipped_fraction": 0.001257961362615291,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "45": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8618306110951736,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.756762652705061,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005399191310552605,
+              "prior_lower_fraction": 0.0012315336028964825,
+              "prior_total_clipped_fraction": 0.0012315336028964825,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "46": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8677918804125504,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7469458987783595,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005565686196781099,
+              "prior_lower_fraction": 0.0012130341710933164,
+              "prior_total_clipped_fraction": 0.0012130341710933164,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "47": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8634327429649484,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7423647469458988,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005335764687227464,
+              "prior_lower_fraction": 0.0012156769470651973,
+              "prior_total_clipped_fraction": 0.0012156769470651973,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "48": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8535544461270316,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7537085514834206,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005375406326805676,
+              "prior_lower_fraction": 0.0012341763788683634,
+              "prior_total_clipped_fraction": 0.0012341763788683634,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "49": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8413177633416203,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7504363001745201,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005272338063902323,
+              "prior_lower_fraction": 0.0012262480509527207,
+              "prior_total_clipped_fraction": 0.0012262480509527207,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "50": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8640006735537926,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7554537521815009,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0053436930151431064,
+              "prior_lower_fraction": 0.0012183197230370782,
+              "prior_total_clipped_fraction": 0.0012183197230370782,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "51": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8600004608652267,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7587260034904014,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005573614524696741,
+              "prior_lower_fraction": 0.0012870318983059805,
+              "prior_total_clipped_fraction": 0.0012870318983059805,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "52": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8606004098027753,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7456369982547993,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0053463357911149876,
+              "prior_lower_fraction": 0.0012288908269246016,
+              "prior_total_clipped_fraction": 0.0012288908269246016,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "53": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8573993411568142,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7493455497382199,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005483760141652792,
+              "prior_lower_fraction": 0.0012288908269246016,
+              "prior_total_clipped_fraction": 0.0012288908269246016,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "54": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8653117387866692,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7521815008726004,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0056502550278812866,
+              "prior_lower_fraction": 0.0012711752424746955,
+              "prior_total_clipped_fraction": 0.0012711752424746955,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "55": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8579618987357267,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.75021815008726,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005319908031396178,
+              "prior_lower_fraction": 0.0012262480509527207,
+              "prior_total_clipped_fraction": 0.0012262480509527207,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "56": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8488649055634914,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.74978184991274,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005322550807368059,
+              "prior_lower_fraction": 0.0012870318983059805,
+              "prior_total_clipped_fraction": 0.0012870318983059805,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "57": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8583809814373434,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7465095986038395,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0053278363593118215,
+              "prior_lower_fraction": 0.0011760353074869844,
+              "prior_total_clipped_fraction": 0.0011760353074869844,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "58": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8602551996284049,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7489092495636999,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005573614524696741,
+              "prior_lower_fraction": 0.0012341763788683634,
+              "prior_total_clipped_fraction": 0.0012341763788683634,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "59": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8554944212856843,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7506544502617801,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0053463357911149876,
+              "prior_lower_fraction": 0.0012288908269246016,
+              "prior_total_clipped_fraction": 0.0012288908269246016,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "60": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8423276002531022,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7489092495636999,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0055128306773434815,
+              "prior_lower_fraction": 0.0012130341710933164,
+              "prior_total_clipped_fraction": 0.0012130341710933164,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "61": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8478594819603894,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7495636998254799,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005557757868865456,
+              "prior_lower_fraction": 0.001279103570390338,
+              "prior_total_clipped_fraction": 0.001279103570390338,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          }
+        },
+        "baseline": {
+          "42": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8452141706198519,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7744328097731239,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005296123047649251,
+              "prior_lower_fraction": 0.0012315336028964825,
+              "prior_total_clipped_fraction": 0.0012315336028964825,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "43": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.854517874727893,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7820680628272252,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.00553925843706229,
+              "prior_lower_fraction": 0.0012685324665028146,
+              "prior_total_clipped_fraction": 0.0012685324665028146,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "44": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8515559834820294,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7746509598603839,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0053463357911149876,
+              "prior_lower_fraction": 0.001257961362615291,
+              "prior_total_clipped_fraction": 0.001257961362615291,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "45": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8408282962212056,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7781413612565445,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005338407463199344,
+              "prior_lower_fraction": 0.0012315336028964825,
+              "prior_total_clipped_fraction": 0.0012315336028964825,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "46": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8469457887057449,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7744328097731239,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005515473453315363,
+              "prior_lower_fraction": 0.0012130341710933164,
+              "prior_total_clipped_fraction": 0.0012130341710933164,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "47": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8538781476827465,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7783595113438045,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005269695287930442,
+              "prior_lower_fraction": 0.0012156769470651973,
+              "prior_total_clipped_fraction": 0.0012156769470651973,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "48": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8361865159979941,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7783595113438045,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005309336927508655,
+              "prior_lower_fraction": 0.0012341763788683634,
+              "prior_total_clipped_fraction": 0.0012341763788683634,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "49": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8522465500003926,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.774869109947644,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005206268664605301,
+              "prior_lower_fraction": 0.0012262480509527207,
+              "prior_total_clipped_fraction": 0.0012262480509527207,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "50": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8423460898804068,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7792321116928447,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005288194719733608,
+              "prior_lower_fraction": 0.0012183197230370782,
+              "prior_total_clipped_fraction": 0.0012183197230370782,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "51": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8534574605196851,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7805410122164049,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005528687333174766,
+              "prior_lower_fraction": 0.0012870318983059805,
+              "prior_total_clipped_fraction": 0.0012870318983059805,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "52": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8382483728475214,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7803228621291448,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005290837495705489,
+              "prior_lower_fraction": 0.0012288908269246016,
+              "prior_total_clipped_fraction": 0.0012288908269246016,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "53": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8467424872071982,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7794502617801047,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005428261846243294,
+              "prior_lower_fraction": 0.0012288908269246016,
+              "prior_total_clipped_fraction": 0.0012288908269246016,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "54": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8341126417845769,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7774869109947644,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005573614524696741,
+              "prior_lower_fraction": 0.0012711752424746955,
+              "prior_total_clipped_fraction": 0.0012711752424746955,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "55": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.853157022662204,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.787739965095986,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005253838632099157,
+              "prior_lower_fraction": 0.0012262480509527207,
+              "prior_total_clipped_fraction": 0.0012262480509527207,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "56": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.865299687678559,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7746509598603839,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005264409735986681,
+              "prior_lower_fraction": 0.0012870318983059805,
+              "prior_total_clipped_fraction": 0.0012870318983059805,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "57": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8545128544064421,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7768324607329843,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0052591241840429185,
+              "prior_lower_fraction": 0.0011760353074869844,
+              "prior_total_clipped_fraction": 0.0011760353074869844,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "58": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8591083176168579,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7781413612565445,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005515473453315363,
+              "prior_lower_fraction": 0.0012341763788683634,
+              "prior_total_clipped_fraction": 0.0012341763788683634,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "59": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8761230879142712,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7770506108202443,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005282909167789847,
+              "prior_lower_fraction": 0.0012288908269246016,
+              "prior_total_clipped_fraction": 0.0012288908269246016,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "60": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8503190032204156,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7866492146596858,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.005452046829990222,
+              "prior_lower_fraction": 0.0012130341710933164,
+              "prior_total_clipped_fraction": 0.0012130341710933164,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          },
+          "61": {
+            "diagnostic_score_source": "recomputed frozen model; stable candidate order for exact ties",
+            "frozen_rank_reproduction": "exact",
+            "kendall_tau_defined_lists": 4584,
+            "kendall_tau_undefined_lists": 0,
+            "mean_kendall_tau_defined": 0.8466682892593276,
+            "numerical_tie_count": 0,
+            "top1_equals_prior_fraction": 0.7739965095986039,
+            "training_pair_prior_clipping": {
+              "any_feature_clipped_fraction": 0.0054969740215121965,
+              "prior_lower_fraction": 0.001279103570390338,
+              "prior_total_clipped_fraction": 0.001279103570390338,
+              "prior_upper_fraction": 0.0,
+              "uninterpretable_prior_clipping_gt_10pct": false
+            }
+          }
+        }
+      },
+      "covered_reactions": 4584,
+      "prior": {
+        "gap_defined_lists": 4584,
+        "mean_within_list_skew": 0.014276320800885546,
+        "median_top1_top2_gap": 0.020408153533935547,
+        "prior_tie_list_fraction": 0.5294502617801047,
+        "skew_defined_lists": 4584
+      }
+    }
+  },
+  "protocol_id": "dd-n3-pool-specific-selection-v1",
+  "runtime_seconds": 167.28384889499284,
+  "schema_version": 1,
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
+  ],
+  "single_intended_change": "diagnose prior lock and training-pair clipping without refitting",
+  "stage": "N3_S1",
+  "status": "complete",
+  "training_performed": false
+}

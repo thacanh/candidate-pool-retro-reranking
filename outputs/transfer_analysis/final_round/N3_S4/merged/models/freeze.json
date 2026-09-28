@@ -1,0 +1,267 @@
+{
+  "augmented_config": {
+    "dropout": 0.0,
+    "hidden_width": 128,
+    "index": 62,
+    "learning_rate": 0.001,
+    "margin": 0.3
+  },
+  "baseline_config": {
+    "dropout": 0.0,
+    "hidden_width": 128,
+    "index": 61,
+    "learning_rate": 0.001,
+    "margin": 0.1
+  },
+  "candidate_cap": 10,
+  "candidate_ordering": "first rows of the frozen pool order; no re-sorting",
+  "complete": true,
+  "config_selection_performed_for_ws_e": true,
+  "config_selection_source": {
+    "path": "/workspace/dd_s4_finish/inputs/merged/search_freeze.json",
+    "sha256": "d04cb4324192e26aa3972b05cfc55babd8eadbfed314391208642e3cb3ba2b76",
+    "size_bytes": 270030
+  },
+  "input_contract_sha256": "b5afcdf63f8834fb42f649b0ff55f9e3f51fe03e4e2363c684fd722752a13e9d",
+  "new_models": 30,
+  "pool_name": "merged",
+  "protocol_id": "dd-n3-s4-validation-grid-v1",
+  "record_kind": "s4_final_model_freeze",
+  "reused_search_models": 10,
+  "schema_version": 1,
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
+  ],
+  "selected_prior_transform": "rank",
+  "selection_manifest": {
+    "path": "/workspace/dd_s4_finish/inputs/merged/selection/manifest.json",
+    "sha256": "d37894f3571c009ad623908c5409668f3ad8c8a43130fbe4319b946111f1c30b",
+    "size_bytes": 10048
+  },
+  "test_partition_loaded": false,
+  "trials": {
+    "augmented": {
+      "42": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_42/trial.json",
+        "sha256": "6cde0803204474c68e5fe378b9c7f29975e1d627329edd3d91fbfcd39a1caef2",
+        "size_bytes": 6752
+      },
+      "43": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_43/trial.json",
+        "sha256": "094c02a0219c882d2f59d862b90ab1cd2288cabdf66ad18ffa1291643f419c59",
+        "size_bytes": 5982
+      },
+      "44": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_44/trial.json",
+        "sha256": "ab14f8d9ac3cdbdd30c9cc131a2945b1b8d44520a9ac17661654007a32237cfd",
+        "size_bytes": 8880
+      },
+      "45": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_45/trial.json",
+        "sha256": "674d7f199abfc7080ef1245158c1e9a8093d557f7d023a08dc4ced246dd0c5ac",
+        "size_bytes": 11777
+      },
+      "46": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_46/trial.json",
+        "sha256": "67adc5a4a4c25f0881dd04169c4fd1221afa20fe24acde8e2493f66a45bdcdda",
+        "size_bytes": 13604
+      },
+      "47": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_47/trial.json",
+        "sha256": "fafe2625a5d0c2c6c6c67c326ca7d9dd1eb8506fe3d802546cd53d033849d973",
+        "size_bytes": 8829
+      },
+      "48": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_48/trial.json",
+        "sha256": "665354fff0b9049bcaeab1169463cd9bf148107a279eba36c26d8a628edfb50b",
+        "size_bytes": 9902
+      },
+      "49": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_49/trial.json",
+        "sha256": "b12833b678e1dd1d9df73fd12f62463cdb57c4998367ab763d7294216b5580e1",
+        "size_bytes": 5934
+      },
+      "50": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_50/trial.json",
+        "sha256": "8de70a88bb6343d664744d13b7841c2464d51c34ee9bbfd19c18ce83e4d51917",
+        "size_bytes": 5329
+      },
+      "51": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_51/trial.json",
+        "sha256": "20a4f02fc2e21c302ca02b25b93d2225ecb4f19d1959e53681f61c08a78e5ed5",
+        "size_bytes": 8225
+      },
+      "52": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_52/trial.json",
+        "sha256": "6fae7ad2ecd34f2dcfa7977b552993dcb7a459d0620281cbbae4ae564f79a95f",
+        "size_bytes": 9445
+      },
+      "53": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_53/trial.json",
+        "sha256": "c735cf5c0e0b6ea13c6802657d20ec7257dd8893d3060c76976f80a7bee50f88",
+        "size_bytes": 7770
+      },
+      "54": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_54/trial.json",
+        "sha256": "80a86cf4e2ca9676068ca14c5da5d874049120a8b9168bc805ba840212f94983",
+        "size_bytes": 6096
+      },
+      "55": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_55/trial.json",
+        "sha256": "48ee82890b59c4c93ee5388757f2ea03daa8e3446886648e0ebe7efe8aecb3f4",
+        "size_bytes": 6401
+      },
+      "56": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_56/trial.json",
+        "sha256": "fa88dce676df93c1911cdd1af83e718a98cdb7232ae61812e51e0593f856a118",
+        "size_bytes": 15543
+      },
+      "57": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_57/trial.json",
+        "sha256": "c916d5993b58d616cd1b969342dc7044cad35a92ec7c77e9b7cef7e92e8a776b",
+        "size_bytes": 7615
+      },
+      "58": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_58/trial.json",
+        "sha256": "8c8ff813ba45de7234e2325647143d730daaad0a68661cd3ee58e09a13aa10c4",
+        "size_bytes": 8223
+      },
+      "59": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_59/trial.json",
+        "sha256": "c3cad14510195e23dce81119cf6d382a0d8bea2fdbaacae48250c3ff4d3b0bbb",
+        "size_bytes": 5787
+      },
+      "60": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_60/trial.json",
+        "sha256": "d4fb27c93444e8d839a213db6e7a68c1d5128762eadd63e5cad27aee06ae509f",
+        "size_bytes": 11275
+      },
+      "61": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/augmented/seed_61/trial.json",
+        "sha256": "20840f76579b08abe2b8be1eb241a33192174c0d65ac887230d404fc3c30093e",
+        "size_bytes": 7769
+      }
+    },
+    "baseline": {
+      "42": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_42/trial.json",
+        "sha256": "f050ece6c51aa2a87bcae07dfd845565ace447d55c2f523fe390348280928d4b",
+        "size_bytes": 10222
+      },
+      "43": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_43/trial.json",
+        "sha256": "cb936690dd8991f518814bdb89a11654cf5bf09ec7fc85c25adb34a905742260",
+        "size_bytes": 11142
+      },
+      "44": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_44/trial.json",
+        "sha256": "ae3e53d05139a6d02991ea5143aed36af2698ba2e4192d0a32861f2e48440b72",
+        "size_bytes": 9464
+      },
+      "45": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_45/trial.json",
+        "sha256": "3d6a05bb9d548a071276fe260407126bdd24bf7f74f207f856d7493d2346bcda",
+        "size_bytes": 14196
+      },
+      "46": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_46/trial.json",
+        "sha256": "37a8c4fdd40bcd52f2c157eaa9e4804c4781096b90bfee351d26039294096cc6",
+        "size_bytes": 6724
+      },
+      "47": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_47/trial.json",
+        "sha256": "743da1b13f9f512345ad32b618733a9a6829845977436f7c274460f9f2a21ad1",
+        "size_bytes": 13547
+      },
+      "48": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_48/trial.json",
+        "sha256": "7fb8cb6fa6b30907cbd0603776e8980fdaed64b25cd4903d54d0c369af616edc",
+        "size_bytes": 6524
+      },
+      "49": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_49/trial.json",
+        "sha256": "e3d62ccb47b29d24f1a5dd96d3d21bc250c9260052d6237de47ee053344c8aa5",
+        "size_bytes": 10342
+      },
+      "50": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_50/trial.json",
+        "sha256": "648e1f545c3fae97df19fd2fe211a8ef3c9dfbdd0668021693f2a473df18d647",
+        "size_bytes": 10637
+      },
+      "51": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_51/trial.json",
+        "sha256": "b844326f369a5b891d25c485723c91fce83ccd00cd5f36466a65ff18a3dd4219",
+        "size_bytes": 8200
+      },
+      "52": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_52/trial.json",
+        "sha256": "87eaece207077ff2d1664cf2978678069068df04f85e828ac10e3ba9ca080931",
+        "size_bytes": 9425
+      },
+      "53": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_53/trial.json",
+        "sha256": "f63acd2008ccccd8ed3a8b540eec65a92afb9821dba9cbb283f026e7b84ed4b6",
+        "size_bytes": 19953
+      },
+      "54": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_54/trial.json",
+        "sha256": "cd20be1d1725b0a70b58325ea08f48eefd5969466562f7838f5f5a7b75301d59",
+        "size_bytes": 9423
+      },
+      "55": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_55/trial.json",
+        "sha256": "eedac2eb92b6b03bff4b954c132628ba7997c67d36d07a073bf1e4141cb6909d",
+        "size_bytes": 9728
+      },
+      "56": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_56/trial.json",
+        "sha256": "e007ccf53583da4b2a19111eb7decc3522a0c58469ffef5c681d73ae090608bc",
+        "size_bytes": 10196
+      },
+      "57": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_57/trial.json",
+        "sha256": "dba03d9d0e394e2fe56fb3e7b1a3bb02579ea0e6adff551e93f45341b556f354",
+        "size_bytes": 7742
+      },
+      "58": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_58/trial.json",
+        "sha256": "6ea72ccb4026f755e1453bd1dbaf69779a94427adffe03b7f0fd589922632944",
+        "size_bytes": 9427
+      },
+      "59": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_59/trial.json",
+        "sha256": "d43944d59189abe7e10beb523cabdde1ddd7dd9996b1c4ecb6bb1d4e1648fe48",
+        "size_bytes": 9414
+      },
+      "60": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_60/trial.json",
+        "sha256": "5b4a8e5d5aec56d390d5840dd87736eb875ca7204d914d75bcbc6c8cb1136317",
+        "size_bytes": 11255
+      },
+      "61": {
+        "path": "/workspace/dd_s4_finish/results/merged/models/validation/baseline/seed_61/trial.json",
+        "sha256": "046c5a3f6613989ab13487d6ac8ba506192a19949f058c400c5b0266dbc91bda",
+        "size_bytes": 9273
+      }
+    }
+  }
+}

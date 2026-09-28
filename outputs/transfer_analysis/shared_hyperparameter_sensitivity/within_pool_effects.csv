@@ -1,0 +1,17 @@
+stratum,pool,metric,n_reactions,effect,ci95_low,ci95_high,n_product_clusters,n_seeds,n_bootstrap,rng_seed,method
+baseline_selected,historical,top1,3985,0.0075282308657465494,0.0015558343789209535,0.013651191969887077,3985,5,10000,4100,independent canonical-product-cluster and paired-seed resampling
+baseline_selected,historical,mrr,3985,0.004823942960705822,0.0014106495588616043,0.008179694688414889,3985,5,10000,4101,independent canonical-product-cluster and paired-seed resampling
+baseline_selected,aizynthfinder_only,top1,4012,0.000897308075772682,-0.0021435692921236292,0.003888334995014955,4012,5,10000,4110,independent canonical-product-cluster and paired-seed resampling
+baseline_selected,aizynthfinder_only,mrr,4012,0.0007027330706293816,-0.0010336811984680877,0.0024376157242558044,4012,5,10000,4111,independent canonical-product-cluster and paired-seed resampling
+baseline_selected,localretro_only,top1,4462,-0.0004930524428507396,-0.0012550425818018825,0.0,4462,5,10000,4120,independent canonical-product-cluster and paired-seed resampling
+baseline_selected,localretro_only,mrr,4462,-0.0004040112982291378,-0.0009317121477307492,-2.9465308460153907e-05,4462,5,10000,4121,independent canonical-product-cluster and paired-seed resampling
+baseline_selected,merged,top1,4584,-0.0018760907504363,-0.00968586387434555,0.005760253054101205,4584,5,10000,4130,independent canonical-product-cluster and paired-seed resampling
+baseline_selected,merged,mrr,4584,-0.000387268345383528,-0.004208614677691902,0.003470068855785476,4584,5,10000,4131,independent canonical-product-cluster and paired-seed resampling
+augmented_selected,historical,top1,3985,0.007377666248431619,0.0013048933500627352,0.01340150564617313,3985,5,10000,4200,independent canonical-product-cluster and paired-seed resampling
+augmented_selected,historical,mrr,3985,0.005033857122941188,0.0017420769353328953,0.008302212164665115,3985,5,10000,4201,independent canonical-product-cluster and paired-seed resampling
+augmented_selected,aizynthfinder_only,top1,4012,0.0014955134596211367,-0.0009970089730807576,0.003938185443668993,4012,5,10000,4210,independent canonical-product-cluster and paired-seed resampling
+augmented_selected,aizynthfinder_only,mrr,4012,0.0016815426735666016,0.00023497909050625905,0.0031819061664213706,4012,5,10000,4211,independent canonical-product-cluster and paired-seed resampling
+augmented_selected,localretro_only,top1,4462,-0.00017929179740026893,-0.0006723442402510085,0.0,4462,5,10000,4220,independent canonical-product-cluster and paired-seed resampling
+augmented_selected,localretro_only,mrr,4462,-9.345229201795767e-05,-0.0003803405121199832,0.00012648564954145404,4462,5,10000,4221,independent canonical-product-cluster and paired-seed resampling
+augmented_selected,merged,top1,4584,-0.0016579406631762653,-0.009205933682373473,0.00593368237347295,4584,5,10000,4230,independent canonical-product-cluster and paired-seed resampling
+augmented_selected,merged,mrr,4584,-0.0006234937255879664,-0.004449880017452007,0.003237624310922736,4584,5,10000,4231,independent canonical-product-cluster and paired-seed resampling

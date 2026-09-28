@@ -1,0 +1,63 @@
+{
+  "analysis_plan": {
+    "path": "docs/analysis_plan.md",
+    "sha256": "6f103513d0d6e791b14e3f4a4520a53c17905af7c4fe7de59515b0b5a6d92745",
+    "size_bytes": 76072
+  },
+  "approval_date": "2026-09-27",
+  "approval_quote": "th\u1ebf c\u1ee9 ch\u1ea1y \u0111i",
+  "bootstrap_draws": 10000,
+  "boundary_rule": "ties at cutpoint go to lower bin; no tie splitting",
+  "counts": {
+    "-1": 87,
+    "0": 932,
+    "1": 932,
+    "2": 931,
+    "3": 932
+  },
+  "cutpoints": [
+    0.14698001742362976,
+    0.47813886404037476,
+    0.8008649870753288
+  ],
+  "exact_top_prior_ties": 244,
+  "git_commit": "ccab235d39e9f27500ba9dab4d14796154011c5f",
+  "model_inference_performed": false,
+  "pointwise_intervals": true,
+  "protocol_id": "dd-prior-increment-gap-supplement-v1",
+  "quantile_method": "linear",
+  "rng_seeds": [
+    2026092701,
+    2026092702
+  ],
+  "runner": {
+    "path": "src/rerank/analysis/analyze_dd_prior_gap.py",
+    "sha256": "f7bf6136a73d9671f8cce8c32fd72d5a89301d730544a124ef2575ae74b9d031",
+    "size_bytes": 15658
+  },
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
+  ],
+  "status": "bin_design_frozen_before_prediction_analysis",
+  "test_access": "post-freeze post-hoc analysis only",
+  "training_performed": false
+}

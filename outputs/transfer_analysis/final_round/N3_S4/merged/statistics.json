@@ -1,0 +1,106 @@
+{
+  "bootstrap_draws": 10000,
+  "common_transfer": [
+    {
+      "common_reactions": 3814,
+      "crossed_ci95_high": 0.00626671473518615,
+      "crossed_ci95_low": -0.012860841636077609,
+      "expanded_effect": 0.003828002097535396,
+      "historical_effect": 0.007039853172522286,
+      "metric": "top1",
+      "pool": "merged",
+      "product_ci95_high": 0.004824331410592553,
+      "product_ci95_low": -0.011562663869952803,
+      "sign_flip_p": 0.44707552924470756,
+      "transfer_loss": -0.0032118510749868903
+    },
+    {
+      "common_reactions": 3814,
+      "crossed_ci95_high": 0.0018084790735469136,
+      "crossed_ci95_low": -0.008431928681715651,
+      "expanded_effect": 0.0018959129273104101,
+      "historical_effect": 0.005241648354849717,
+      "metric": "mrr",
+      "pool": "merged",
+      "product_ci95_high": 0.000945659943316603,
+      "product_ci95_low": -0.007626866296684728,
+      "sign_flip_p": 0.12891871081289188,
+      "transfer_loss": -0.003345735427539308
+    }
+  ],
+  "own_pool_effects": {
+    "mrr": {
+      "crossed": {
+        "ci95_high": 0.004759748365605695,
+        "ci95_low": -0.0020287674606637306,
+        "effect": 0.001304269162580681,
+        "method": "independent canonical-product-cluster and paired-seed resampling",
+        "n_bootstrap": 10000,
+        "n_product_clusters": 4584,
+        "n_seeds": 20,
+        "rng_seed": 2421
+      },
+      "negative_seeds": 4,
+      "positive_seeds": 16,
+      "product": {
+        "ci95_high": 0.004330509177020139,
+        "ci95_low": -0.001760834030201668,
+        "effect": 0.0013042691625806805
+      },
+      "sign_flip_p": 0.40472595274047257,
+      "zero_seeds": 0
+    },
+    "top1": {
+      "crossed": {
+        "ci95_high": 0.008453315881326353,
+        "ci95_low": -0.0048434773123909244,
+        "effect": 0.0019415357766143107,
+        "method": "independent canonical-product-cluster and paired-seed resampling",
+        "n_bootstrap": 10000,
+        "n_product_clusters": 4584,
+        "n_seeds": 20,
+        "rng_seed": 2420
+      },
+      "negative_seeds": 5,
+      "positive_seeds": 14,
+      "product": {
+        "ci95_high": 0.008104275741710297,
+        "ci95_low": -0.004101221640488656,
+        "effect": 0.0019415357766143107
+      },
+      "sign_flip_p": 0.5375446245537545,
+      "zero_seeds": 1
+    }
+  },
+  "pool": "merged",
+  "predictions": {
+    "path": "/workspace/dd_s4_finish/results/merged/test_results/reaction_ranks.jsonl",
+    "sha256": "26fa19c501e4e0de02cf792475fdf11fbe3ee6b38f7f6a01a927bc4238f74a21",
+    "size_bytes": 5977177
+  },
+  "protocol_id": "dd-n3-s4-validation-grid-v1",
+  "scope": "secondary post-hoc sensitivity; not the primary Holm family",
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
+  ],
+  "sign_flip_draws": 100000
+}

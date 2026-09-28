@@ -65,7 +65,7 @@ def test_complete_m2_grid_is_reported() -> None:
     )
     assert len(rows) == 36
     pool_names = {
-        "aizynthfinder_only": "AiZynthFinder-only",
+        "aizynthfinder_only": "Anchored AiZynthFinder",
         "localretro_only": "LocalRetro-only",
         "merged": "Merged union",
     }

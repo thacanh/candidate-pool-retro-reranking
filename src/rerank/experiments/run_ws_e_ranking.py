@@ -22,7 +22,7 @@ import random
 import time
 from collections import defaultdict
 from functools import lru_cache
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Mapping, Sequence
 
 import numpy as np
@@ -89,6 +89,26 @@ def _candidate_cap(selection: Mapping) -> int | None:
     return cap
 
 
+def _selection_arm_view(features: np.ndarray, selection: Mapping, arm: str) -> np.ndarray:
+    """Use the frozen selection schema, including seven-column encoder controls.
+
+    Existing nine-column WS-E manifests carry the original 6/9 column lists,
+    so this does not change their ranking procedure or numerical results.
+    """
+
+    if arm not in {"baseline", "augmented"}:
+        raise ValueError("Unknown ranking arm.")
+    matrix = np.asarray(features, dtype=np.float32)
+    if matrix.ndim != 2:
+        raise ValueError("Ranking features must be a matrix.")
+    key = f"{arm}_columns"
+    default = BASELINE_COLUMNS if arm == "baseline" else AUGMENTED_COLUMNS
+    columns = tuple(int(value) for value in selection.get(key, default))
+    if not columns or len(set(columns)) != len(columns) or min(columns) < 0 or max(columns) >= matrix.shape[1]:
+        raise ValueError(f"Invalid frozen {key} for {matrix.shape[1]} columns.")
+    return matrix[:, columns].copy()
+
+
 def _truncate_feature_lookup(
     lookup: Mapping[int, tuple[np.ndarray, np.ndarray]], cap: int | None
 ) -> dict[int, tuple[np.ndarray, np.ndarray]]:
@@ -120,8 +140,10 @@ def _resolve_frozen_path(record: Mapping, *local_dirs: str | Path) -> Path:
     the frozen byte size and SHA-256; no manifest is rewritten.
     """
 
-    recorded = Path(str(record["path"]))
-    candidates = [recorded, *(Path(directory) / recorded.name for directory in local_dirs)]
+    original = str(record["path"])
+    recorded = Path(original)
+    basename = PureWindowsPath(original).name if "\\" in original else recorded.name
+    candidates = [recorded, *(Path(directory) / basename for directory in local_dirs)]
     resolved = next((path for path in candidates if path.is_file()), None)
     if resolved is None:
         raise FileNotFoundError(
@@ -381,20 +403,24 @@ def finalize_features(args: argparse.Namespace) -> dict:
     return result
 
 
-def _feature_shard_records(feature_freeze: Mapping) -> list[tuple[dict, np.lib.npyio.NpzFile]]:
+def _feature_shard_records(
+    feature_freeze: Mapping, freeze_path: str | Path
+) -> list[tuple[dict, np.lib.npyio.NpzFile]]:
     result = []
+    local_root = Path(freeze_path).resolve().parent
     for item in feature_freeze["shard_manifests"]:
-        record = _load_json(item["path"])
-        output = Path(record["output"]["path"])
-        if sha256_file(output) != record["output"]["sha256"]:
-            raise ValueError("Frozen pool feature shard checksum mismatch.")
+        record_path = _resolve_frozen_path(item, local_root / "shards", local_root)
+        record = _load_json(record_path)
+        output = _resolve_frozen_path(record["output"], record_path.parent)
         result.append((record, np.load(output, allow_pickle=False)))
     return result
 
 
-def _product_feature_lookup(feature_freeze: Mapping) -> dict[int, tuple[np.ndarray, np.ndarray]]:
+def _product_feature_lookup(
+    feature_freeze: Mapping, freeze_path: str | Path
+) -> dict[int, tuple[np.ndarray, np.ndarray]]:
     lookup: dict[int, tuple[np.ndarray, np.ndarray]] = {}
-    for _, arrays in _feature_shard_records(feature_freeze):
+    for _, arrays in _feature_shard_records(feature_freeze, freeze_path):
         product_ranks = arrays["product_rank"]
         digests = arrays["candidate_sha256"]
         features = arrays["features"]
@@ -527,7 +553,7 @@ def prepare_selection(args: argparse.Namespace) -> dict:
         getattr(args, "output_protocol_id", None) or RANKING_PROTOCOL_ID
     )
     feature_lookup = _truncate_feature_lookup(
-        _product_feature_lookup(feature_freeze), candidate_cap
+        _product_feature_lookup(feature_freeze, args.feature_freeze), candidate_cap
     )
     output_root = Path(args.output_root).resolve()
     _require_absent(output_root / "manifest.json")
@@ -625,8 +651,11 @@ def prepare_selection(args: argparse.Namespace) -> dict:
         "source_feature_protocol_id": RANKING_PROTOCOL_ID,
         "source_pool_protocol_id": POOL_PROTOCOL_ID,
         "pool_name": feature_freeze["pool_name"],
+        "prior_transform": feature_freeze.get("prior_transform", "raw"),
         "comparator": "same pool, frozen 2D baseline configuration",
-        "single_intended_arm_change": "add three Uni-Mol-derived pair-level scalars",
+        "single_intended_arm_change": feature_freeze.get(
+            "single_intended_arm_change", "add three Uni-Mol-derived pair-level scalars"
+        ),
         "seeds": list(seeds),
         "candidate_cap": candidate_cap,
         "candidate_ordering": (
@@ -634,10 +663,10 @@ def prepare_selection(args: argparse.Namespace) -> dict:
             if candidate_cap is not None
             else "complete frozen pool order"
         ),
-        "feature_names": list(FULL_FEATURE_NAMES),
-        "baseline_columns": list(BASELINE_COLUMNS),
-        "augmented_columns": list(AUGMENTED_COLUMNS),
-        "source_indicators_in_both_arms": True,
+        "feature_names": list(feature_freeze.get("feature_names", FULL_FEATURE_NAMES)),
+        "baseline_columns": list(feature_freeze.get("baseline_columns", BASELINE_COLUMNS)),
+        "augmented_columns": list(feature_freeze.get("augmented_columns", AUGMENTED_COLUMNS)),
+        "source_indicators_in_both_arms": bool(feature_freeze.get("source_indicators_in_both_arms", True)),
         "negative_sampling": "seeded random, at most five negatives per positive",
         "train_overlap_reactions_excluded": train_overlap_excluded,
         "train_audit": train_audits,
@@ -668,6 +697,26 @@ def prepare_selection(args: argparse.Namespace) -> dict:
 def _config_for_arm(primary_freeze: Mapping, arm: str) -> dict:
     key = "selected_baseline" if arm == "baseline" else "selected_augmented"
     return dict(primary_freeze[key]["config"])
+
+
+def _fit_config(primary: Mapping, selection: Mapping, arm: str) -> dict:
+    """Keep historical fits unchanged; admit only a declared S4 validation grid."""
+    if primary.get("protocol_id") == "cap10-tuned-v1":
+        return _config_for_arm(primary, arm)
+    protocol = "dd-n3-s4-validation-grid-v1"
+    if (primary.get("protocol_id") != protocol or selection.get("protocol_id") != protocol
+            or primary.get("record_kind") != "validation_grid_candidate"
+            or primary.get("test_partition_loaded") is not False
+            or selection.get("test_partition_loaded") is not False):
+        raise ValueError("Unapproved configuration protocol for validation fitting.")
+    from dataclasses import asdict
+    from rerank.revision_tuning import enumerate_d1_grid
+    config = _config_for_arm(primary, arm)
+    if config not in [asdict(item) for item in enumerate_d1_grid()]:
+        raise ValueError("S4 configuration is outside the frozen 81-point grid.")
+    if selection.get("pool_name") not in {"localretro_only", "merged"}:
+        raise ValueError("S4 pool is outside the approved scope.")
+    return config
 
 
 def _seed_everything(seed: int) -> None:
@@ -712,9 +761,7 @@ def fit_validation(args: argparse.Namespace) -> dict:
     if args.arm not in {"baseline", "augmented"}:
         raise ValueError("arm must be baseline or augmented")
     primary = _load_json(args.primary_freeze)
-    if primary.get("protocol_id") != "cap10-tuned-v1":
-        raise ValueError("WS-E requires the frozen cap10-tuned-v1 primary configuration.")
-    config = _config_for_arm(primary, args.arm)
+    config = _fit_config(primary, selection, args.arm)
     output_root = Path(args.output_root).resolve() / "validation" / args.arm / f"seed_{args.seed}"
     trial_path = output_root / "trial.json"
     checkpoint_path = output_root / "best_checkpoint.pt"
@@ -722,22 +769,22 @@ def fit_validation(args: argparse.Namespace) -> dict:
     _require_absent(trial_path, checkpoint_path, normalizer_path)
     output_root.mkdir(parents=True, exist_ok=True)
 
-    pairs_path = Path(selection["train_pairs"][str(args.seed)]["path"])
+    pairs_path = _resolve_frozen_path(selection["train_pairs"][str(args.seed)], args.selection_root)
     if sha256_file(pairs_path) != selection["train_pairs"][str(args.seed)]["sha256"]:
         raise ValueError("WS-E training-pair checksum mismatch.")
     pairs = np.load(pairs_path, allow_pickle=False)
-    positive = arm_view(pairs["positive"], args.arm)
-    negative = arm_view(pairs["negative"], args.arm)
+    positive = _selection_arm_view(pairs["positive"], selection, args.arm)
+    negative = _selection_arm_view(pairs["negative"], selection, args.arm)
     normalizer = FeatureNormalizer().fit(np.concatenate((positive, negative), axis=0))
     normalizer.save(str(normalizer_path))
     positive = normalizer.transform(positive)
     negative = normalizer.transform(negative)
 
-    valid_path = Path(selection["validation"]["path"])
+    valid_path = _resolve_frozen_path(selection["validation"], args.selection_root)
     if sha256_file(valid_path) != selection["validation"]["sha256"]:
         raise ValueError("WS-E validation checksum mismatch.")
     valid = np.load(valid_path, allow_pickle=False)
-    valid_features = normalizer.transform(arm_view(valid["features"], args.arm))
+    valid_features = normalizer.transform(_selection_arm_view(valid["features"], selection, args.arm))
     offsets = valid["offsets"]
     masks = valid["match_mask"]
 
@@ -820,14 +867,18 @@ def fit_validation(args: argparse.Namespace) -> dict:
         "pool_name": selection["pool_name"],
         "arm": args.arm,
         "seed": args.seed,
-        "comparator": "same pool and seed; source indicators retained in both arms",
-        "single_intended_change": "add three Uni-Mol-derived pair-level scalars",
+        "comparator": selection.get("comparator", "same pool and seed; source indicators retained in both arms"),
+        "single_intended_change": selection.get(
+            "single_intended_arm_change", "add three Uni-Mol-derived pair-level scalars"
+        ),
         "config_source": fingerprint(args.primary_freeze),
         "config": config,
         "model_parameters": model_parameters,
         "candidate_cap": _candidate_cap(selection),
-        "feature_columns": list(BASELINE_COLUMNS if args.arm == "baseline" else AUGMENTED_COLUMNS),
-        "source_indicators_in_both_arms": True,
+        "feature_columns": list(selection.get(
+            f"{args.arm}_columns", BASELINE_COLUMNS if args.arm == "baseline" else AUGMENTED_COLUMNS
+        )),
+        "source_indicators_in_both_arms": bool(selection.get("source_indicators_in_both_arms", True)),
         "best_validation_mrr": best_mrr,
         "best_epoch": best_epoch,
         "epochs_completed": len(history),
@@ -876,11 +927,13 @@ def freeze(args: argparse.Namespace) -> dict:
         "candidate_ordering": selection.get("candidate_ordering"),
         "baseline_config": _config_for_arm(primary, "baseline"),
         "augmented_config": _config_for_arm(primary, "augmented"),
-        "selected_prior_transform": "raw",
+        "selected_prior_transform": selection.get("prior_transform", "raw"),
         "selection_metric": "official-validation conditional MRR for checkpoint epoch only",
         "config_selection_performed_for_ws_e": False,
-        "source_indicators_in_both_arms": True,
-        "single_intended_arm_change": "add three Uni-Mol-derived pair-level scalars",
+        "source_indicators_in_both_arms": bool(selection.get("source_indicators_in_both_arms", True)),
+        "single_intended_arm_change": selection.get(
+            "single_intended_arm_change", "add three Uni-Mol-derived pair-level scalars"
+        ),
         "trials": trials,
         "selection_manifest": fingerprint(Path(args.selection_root) / "manifest.json"),
         "primary_freeze": fingerprint(args.primary_freeze),
@@ -924,8 +977,18 @@ def evaluate_test(args: argparse.Namespace) -> dict:
         raise PermissionError("Model-freeze and selection seed sets differ.")
     if _candidate_cap(model_freeze) != _candidate_cap(selection):
         raise PermissionError("Model-freeze and selection candidate caps differ.")
+    if model_freeze.get("selected_prior_transform", "raw") != selection.get("prior_transform", "raw"):
+        raise PermissionError("Model-freeze and selection prior transforms differ.")
     freeze_hash_before = sha256_file(args.model_freeze)
     feature_freeze = _load_json(args.feature_freeze)
+    recorded_feature = selection.get("inputs", {}).get("feature_freeze")
+    if recorded_feature and recorded_feature.get("sha256") != fingerprint(args.feature_freeze)["sha256"]:
+        raise PermissionError("Test feature freeze differs from the validation selection input.")
+    selected_manifest = model_freeze.get("selection_manifest")
+    if selected_manifest and selected_manifest.get("sha256") != fingerprint(
+        Path(args.selection_root) / "manifest.json"
+    )["sha256"]:
+        raise PermissionError("Model freeze differs from the validation selection manifest.")
     if (
         feature_freeze["pool_index_manifest"]["sha256"]
         != fingerprint(args.pool_index_manifest)["sha256"]
@@ -941,7 +1004,7 @@ def evaluate_test(args: argparse.Namespace) -> dict:
         args.source_csv, args.metadata_csv, args.products_jsonl
     )
     feature_lookup = _truncate_feature_lookup(
-        _product_feature_lookup(feature_freeze), _candidate_cap(selection)
+        _product_feature_lookup(feature_freeze, args.feature_freeze), _candidate_cap(selection)
     )
     test_reactions = [item for item in reactions if item.source_split == "test"]
     covered = []
@@ -986,7 +1049,9 @@ def evaluate_test(args: argparse.Namespace) -> dict:
             trial_path = Path(args.output_root) / "validation" / arm / f"seed_{seed}" / "trial.json"
             trial = _load_json(trial_path)
             normalizer = FeatureNormalizer.load(trial["normalizer"]["path"])
-            columns = BASELINE_COLUMNS if arm == "baseline" else AUGMENTED_COLUMNS
+            columns = tuple(int(value) for value in selection.get(
+                f"{arm}_columns", BASELINE_COLUMNS if arm == "baseline" else AUGMENTED_COLUMNS
+            ))
             model = RankerMLP(
                 input_dim=len(columns),
                 hidden_dims=[int(config["hidden_width"])],
@@ -999,7 +1064,7 @@ def evaluate_test(args: argparse.Namespace) -> dict:
             ranks = []
             with torch.no_grad():
                 for reaction, _, features, mask in covered:
-                    normalized = normalizer.transform(arm_view(features, arm))
+                    normalized = normalizer.transform(_selection_arm_view(features, selection, arm))
                     scores = model.score(
                         torch.as_tensor(normalized, dtype=torch.float32, device=args.device)
                     ).detach().cpu().numpy()

@@ -87,3 +87,51 @@ def test_transport_checksums_are_valid() -> None:
         path = ROOT / relative
         assert path.is_file(), relative
         assert _sha256(path) == expected, relative
+
+
+def test_final_round_payload_and_public_hashes() -> None:
+    _require_public_release()
+    mapping = json.loads((ROOT / "data/provenance/final_round_artifact_map.json").read_text())
+    assert mapping["scientific_computation"] is False
+    aliases = set()
+    for row in mapping["artifacts"]:
+        path = ROOT / row["public_path"]
+        aliases.add(Path(row["public_path"]).parts[3])
+        assert _sha256(path) == row["sha256"]
+        assert path.stat().st_size == row["size_bytes"]
+        if row["transformation"] == "byte-identical":
+            assert row["sha256"] == row["source_sha256"]
+    assert {"N1", "N2", "N2_prior_distribution", "N3_S1", "N3_S2", "N3_S3", "N3_S4", "N4", "N5", "P1", "prior_gap_supplement"} <= aliases
+
+
+def test_public_metadata_preserves_numbers_and_protocol():
+    from rerank.data.build_public_release import public_metadata
+    original = {"path": "C:/" + "Users/example/Documents/Retrosynthesis/outputs/a.json",
+                "protocol_id": "example-v1", "effect": -0.003, "seeds": [42, 43]}
+    result = public_metadata(original)
+    assert result == {**original, "path": "outputs/a.json"}
+    assert original["path"].startswith("C:/")
+
+
+def test_adaptation_compact_rows_match_included_frozen_statistics():
+    _require_public_release()
+    base = ROOT / "outputs/transfer_analysis"
+    rows = list(csv.DictReader((base / "figure_inputs/adaptation.csv").open()))
+    assert len(rows) == 12
+    assert len({(r["pool"], r["metric"], r["stage"]) for r in rows}) == 12
+    for row in rows:
+        pool, metric, stage = row["pool"], row["metric"], row["stage"]
+        if stage == "full_grid":
+            source = json.loads((base / f"final_round/N3_S4/{pool}/statistics.json").read_text())["common_transfer"]
+            keys = ("transfer_loss", "crossed_ci95_low", "crossed_ci95_high")
+        elif stage == "prior_reselected":
+            source = list(csv.DictReader((base / "final_round/N3_S3/transfer_effects.csv").open()))
+            keys = ("transfer_loss", "crossed_ci95_low", "crossed_ci95_high")
+        else:
+            assert stage == "original"
+            source = list(csv.DictReader((base / "final_round/N5/n5_crossed_transfer_intervals.csv").open()))
+            keys = ("mean_transfer_loss", "crossed_product_seed_ci95_low", "crossed_product_seed_ci95_high")
+        match = [r for r in source if r["pool"] == pool and r["metric"] == metric]
+        assert len(match) == 1
+        for field, key in zip(("effect", "low", "high"), keys):
+            assert float(row[field]) == float(match[0][key])
