@@ -15,7 +15,7 @@ from rerank.analysis.analyze_controlled_study import (
     clustered_bootstrap,
     paired_cluster_permutation_test,
 )
-from rerank.revision_tuning import file_fingerprint
+from rerank.tuning import file_fingerprint
 from rerank.study_data import canonicalize_smiles
 from rerank.experiments.run_salt_sensitivity import F3_PROTOCOL_ID, SEEDS
 

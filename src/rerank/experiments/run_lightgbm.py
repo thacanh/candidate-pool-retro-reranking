@@ -20,7 +20,7 @@ from pathlib import Path
 import numpy as np
 
 from rerank.evaluate import evaluate_reranking
-from rerank.revision_tuning import (
+from rerank.tuning import (
     AUGMENTED_COLUMNS,
     BASELINE_COLUMNS,
     PROTOCOL_ID,
@@ -30,7 +30,7 @@ from rerank.revision_tuning import (
     transform_feature_matrix,
 )
 from rerank.study_data import canonicalize_reactant_set
-from rerank.experiments.run_tuned_revision import (
+from rerank.experiments.run_tuned import (
     _require_prior_freeze,
     canonical_fingerprint,
     environment_record,

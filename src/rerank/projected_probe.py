@@ -17,7 +17,7 @@ from typing import Mapping, Sequence
 
 import numpy as np
 
-from rerank.revision_tuning import BASELINE_COLUMNS
+from rerank.tuning import BASELINE_COLUMNS
 
 
 PROTOCOL_ID = "cap10-tuned-unimol-projected32-v1"

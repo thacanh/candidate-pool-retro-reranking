@@ -19,7 +19,7 @@ from pathlib import Path
 
 import numpy as np
 
-from rerank.revision_tuning import (
+from rerank.tuning import (
     BASELINE_COLUMNS,
     MAX_EPOCHS,
     MIN_IMPROVEMENT,
@@ -34,7 +34,7 @@ from rerank.revision_tuning import (
     train_validation_trial,
     transform_selection_cache,
 )
-from rerank.experiments.run_tuned_revision import (
+from rerank.experiments.run_tuned import (
     FIXED_TUNING_CONFIG,
     _score_test_arm,
     canonical_fingerprint,

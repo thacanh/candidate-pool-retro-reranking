@@ -3,7 +3,7 @@
 
 This file contains no training logic.  It gives borrowed machines stable stage
 commands while preserving the validation-only search and post-freeze test lock
-implemented by :mod:`run_tuned_revision`.
+implemented by :mod:`run_tuned`.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from rerank.analysis.analyze_conformer_aggregate import (
     VALIDATION_FEATURE_CACHE_NAME,
     verify_seed_run,
 )
-from rerank.revision_tuning import PRIOR_TRANSFORMS
+from rerank.tuning import PRIOR_TRANSFORMS
 
 
 @dataclass(frozen=True)
@@ -52,7 +52,7 @@ def workflow_paths(root: str | Path) -> WorkflowPaths:
 
 
 def _base_command() -> list[str]:
-    return [sys.executable, "-m", "rerank.experiments.run_tuned_revision"]
+    return [sys.executable, "-m", "rerank.experiments.run_tuned"]
 
 
 def stage_commands(args: argparse.Namespace, paths: WorkflowPaths) -> list[list[str]]:

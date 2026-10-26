@@ -23,7 +23,7 @@ from dd_n3_s4 import PROTOCOL, POOLS, ARMS, read, sha, write
 from rerank.experiments.dd_remote_gate import fingerprint
 from rerank.experiments.run_ws_e_ranking import evaluate_test
 from rerank.analysis.dd_remote_effects import common_cohort, historical_g1_ranks, k1_ranks, transfer_summary
-from rerank.analysis.analyze_revision_predictions import (
+from rerank.analysis.analyze_predictions import (
     product_cluster_bootstrap, crossed_product_seed_bootstrap, clustered_sign_flip,
 )
 

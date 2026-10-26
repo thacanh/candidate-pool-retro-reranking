@@ -17,7 +17,7 @@ from typing import Iterable, Mapping
 
 import numpy as np
 
-from rerank.analysis.analyze_revision_predictions import (
+from rerank.analysis.analyze_predictions import (
     crossed_product_seed_bootstrap,
     product_cluster_bootstrap,
 )

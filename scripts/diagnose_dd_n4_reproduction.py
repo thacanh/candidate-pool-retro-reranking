@@ -14,7 +14,7 @@ from rerank.experiments.run_dd_n2_cross_inference import _score_lists, _checked_
 from rerank.features import FeatureNormalizer
 from rerank.model import RankerMLP
 from rerank.study_data import canonicalize_reactant_set
-from rerank.revision_tuning import transform_feature_matrix, feature_columns_for_arm
+from rerank.tuning import transform_feature_matrix, feature_columns_for_arm
 from rerank.experiments.dd_remote_gate import sha256
 
 

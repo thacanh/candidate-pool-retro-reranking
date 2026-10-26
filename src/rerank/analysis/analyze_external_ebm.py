@@ -18,7 +18,7 @@ from rerank.analysis.analyze_controlled_study import (
     paired_cluster_permutation_test,
 )
 from rerank.external_ebm import PUBLISHED_EBM_SEEDS, PROTOCOL_ID
-from rerank.revision_tuning import file_fingerprint
+from rerank.tuning import file_fingerprint
 from rerank.study_data import canonicalize_smiles
 
 

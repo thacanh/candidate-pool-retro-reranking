@@ -8,7 +8,7 @@ The Figshare checkpoint is verified byte-for-byte. The runtime applies only the
 official Chemformer README migration from `vocab_size` to `vocabulary_size` and
 records a logical hash proving that all 188 state tensors are unchanged. The
 runtime implementation is the official successor, AiZynthModels, at the pinned
-commit in `data/revision_external_assets.json`.
+commit in `data/external_assets.json`.
 
 On a fresh Linux CUDA instance with `uv`:
 

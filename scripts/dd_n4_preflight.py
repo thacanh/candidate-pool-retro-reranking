@@ -10,8 +10,8 @@ from dd_n3_preflight import local_record
 from run_dd_n4_remote import _pool_inputs, PROTOCOL_ID
 from rerank.experiments.dd_remote_gate import require_approval, sha256
 from rerank.experiments.run_dd_n4_historical import _artifact
-from rerank.experiments.run_tuned_revision import validate_selection_freeze
-from rerank.revision_tuning import load_selection_bundle
+from rerank.experiments.run_tuned import validate_selection_freeze
+from rerank.tuning import load_selection_bundle
 from rerank.ws_e_streaming import load_pool_index
 
 

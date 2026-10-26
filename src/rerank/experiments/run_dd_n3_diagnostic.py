@@ -24,7 +24,7 @@ from rerank.experiments.run_dd_n2_cross_inference import (
 )
 from rerank.features import FeatureNormalizer
 from rerank.model import RankerMLP
-from rerank.revision_tuning import load_selection_bundle, transform_selection_cache
+from rerank.tuning import load_selection_bundle, transform_selection_cache
 from rerank.study_data import canonicalize_reactant_set, canonicalize_smiles, load_reactions, make_pairwise_dataset
 from rerank.ws_e_streaming import arm_view, atomic_json, digest_key, identity_digest, load_products
 

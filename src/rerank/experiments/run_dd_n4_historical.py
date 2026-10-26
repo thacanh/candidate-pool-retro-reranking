@@ -20,11 +20,11 @@ from rerank.experiments.dd_remote_gate import fingerprint, require_approval, sha
 from rerank.experiments.run_dd_n2_cross_inference import _score_lists
 from rerank.features import FeatureNormalizer
 from rerank.model import RankerMLP
-from rerank.revision_tuning import (
+from rerank.tuning import (
     GridConfig, load_selection_bundle, train_validation_trial,
     transform_selection_cache,
 )
-from rerank.experiments.run_tuned_revision import validate_selection_freeze
+from rerank.experiments.run_tuned import validate_selection_freeze
 from rerank.study_data import canonicalize_reactant_set
 from rerank.ws_e_streaming import atomic_json, atomic_npz
 

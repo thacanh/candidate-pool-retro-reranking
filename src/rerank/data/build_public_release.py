@@ -27,11 +27,11 @@ ROOT_FILES = (
     ".gitignore",
     "LICENSE",
     "README.md",
-    "constraints-revision-py310.txt",
-    "environment-revision.yml",
+    "constraints-py310.txt",
+    "environment.yml",
     "pyproject.toml",
     "pytest.ini",
-    "requirements-revision.txt",
+    "requirements.txt",
 )
 DOC_FILES = (
     "docs/analysis_plan.md",
@@ -42,7 +42,7 @@ DOC_FILES = (
 PROVENANCE_FILES = (
     "data/candidate_generator_provenance.json",
     "data/grover_control_decision.json",
-    "data/revision_external_assets.json",
+    "data/external_assets.json",
     "data/uspto_provenance.json",
     "paper/digital_discovery/release_artifact_map.json",
 )
@@ -376,7 +376,7 @@ def normalize_release_text(output: Path) -> None:
     remain byte-identical to the frozen research artifacts.
     """
     for relative in relative_files(output):
-        if relative.parts and relative.parts[0] == "outputs":
+        if relative.parts and (relative.parts[0] == "outputs" or relative.parts[:2] == ("data", "common_test_3814")):
             continue
         path = output / relative
         if path.suffix.lower() not in TEXT_SUFFIXES:
@@ -466,15 +466,14 @@ def write_release_ledgers(repo: Path, output: Path) -> None:
         )
     manifest = {
         "schema_version": SCHEMA_VERSION,
-        "release_kind": "clean-public-code-and-compact-numerical-release",
-        "publication_target": "Digital Discovery",
+        "release_kind": "public-code-results-and-common-test-data",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_git": git_state(repo),
         "payload_file_count": len(payload),
         "payload_size_bytes": sum(row["size_bytes"] for row in payload),
         "excluded_classes": [
             "manuscript sources, journal template assets, and rendered paper figures",
-            "raw reaction datasets",
+            "full reaction datasets and train/validation inputs",
             "third-party repositories and model weights",
             "SQLite, PKL, PT/PTH, and candidate-level caches",
             "full predictions and validation checkpoints",
@@ -483,14 +482,14 @@ def write_release_ledgers(repo: Path, output: Path) -> None:
         "files": payload,
     }
     manifest_path = output / "release_manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
 
     rows = []
     for relative in relative_files(output):
         if relative.as_posix() == "checksums.sha256":
             continue
         rows.append(f"{sha256(output / relative)}  {relative.as_posix()}")
-    (output / "checksums.sha256").write_text("\n".join(rows) + "\n", encoding="utf-8")
+    (output / "checksums.sha256").write_text("\n".join(rows) + "\n", encoding="utf-8", newline="\n")
 
 
 def verify_release(output: Path) -> dict[str, int]:

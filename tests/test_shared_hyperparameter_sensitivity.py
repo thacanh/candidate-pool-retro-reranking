@@ -20,11 +20,11 @@ def _approval_root(tmp_path: Path) -> Path:
         "docs/analysis_plan.md",
         "tests/test_shared_hyperparameter_sensitivity.py",
         "src/rerank/experiments/run_ws_e_ranking.py",
-        "src/rerank/revision_tuning.py",
-        "src/rerank/analysis/analyze_revision_predictions.py",
+        "src/rerank/tuning.py",
+        "src/rerank/analysis/analyze_predictions.py",
         "src/rerank/study_data.py",
-        "environment-revision.yml",
-        "requirements-revision.txt",
+        "environment.yml",
+        "requirements.txt",
         "pyproject.toml",
     ):
         path = tmp_path / relative

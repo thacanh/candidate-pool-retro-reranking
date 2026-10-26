@@ -17,7 +17,7 @@ from dataclasses import asdict
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from rerank.revision_tuning import enumerate_d1_grid
+from rerank.tuning import enumerate_d1_grid
 
 PROTOCOL = "dd-n3-s4-validation-grid-v1"
 POOLS = ("localretro_only", "merged")

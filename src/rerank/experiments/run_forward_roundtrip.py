@@ -24,8 +24,8 @@ from rerank.analysis.analyze_controlled_study import (
     clustered_bootstrap,
     paired_cluster_permutation_test,
 )
-from rerank.revision_tuning import file_fingerprint
-from rerank.experiments.run_tuned_revision import immutable_json_dump
+from rerank.tuning import file_fingerprint
+from rerank.experiments.run_tuned import immutable_json_dump
 
 
 F1_PROTOCOL_ID = "f1-chemformer-forward-roundtrip-v1"
@@ -652,7 +652,7 @@ def build_parser() -> argparse.ArgumentParser:
     prepare = subparsers.add_parser("prepare")
     evaluate = subparsers.add_parser("evaluate")
     for item in (verify, prepare):
-        item.add_argument("--asset-ledger", default="data/revision_external_assets.json")
+        item.add_argument("--asset-ledger", default="data/provenance/external_assets.json")
         item.add_argument("--checkpoint", default="assets/chemformer_forward/last.ckpt")
         item.add_argument(
             "--vocabulary",

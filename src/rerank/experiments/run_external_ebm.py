@@ -50,7 +50,7 @@ from rerank.external_ebm import (
     training_query_rows,
     verify_pinned_repository,
 )
-from rerank.revision_tuning import load_selection_bundle
+from rerank.tuning import load_selection_bundle
 
 
 def utc_now() -> str:

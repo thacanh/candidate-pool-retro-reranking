@@ -9,7 +9,7 @@ Set-Location (Split-Path -Parent $PSScriptRoot)
 $python = if ($env:DD_PYTHON) {
     $env:DD_PYTHON
 } else {
-    Join-Path $env:USERPROFILE "anaconda3\envs\retrosynthesis-revision-benchmark-py310\python.exe"
+    Join-Path $env:USERPROFILE "anaconda3\envs\candidate-pool-retro-reranking\python.exe"
 }
 $protocol = "dd-n2-cross-inference-v1"
 $output = "outputs/dd_final_round/N2"

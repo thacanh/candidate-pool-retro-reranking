@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
-import rerank.experiments.run_lightgbm_revision as d4
+import rerank.experiments.run_lightgbm as d4
 
-from rerank.experiments.run_lightgbm_revision import (
+from rerank.experiments.run_lightgbm import (
     build_query_arrays,
     conditional_mrr,
     enumerate_grid,

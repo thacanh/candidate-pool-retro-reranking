@@ -710,7 +710,7 @@ def _fit_config(primary: Mapping, selection: Mapping, arm: str) -> dict:
             or selection.get("test_partition_loaded") is not False):
         raise ValueError("Unapproved configuration protocol for validation fitting.")
     from dataclasses import asdict
-    from rerank.revision_tuning import enumerate_d1_grid
+    from rerank.tuning import enumerate_d1_grid
     config = _config_for_arm(primary, arm)
     if config not in [asdict(item) for item in enumerate_d1_grid()]:
         raise ValueError("S4 configuration is outside the frozen 81-point grid.")

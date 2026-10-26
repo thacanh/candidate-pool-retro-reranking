@@ -11,7 +11,7 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-from rerank.revision_tuning import (
+from rerank.tuning import (
     MAX_EPOCHS,
     MIN_IMPROVEMENT,
     PATIENCE,
@@ -23,7 +23,7 @@ from rerank.revision_tuning import (
     train_validation_trial,
     transform_selection_cache,
 )
-from rerank.experiments.run_tuned_revision import (
+from rerank.experiments.run_tuned import (
     FIXED_TUNING_CONFIG,
     _score_test_arm,
     canonical_fingerprint,

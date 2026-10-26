@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np
 
 from rerank.experiments.dd_remote_gate import fingerprint, require_approval, resolve_frozen
-from rerank.revision_tuning import transform_prior_values
+from rerank.tuning import transform_prior_values
 from rerank.ws_e_streaming import RANKING_PROTOCOL_ID, atomic_json, atomic_npz
 
 

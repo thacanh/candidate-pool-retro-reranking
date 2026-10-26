@@ -22,9 +22,9 @@ New-Item -ItemType Directory -Path (Join-Path $bundleRoot "assets\unimol_weights
 $requiredFiles = @(
     "docs\analysis_plan.md",
     "AGENTS.md",
-    "environment-revision.yml",
-    "requirements-revision.txt",
-    "constraints-revision-py310.txt",
+    "environment.yml",
+    "requirements.txt",
+    "constraints-py310.txt",
     "data\uspto_smiles.csv",
     "data\uspto_reaction_metadata.csv",
     "outputs\rerank_dataset.jsonl"
@@ -48,8 +48,8 @@ $weightCandidates = @()
 if ($env:UNIMOL_WEIGHT_DIR) {
     $weightCandidates += $env:UNIMOL_WEIGHT_DIR
 }
-$weightCandidates += (Join-Path $env:USERPROFILE "anaconda3\envs\retrosynthesis-revision-benchmark-py310\Lib\site-packages\unimol_tools\weights")
-$weightCandidates += (Join-Path $env:USERPROFILE "miniconda3\envs\retrosynthesis-revision-benchmark-py310\Lib\site-packages\unimol_tools\weights")
+$weightCandidates += (Join-Path $env:USERPROFILE "anaconda3\envs\candidate-pool-retro-reranking\Lib\site-packages\unimol_tools\weights")
+$weightCandidates += (Join-Path $env:USERPROFILE "miniconda3\envs\candidate-pool-retro-reranking\Lib\site-packages\unimol_tools\weights")
 $weightDir = $weightCandidates | Where-Object {
     Test-Path -LiteralPath (Join-Path $_ "mol_pre_no_h_220816.pt") -PathType Leaf
 } | Select-Object -First 1

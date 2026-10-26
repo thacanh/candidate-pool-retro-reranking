@@ -64,7 +64,7 @@ def one(frame: pd.DataFrame, **filters: object) -> pd.Series:
 def save_figure(fig: plt.Figure, output_dir: Path, stem: str, *, with_png: bool) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     metadata = {
-        "Creator": "rerank.figures.plot_revision_main_figures",
+        "Creator": "rerank.figures.plot_anchor_figures",
         "Subject": "Journal of Cheminformatics revision; numerical freeze v2",
     }
     fig.savefig(output_dir / f"{stem}.pdf", facecolor="white", metadata=metadata)

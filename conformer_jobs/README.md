@@ -62,9 +62,9 @@ mixed borrowed-machine runs remain auditable rather than silently pooled.
 - Copy or clone the same repository revision to the machine.
 - Copy `data/uspto_smiles.csv`, `data/uspto_reaction_metadata.csv`, and
   `outputs/rerank_dataset.jsonl` without changing their bytes.
-- Create the pinned Python environment from `environment-revision.yml` and the
+- Create the pinned Python environment from `environment.yml` and the
   checked environment records.  The launcher looks first for the Conda env
-  `retrosynthesis-revision-benchmark-py310` under Anaconda or Miniconda.
+  `candidate-pool-retro-reranking` under Anaconda or Miniconda.
 - The official `mol_pre_no_h_220816.pt` and `mol.dict.txt` must be in the
   installed `unimol_tools/weights` directory with the pinned hashes.
 - Have at least 20 GiB free on the output drive.  The retained seed folder is

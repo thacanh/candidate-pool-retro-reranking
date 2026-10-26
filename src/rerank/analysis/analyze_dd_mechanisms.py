@@ -26,7 +26,7 @@ from rdkit import Chem, DataStructs
 from rdkit.Chem import rdFingerprintGenerator
 from scipy.stats import kendalltau, rankdata, spearmanr
 
-from rerank.analysis.analyze_revision_predictions import (
+from rerank.analysis.analyze_predictions import (
     clustered_sign_flip,
     product_cluster_bootstrap,
 )

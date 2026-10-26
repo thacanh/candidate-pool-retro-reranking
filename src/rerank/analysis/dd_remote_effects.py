@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from rerank.analysis.analyze_revision_predictions import product_cluster_bootstrap
+from rerank.analysis.analyze_predictions import product_cluster_bootstrap
 from rerank.study_data import canonicalize_smiles
 
 

@@ -28,7 +28,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-from rerank.analysis.analyze_revision_predictions import (
+from rerank.analysis.analyze_predictions import (
     clustered_sign_flip,
     crossed_product_seed_bootstrap,
     product_cluster_bootstrap,
@@ -36,7 +36,7 @@ from rerank.analysis.analyze_revision_predictions import (
 from rerank.evaluate import evaluate_reranking
 from rerank.features import FeatureNormalizer
 from rerank.model import RankerMLP
-from rerank.revision_tuning import (
+from rerank.tuning import (
     feature_columns_for_arm,
     file_sha256,
     transform_feature_matrix,
@@ -143,11 +143,11 @@ def create_approval(root: Path, commit: str) -> dict[str, Any]:
         "runner": Path(__file__).resolve(),
         "tests": root / "tests/test_shared_hyperparameter_sensitivity.py",
         "ws_e_runner": root / "src/rerank/experiments/run_ws_e_ranking.py",
-        "revision_tuning": root / "src/rerank/revision_tuning.py",
-        "analysis_statistics": root / "src/rerank/analysis/analyze_revision_predictions.py",
+        "revision_tuning": root / "src/rerank/tuning.py",
+        "analysis_statistics": root / "src/rerank/analysis/analyze_predictions.py",
         "study_data": root / "src/rerank/study_data.py",
-        "environment_yml": root / "environment-revision.yml",
-        "requirements": root / "requirements-revision.txt",
+        "environment_yml": root / "environment.yml",
+        "requirements": root / "requirements.txt",
         "pyproject": root / "pyproject.toml",
     }
     for label, path in paths.items():

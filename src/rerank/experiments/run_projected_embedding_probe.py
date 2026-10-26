@@ -29,7 +29,7 @@ from rerank.projected_probe import (
     materialize_rows, materialize_validation, selected_base_features,
     validate_projected_selection,
 )
-from rerank.revision_tuning import MAX_EPOCHS, MIN_IMPROVEMENT, PATIENCE, SEEDS
+from rerank.tuning import MAX_EPOCHS, MIN_IMPROVEMENT, PATIENCE, SEEDS
 
 
 COMPARATOR = "frozen cap10-tuned-v1 validation-tuned prior+2D baseline"

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from rerank.data.build_revision_numerical_ledger import (
+from rerank.data.build_numerical_ledger import (
     APPROVED_B1_STRATA,
     LEDGER_PROTOCOL_ID,
     build_numerical_ledger,

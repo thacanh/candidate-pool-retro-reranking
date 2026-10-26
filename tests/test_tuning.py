@@ -4,9 +4,9 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-import rerank.experiments.run_tuned_revision as tuned_runner
+import rerank.experiments.run_tuned as tuned_runner
 
-from rerank.revision_tuning import (
+from rerank.tuning import (
     AUGMENTED_COLUMNS,
     BASELINE_COLUMNS,
     CAPACITY_CONTROL_ID,
@@ -27,7 +27,7 @@ from rerank.revision_tuning import (
     trainable_parameter_count,
     transform_feature_matrix,
 )
-from rerank.experiments.run_tuned_revision import (
+from rerank.experiments.run_tuned import (
     _score_test_arm,
     build_parser,
     canonical_fingerprint,

@@ -1,140 +1,90 @@
 # Candidate-pool dependence in retrosynthesis reranking
 
-This repository contains the code and frozen numerical summaries for the
-*Digital Discovery* study **Candidate-pool dependence of
-molecular-representation reranking in single-step retrosynthesis**.
+Code for comparing reaction-candidate rerankers on fixed candidate pools.
+The models combine candidate priors, 2D features and optional
+representation-derived features. Evaluation separates reference coverage,
+ranking within covered pools and end-to-end accuracy.
 
-The study separates three questions that are often conflated in reranking
-benchmarks:
+The experiments use the 50,037-reaction Chemformer distribution of USPTO-50K:
+40,029 training, 5,004 validation and 5,004 test reactions. See
+[dataset provenance](docs/dataset_source_audit.md) for the source and checksums.
 
-1. whether a candidate generator covers the recorded reference reaction;
-2. how well a ranker orders candidates within a covered pool; and
-3. whether a representation-assisted ranking gain transfers when the candidate
-   generator or pool construction changes.
+## Install
 
-The active manuscript is maintained privately in Overleaf and is intentionally
-excluded from this public code repository while editorial revisions continue.
-
-## Main frozen result
-
-On the historical cap-10 pool, 3,985 of 5,004 official-test reactions are
-covered. Across paired training seeds 42--61, adding the Uni-Mol-derived scalar
-features improves conditional Top-1 by 0.00670 (95% seed-marginal interval
-0.00112--0.01228) and MRR by 0.00485 (0.00173--0.00790).
-
-Alternative AiZynthFinder-only, LocalRetro-only, and merged pools increase
-coverage, but their matched representation-assisted effects are compatible
-with zero. Direct paired inference on 3,814 commonly covered reactions finds
-negative transfer-loss intervals for Top-1 and MRR in all three alternative
-pools.
-
-## Public release layout
-
-Local research-worktree organization (not the public upload payload):
-
-| Location | Purpose |
-| --- | --- |
-| `src/`, `tests/`, `scripts/` | Implementation, validation, and task entry points |
-| `outputs/` | Frozen scientific results and active caches; preserve in place |
-| `archive/imports/dd_final_round/` | Original N3, N3-S4 and N4 result ZIPs with paired receipts |
-| `archive/imports/manuscripts/` | Original user-supplied manuscript ZIP; private |
-| `paper/digital_discovery/` | Canonical private main/SI sources |
-| `release/README.md` | Index identifying current delivery versus historical packages |
-| `output/pdf/` | Compiled private manuscript review copies |
-| `tmp/`, `logs/` | Build scratch, QA renders, and execution logs |
-
-Do not push the whole research worktree. Existing `release/public_repository*`
-directories are historical snapshots, not an automatically current release.
-Use the allowlisted builder and review the new payload before publishing.
-
-The clean release produced by
-`python -m rerank.data.build_public_release` has this structure:
-
-```text
-src/rerank/                 Installable analysis and experiment package
-tests/                      Unit, protocol, pairing, and release checks
-docs/                       Prespecification, provenance, and release guide
-data/provenance/            Dataset, model, and generator identity records
-outputs/historical_anchor/  Small read-only historical numerical summaries
-outputs/transfer_analysis/  Small transfer-analysis CSV/JSON artifacts
-                            Includes final_round/N1--N5, S4 and prior-gap
-notebooks/                 Editable, data-only plotting notebook
-release_manifest.json       SHA256 and size of every released payload file
-checksums.sha256             Transport checksums for the complete release
-```
-
-The research worktree retains larger caches and historical storage labels for
-provenance. Those local paths are not separate publications and are not copied
-into the clean Git repository.
-
-## Installation
-
-Python 3.10 is the validated version for the core environment.
+Python 3.10 is the validated version.
 
 ```bash
-conda env create -f environment-revision.yml
-conda activate retrosynthesis-revision-benchmark-py310
+git clone https://github.com/thacanh/candidate-pool-retro-reranking.git
+cd candidate-pool-retro-reranking
+conda env create -f environment.yml
+conda activate candidate-pool-retro-reranking
 python -m pip install -e .
 ```
 
-The core environment is deliberately separate from AiZynthFinder, LocalRetro,
-GROVER, Chemformer, and RXN-EBM. Their pinned identities, checkpoints, and
-environment decisions are recorded in `docs/analysis_plan.md`, the provenance
-JSON files, and the corresponding job directories.
+AiZynthFinder, LocalRetro, GROVER, Chemformer and RXN-EBM use separate
+environments. Their source and model identities are recorded in
+`data/provenance/` and the relevant experiment modules.
 
-## Rebuild the numerical figures
+## Contents
 
-From either the research worktree or the clean public release:
+| Path | Contents |
+| --- | --- |
+| `src/rerank/` | Features, ranker training, evaluation and analysis |
+| `tests/` | Unit and protocol checks |
+| `outputs/historical_anchor/` | Frozen historical numerical summaries |
+| `outputs/transfer_analysis/` | Transfer analyses and final-round summaries |
+| `notebooks/rebuild_data_figures.ipynb` | Editable plots using saved summaries |
+| `data/provenance/` | Dataset, generator and model source records |
+| [`data/common_test_3814/`](data/common_test_3814/) | 3,814 common test reactions, four candidate pools and reference ranks |
+| `docs/analysis_plan.md` | Experiment definitions and decision rules |
+
+The repository currently includes code and compact results. Full training
+inputs, third-party weights, trained model checkpoints and embedding caches
+are distributed separately. The included summary tables suffice to rebuild
+the numerical plots, but do not replace the inputs needed to train a model.
+
+The 3,814-reaction comparison cohort is the intersection of reference-covered
+official-test reactions across four cap-10 pools: historical, AiZynthFinder,
+LocalRetro and merged. Each reaction has a separate candidate list in each
+pool. [The data folder](data/common_test_3814/README.md) contains these lists,
+recorded reactants and reference ranks across 20 paired seeds. It is about
+32 MiB uncompressed and needs no archive extraction. This is an evaluation
+subset, not a training set; train/validation inputs are supplied separately.
+
+## Rebuild plots
 
 ```bash
 python -m rerank.figures.plot_digital_discovery_figures \
-  --repo-root . \
-  --output-dir figures_rebuilt
+  --repo-root . --output-dir figures_rebuilt
 ```
 
-The plotting code prefers the neutral public artifact paths and falls back to
-the read-only local provenance paths when run in the research worktree.
-For interactive style changes, open `notebooks/rebuild_data_figures.ipynb`.
-The conceptual PowerPoint figure is intentionally private and is not part of
-this data-plot reproduction. Rendering does not rerun models or bootstrap tests.
+Open `notebooks/rebuild_data_figures.ipynb` to change plot styles.
+These commands use saved results; they do not retrain models.
 
-## Validation
+## Check the downloaded files
 
 ```bash
-python -m pytest -q tests/test_public_release.py tests/test_dd_unified_figures.py
 python -m rerank.data.build_public_release --verify .
+python -m pytest -q tests/test_public_release.py tests/test_common_test_data.py
 ```
 
-These are the compact public checks. The full `python -m pytest -q` research
-suite additionally requires private manuscript inputs, datasets, third-party
-model weights and heavyweight caches; it is not a clean-code-only test gate.
-The repository supports numerical-table inspection and data-figure rebuilding
-now. It does not claim one-command, from-scratch reproduction of every model
-without the separately obtained inputs.
+The full research test suite also exercises workflows requiring the separately
+supplied data and models.
 
-## Data and heavyweight artifacts
+## Run a new embedding comparison
 
-The clean Git repository intentionally excludes raw USPTO reaction files,
-third-party checkpoints, candidate-level prediction archives, model states,
-SQLite embedding stores, and PKL/NPZ caches. These files are either too large
-for Git, subject to third-party redistribution terms, or both. Exact source
-identities and checksums are supplied so an archival data deposit can be linked
-without silently changing the scientific protocol.
+Start from the same candidate lists and official splits. Fit preprocessing on
+training data, choose settings on validation data and evaluate paired models
+with the same seeds and metrics. Report candidate coverage separately from
+ranking performance.
 
-See `docs/dataset_source_audit.md` and `docs/public_release.md` for details.
-
-## Manuscript status
-
-The manuscript and Supporting Information are maintained in a separate private
-Overleaf project. At submission, that project will cite this repository and its
-versioned archival DOI; manuscript source and journal template assets are not
-part of this Git release.
+Training and evaluation modules are under `src/rerank/experiments/`.
+Use their `--help` options for required inputs. To reuse the frozen experiments,
+request the corresponding candidate pools and train/validation inputs;
+cloning this repository alone is not sufficient.
 
 ## License
 
-Original software under `src/`, `tests/`, and the runnable job-script
-directories is released under the MIT License; see `LICENSE`. This license does
-not extend to third-party datasets, mapped reaction files, model repositories,
-model weights, journal template assets, the manuscript, figures, or frozen
-numerical artifacts. Those materials retain their original terms or are all
-rights reserved unless a separate notice states otherwise.
+Original software is covered by the [MIT License](LICENSE). Third-party data,
+repositories and model weights retain their own terms. The software license
+does not grant a license to the frozen numerical artifacts or manuscript.

@@ -30,7 +30,7 @@ from tqdm import tqdm
 from rerank.evaluate import evaluate_reranking
 from rerank.features import FeatureNormalizer
 from rerank.model import RankerMLP
-from rerank.revision_tuning import (
+from rerank.tuning import (
     AUGMENTED_COLUMNS,
     BASELINE_COLUMNS,
     CAPACITY_CONTROL_ID,

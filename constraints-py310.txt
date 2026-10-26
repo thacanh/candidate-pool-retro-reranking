@@ -1,4 +1,4 @@
-# Compatibility constraints for requirements-revision.txt.
+# Compatibility constraints for requirements.txt.
 #
 # This is intentionally a selective constraint set, not a complete transitive
 # lock.  A full lock must include artifact hashes/build tags and must be

@@ -21,7 +21,7 @@ import numpy as np
 
 from rerank.study_data import canonicalize_smiles, file_fingerprint
 from rerank.ws_e_streaming import atomic_json
-from rerank.analysis.analyze_revision_predictions import (
+from rerank.analysis.analyze_predictions import (
     clustered_sign_flip,
     crossed_product_seed_bootstrap,
     product_cluster_bootstrap,

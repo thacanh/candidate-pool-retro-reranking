@@ -2,7 +2,7 @@ import argparse
 
 import pytest
 
-from rerank.revision_tuning import enumerate_d1_grid, train_validation_trial
+from rerank.tuning import enumerate_d1_grid, train_validation_trial
 from rerank.experiments.run_tuned_seed_extension import G1_SEEDS, parse_seeds
 
 

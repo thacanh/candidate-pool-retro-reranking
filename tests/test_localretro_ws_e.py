@@ -15,7 +15,7 @@ from rerank.data.prepare_localretro_current_dataset import (
     transfer_atom_maps_to_original,
     validate_mapped_reaction,
 )
-from rerank.experiments.run_localretro_revision import (
+from rerank.experiments.run_localretro import (
     PROTOCOL_ID as LOCALRETRO_PROTOCOL,
     compile_decoded_predictions,
 )

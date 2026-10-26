@@ -3,7 +3,7 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "controlled-retrosynthesis-reranking"
+name = "candidate-pool-retro-reranking"
 version = "0.1.0"
 description = "Controlled evaluation of representation-assisted retrosynthesis candidate reranking"
 readme = "README.md"

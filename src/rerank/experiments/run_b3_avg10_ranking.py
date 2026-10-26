@@ -23,7 +23,7 @@ import numpy as np
 import pandas as pd
 
 from rerank.analysis.analyze_encoder_attribution import clustered_intervals
-from rerank.revision_tuning import (
+from rerank.tuning import (
     BASELINE_COLUMNS,
     MAX_EPOCHS,
     MIN_IMPROVEMENT,
@@ -41,7 +41,7 @@ from rerank.revision_tuning import (
     transform_selection_cache,
     validate_selection_bundle,
 )
-from rerank.experiments.run_tuned_revision import (
+from rerank.experiments.run_tuned import (
     FIXED_TUNING_CONFIG,
     _score_test_arm,
     canonical_fingerprint,

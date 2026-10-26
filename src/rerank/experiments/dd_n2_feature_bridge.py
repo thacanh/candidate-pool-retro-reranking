@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from rerank.revision_tuning import (
+from rerank.tuning import (
     AUGMENTED_COLUMNS as HISTORICAL_AUGMENTED,
     BASELINE_COLUMNS as HISTORICAL_BASELINE,
 )

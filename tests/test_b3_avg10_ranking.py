@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from rerank.revision_tuning import SEEDS, validate_selection_bundle
+from rerank.tuning import SEEDS, validate_selection_bundle
 from rerank.experiments.run_b3_avg10_ranking import _metric_summary, assert_test_pairing
 
 

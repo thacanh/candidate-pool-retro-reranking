@@ -5,6 +5,7 @@
 
 # Frozen numerical artifacts and the transport ledgers are byte-preserving.
 outputs/** -text
+data/common_test_3814/** -text
 checksums.sha256 -text
 release_manifest.json -text
 

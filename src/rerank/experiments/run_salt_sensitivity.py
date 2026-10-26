@@ -34,7 +34,7 @@ from rerank.features import (
     _morgan_similarity,
     _reaction_distance,
 )
-from rerank.revision_tuning import (
+from rerank.tuning import (
     MAX_EPOCHS,
     MIN_IMPROVEMENT,
     PATIENCE,
@@ -50,7 +50,7 @@ from rerank.revision_tuning import (
     transform_selection_cache,
     validate_selection_bundle,
 )
-from rerank.experiments.run_tuned_revision import (
+from rerank.experiments.run_tuned import (
     FIXED_TUNING_CONFIG,
     _score_test_arm,
     environment_record,

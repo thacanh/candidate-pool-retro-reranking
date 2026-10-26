@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from rerank.analysis.analyze_revision_predictions import (
+from rerank.analysis.analyze_predictions import (
     CONTINUOUS_PREDICTORS,
     benjamini_hochberg,
     build_net_flips,

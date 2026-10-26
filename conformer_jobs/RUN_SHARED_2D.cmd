@@ -4,10 +4,10 @@ cd /d "%~dp0\.."
 
 if defined CONFORMER_PYTHON (
   set "PYTHON_EXE=%CONFORMER_PYTHON%"
-) else if exist "%USERPROFILE%\anaconda3\envs\retrosynthesis-revision-benchmark-py310\python.exe" (
-  set "PYTHON_EXE=%USERPROFILE%\anaconda3\envs\retrosynthesis-revision-benchmark-py310\python.exe"
-) else if exist "%USERPROFILE%\miniconda3\envs\retrosynthesis-revision-benchmark-py310\python.exe" (
-  set "PYTHON_EXE=%USERPROFILE%\miniconda3\envs\retrosynthesis-revision-benchmark-py310\python.exe"
+) else if exist "%USERPROFILE%\anaconda3\envs\candidate-pool-retro-reranking\python.exe" (
+  set "PYTHON_EXE=%USERPROFILE%\anaconda3\envs\candidate-pool-retro-reranking\python.exe"
+) else if exist "%USERPROFILE%\miniconda3\envs\candidate-pool-retro-reranking\python.exe" (
+  set "PYTHON_EXE=%USERPROFILE%\miniconda3\envs\candidate-pool-retro-reranking\python.exe"
 ) else (
   set "PYTHON_EXE=python"
 )

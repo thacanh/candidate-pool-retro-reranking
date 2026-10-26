@@ -36,7 +36,7 @@ from rerank.features import (
     _reaction_distance,
 )
 from rerank.grover_official_backend import OfficialGroverAtomBackend
-from rerank.revision_tuning import load_selection_bundle, prepare_selection_bundle
+from rerank.tuning import load_selection_bundle, prepare_selection_bundle
 
 
 class FakeAtomEncoder:

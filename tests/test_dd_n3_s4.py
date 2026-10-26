@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 
 from rerank.experiments import run_ws_e_ranking as trainer
-from rerank.revision_tuning import enumerate_d1_grid
+from rerank.tuning import enumerate_d1_grid
 
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('s4',ROOT/'scripts/dd_n3_s4.py')

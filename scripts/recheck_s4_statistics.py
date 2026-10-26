@@ -9,7 +9,7 @@ import numpy as np
 from dd_n3_s4 import POOLS, read, sha, write
 from rerank.study_data import load_reactions
 from rerank.analysis.dd_remote_effects import common_cohort, historical_g1_ranks, k1_ranks, transfer_summary
-from rerank.analysis.analyze_revision_predictions import product_cluster_bootstrap, crossed_product_seed_bootstrap, clustered_sign_flip
+from rerank.analysis.analyze_predictions import product_cluster_bootstrap, crossed_product_seed_bootstrap, clustered_sign_flip
 
 ROOT=Path(__file__).resolve().parents[1]
 DATA=ROOT/'outputs/dd_final_round/N3_S4_final'

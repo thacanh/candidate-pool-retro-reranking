@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-import rerank.experiments.orchestrate_tuned_revision as workflow
+import rerank.experiments.orchestrate_tuned as workflow
 
 
 def _args(stage):
