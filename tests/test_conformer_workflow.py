@@ -76,9 +76,7 @@ class _OomTrainer:
     def inference(self, model, dataset, **kwargs):
         if len(dataset) > 2:
             raise RuntimeError("CUDA out of memory in synthetic test")
-        return {
-            "atomic_reprs": [np.zeros((1, 512), dtype=np.float32) for _ in dataset]
-        }
+        return {"atomic_reprs": [np.zeros((1, 512), dtype=np.float32) for _ in dataset]}
 
 
 def test_seed_validation_and_layout_are_isolated(tmp_path):
@@ -98,9 +96,7 @@ def test_seed_validation_and_layout_are_isolated(tmp_path):
 
 def test_runtime_auto_selects_cpu_and_physical_cores():
     runtime = seed_runner.resolve_runtime(
-        torch_module=_FakeTorch(False),
-        logical_cpu_count=24,
-        physical_cpu_count=12,
+        torch_module=_FakeTorch(False), logical_cpu_count=24, physical_cpu_count=12
     )
     assert runtime["resolved_device"] == "cpu"
     assert runtime["embedding_batch_size"] == 8
@@ -110,9 +106,7 @@ def test_runtime_auto_selects_cpu_and_physical_cores():
 
 def test_runtime_auto_selects_cuda_and_scales_batch_from_vram():
     runtime = seed_runner.resolve_runtime(
-        torch_module=_FakeTorch(True, 10 * 1024**3),
-        logical_cpu_count=32,
-        physical_cpu_count=20,
+        torch_module=_FakeTorch(True, 10 * 1024**3), logical_cpu_count=32, physical_cpu_count=20
     )
     assert runtime["resolved_device"] == "cuda"
     assert runtime["embedding_batch_size"] == 16
@@ -177,9 +171,10 @@ def test_sqlite_builder_is_resumable_and_records_non_ok(tmp_path):
     assert summary["status_counts"] == {"fallback_2d": 1, "ok": 2}
     assert len(backend.calls) == 2
     with sqlite3.connect(output) as connection:
-        assert connection.execute(
-            "SELECT value FROM metadata WHERE key='complete'"
-        ).fetchone()[0] == "1"
+        assert (
+            connection.execute("SELECT value FROM metadata WHERE key='complete'").fetchone()[0]
+            == "1"
+        )
         rows = connection.execute(
             "SELECT smiles,n_rows,n_cols,length(data),status FROM embeddings ORDER BY smiles"
         ).fetchall()
@@ -223,11 +218,7 @@ def _write_synthetic_retained_results(layout, monkeypatch):
     }
     with open(layout["feature_cache"], "wb") as handle:
         pickle.dump(
-            {
-                "schema_version": STUDY_CACHE_SCHEMA,
-                "feature_mode": "3d+prior",
-                "payload": payload,
-            },
+            {"schema_version": STUDY_CACHE_SCHEMA, "feature_mode": "3d+prior", "payload": payload},
             handle,
         )
     with open(layout["validation_features"], "wb") as handle:
@@ -240,25 +231,14 @@ def _write_synthetic_retained_results(layout, monkeypatch):
             handle,
         )
     metrics = {
-        str(seed): {
-            "top1": 0.5,
-            "top3": 0.7,
-            "top5": 0.8,
-            "top10": 1.0,
-            "mrr": 0.6,
-        }
+        str(seed): {"top1": 0.5, "top3": 0.7, "top5": 0.8, "top10": 1.0, "mrr": 0.6}
         for seed in seed_runner.TRAINING_SEEDS
     }
-    (layout["ranking"] / "per_seed_metrics.json").write_text(
-        json.dumps(metrics), encoding="utf-8"
-    )
+    (layout["ranking"] / "per_seed_metrics.json").write_text(json.dumps(metrics), encoding="utf-8")
     (layout["ranking"] / "manifest.json").write_text("{}", encoding="utf-8")
     for seed in seed_runner.TRAINING_SEEDS:
         with open(
-            layout["ranking"] / f"eval_seed{seed}.csv",
-            "w",
-            encoding="utf-8",
-            newline="",
+            layout["ranking"] / f"eval_seed{seed}.csv", "w", encoding="utf-8", newline=""
         ) as handle:
             writer = csv.DictWriter(handle, fieldnames=["reaction_id"])
             writer.writeheader()
@@ -296,9 +276,7 @@ def test_cleanup_refuses_a_cache_outside_seed_root(tmp_path):
 def test_ten_clickable_seed_launchers_exist():
     jobs = Path(__file__).resolve().parents[1] / "workflows/conformers"
     launchers = sorted(jobs.glob("run_seed_*.cmd"))
-    assert [path.stem for path in launchers] == [
-        f"run_seed_{seed}" for seed in range(42, 52)
-    ]
+    assert [path.stem for path in launchers] == [f"run_seed_{seed}" for seed in range(42, 52)]
     for seed, path in zip(range(42, 52), launchers):
         assert f" {seed}" in path.read_text(encoding="utf-8")
 
@@ -329,25 +307,17 @@ def test_collector_verifies_complete_seed_folders(tmp_path):
             "large_atom_cache_retained": False,
             "retained_file_count": 2,
         }
-        (root / "COMPLETED.json").write_text(
-            json.dumps(completed), encoding="utf-8"
-        )
+        (root / "COMPLETED.json").write_text(json.dumps(completed), encoding="utf-8")
         checksum_lines = []
         for path in (manifest, summary):
-            checksum_lines.append(
-                f"{seed_runner._sha256(path)}  {path.name}"
-            )
-        (root / "checksums.sha256").write_text(
-            "\n".join(checksum_lines) + "\n", encoding="utf-8"
-        )
+            checksum_lines.append(f"{seed_runner._sha256(path)}  {path.name}")
+        (root / "checksums.sha256").write_text("\n".join(checksum_lines) + "\n", encoding="utf-8")
 
     rows, audit = collect_runs(tmp_path, seeds=(42, 43))
     assert audit["all_complete"] is True
     assert [row["conformer_seed"] for row in rows] == [42, 43]
     assert all(row["checksum_files_verified"] == 2 for row in rows)
 
-    (tmp_path / "seed_43" / "result_summary.json").write_text(
-        "tampered", encoding="utf-8"
-    )
+    (tmp_path / "seed_43" / "result_summary.json").write_text("tampered", encoding="utf-8")
     with pytest.raises(RuntimeError, match="Checksum mismatch"):
         collect_runs(tmp_path, seeds=(42, 43))

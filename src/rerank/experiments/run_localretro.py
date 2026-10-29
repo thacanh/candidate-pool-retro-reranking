@@ -204,20 +204,11 @@ def preprocess_train_valid(*, workspace: str | Path) -> dict[str, Any]:
     if output_manifest.exists() or (dataset / "labeled_data.csv").exists():
         raise FileExistsError("Refusing to overwrite LocalRetro preprocessing output.")
     start = time.perf_counter()
-    command = [
-        sys.executable,
-        "Extract_from_train_data.py",
-        "-d",
-        DATASET_NAME,
-    ]
+    command = [sys.executable, "Extract_from_train_data.py", "-d", DATASET_NAME]
     subprocess.run(command, cwd=root / "preprocessing", check=True)
 
     with _workspace_imports(root, "preprocessing"):
-        from Run_preprocessing import (
-            build_template_extractor,
-            labeling_dataset,
-            load_templates,
-        )
+        from Run_preprocessing import build_template_extractor, labeling_dataset, load_templates
 
         args = {
             "dataset": DATASET_NAME,
@@ -231,19 +222,13 @@ def preprocess_train_valid(*, workspace: str | Path) -> dict[str, Any]:
         }
         template_dicts, template_infos = load_templates(args)
         extractor = build_template_extractor(args)
-        validation = labeling_dataset(
-            args, "val", template_dicts, template_infos, extractor
-        ).copy()
-        training = labeling_dataset(
-            args, "train", template_dicts, template_infos, extractor
-        ).copy()
+        validation = labeling_dataset(args, "val", template_dicts, template_infos, extractor).copy()
+        training = labeling_dataset(args, "train", template_dicts, template_infos, extractor).copy()
 
     training["Split"] = "train"
     validation["Split"] = "val"
     combined = pd.concat([training, validation], ignore_index=True)
-    combined["Mask"] = [
-        int(float(frequency) >= 1) for frequency in combined["Frequency"]
-    ]
+    combined["Mask"] = [int(float(frequency) >= 1) for frequency in combined["Frequency"]]
     combined.to_csv(dataset / "labeled_data.csv", index=False, lineterminator="\n")
     if set(combined["Split"]) != {"train", "val"}:
         raise RuntimeError("Preprocessed data contains an unexpected split.")
@@ -294,9 +279,7 @@ def _seed_everything(seed: int) -> None:
     torch.backends.cudnn.deterministic = True
 
 
-def train_and_freeze(
-    *, workspace: str | Path, device: str = "cuda:0"
-) -> dict[str, Any]:
+def train_and_freeze(*, workspace: str | Path, device: str = "cuda:0") -> dict[str, Any]:
     root, source_manifest = validate_workspace(workspace)
     dataset = root / "data" / DATASET_NAME
     preprocess_manifest = dataset / "preprocess_train_valid_manifest.json"
@@ -370,12 +353,8 @@ def train_and_freeze(
         best_score: float | None = None
         best_epoch: int | None = None
         for epoch in range(args["num_epochs"]):
-            run_a_train_epoch(
-                args, epoch, model, train_loader, loss_criterion, optimizer
-            )
-            validation_loss = float(
-                run_an_eval_epoch(args, model, valid_loader, loss_criterion)
-            )
+            run_a_train_epoch(args, epoch, model, train_loader, loss_criterion, optimizer)
+            validation_loss = float(run_an_eval_epoch(args, model, valid_loader, loss_criterion))
             early_stop = bool(stopper.step(validation_loss, model))
             scheduler.step()
             if best_score is None or validation_loss < best_score:
@@ -439,9 +418,7 @@ def train_and_freeze(
             "dgllife": importlib.metadata.version("dgllife"),
             "rdkit": importlib.metadata.version("rdkit"),
             "device": str(resolved_device),
-            "gpu": (
-                torch.cuda.get_device_name(0) if torch.cuda.is_available() else None
-            ),
+            "gpu": (torch.cuda.get_device_name(0) if torch.cuda.is_available() else None),
         },
         "runtime_seconds": time.perf_counter() - start,
         "created_at_utc": utc_now(),
@@ -455,10 +432,7 @@ def _candidate_identity(smiles: str) -> tuple[str, ...]:
 
 
 def compile_decoded_predictions(
-    *, decoded_path: str | Path,
-    inventory_path: str | Path,
-    output_path: str | Path,
-    cap: int = 50,
+    *, decoded_path: str | Path, inventory_path: str | Path, output_path: str | Path, cap: int = 50
 ) -> dict[str, Any]:
     inventory_records = [
         json.loads(line)
@@ -570,10 +544,7 @@ def infer_and_decode(*, workspace: str | Path, device: str = "cuda:0") -> dict[s
     )
     final_dir.mkdir(parents=True)
     counts = compile_decoded_predictions(
-        decoded_path=decoded,
-        inventory_path=inventory,
-        output_path=final_predictions,
-        cap=50,
+        decoded_path=decoded, inventory_path=inventory, output_path=final_predictions, cap=50
     )
     manifest = {
         "schema_version": SCHEMA_VERSION,

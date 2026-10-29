@@ -1,22 +1,12 @@
-"""
-Learning-to-rank reranking pipeline for retrosynthesis.
-Candidates are produced by AiZynthFinder (NOT Chemformer).
-
-Modules:
-    encoder          - Module 2: UniMol SMILES encoder with LRU cache
-    features         - Module 3: Multi-modal 11-dim feature extraction
-    dataset          - Module 4: Pairwise dataset builder (JSONL-based)
-    model            - Module 5: MLP reranker
-    loss             - Module 6: Pairwise ranking loss
-    trainer          - Module 7: Training loop
-    inference        - Module 8: Reranking inference
-    evaluate         - Module 9: Evaluation (baseline vs. reranked)
-    embedding_store  - DATA SPEC: UniMol atom-level embedding store
-"""
-
+"""Feature extraction, training and evaluation for reaction-candidate reranking."""
 from rerank.encoder import UniMolEncoder
 from rerank.cached_encoder import CachedUniMolEncoder
-from rerank.features import FeatureExtractor, FeatureNormalizer, FEATURE_NAMES, fit_normalizer_from_dataset
+from rerank.features import (
+    FeatureExtractor,
+    FeatureNormalizer,
+    FEATURE_NAMES,
+    fit_normalizer_from_dataset,
+)
 from rerank.dataset import PairwiseRankingDataset, build_pairwise_dataset
 from rerank.model import RankerMLP
 from rerank.loss import pairwise_ranking_loss
@@ -50,7 +40,7 @@ __all__ = [
     # Inference / evaluation
     "Reranker",
     "evaluate_reranking",
-    # DATA SPEC
+    # Embedding storage
     "EmbeddingStore",
     "MockEmbeddingStore",
     "SampleEmbedding",

@@ -4,10 +4,7 @@ import json
 import numpy as np
 
 from rerank.analysis.analyze_pool_diagnostics import _transfer_inference
-from rerank.analysis.analyze_transfer_study import (
-    J12_SYNC_PROTOCOL_ID,
-    _j12_sync_approval,
-)
+from rerank.analysis.analyze_transfer_study import J12_SYNC_PROTOCOL_ID, _j12_sync_approval
 from rerank.experiments.run_transfer_study import PROTOCOL_ID as K1_PROTOCOL_ID
 
 
@@ -48,4 +45,3 @@ def test_final_j12_approval_is_bound_to_plan(tmp_path):
     )
     record = _j12_sync_approval(approval, plan)
     assert record["j12_sync_protocol_id"] == J12_SYNC_PROTOCOL_ID
-

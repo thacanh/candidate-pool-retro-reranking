@@ -62,11 +62,7 @@ class ProductPool:
     candidates_by_identity: Dict[str, CandidateEntry] = field(default_factory=dict)
 
     def add_candidate(
-        self,
-        candidate_identity: str,
-        prior: float,
-        raw_reactant: str,
-        line_number: int,
+        self, candidate_identity: str, prior: float, raw_reactant: str, line_number: int
     ) -> bool:
         """Add a candidate and return whether it was a canonical duplicate."""
         existing = self.candidates_by_identity.get(candidate_identity)
@@ -111,11 +107,7 @@ def canonicalize_product(smiles: str) -> Optional[str]:
         molecule = Chem.MolFromSmiles(str(smiles))
         if molecule is None:
             return None
-        return Chem.MolToSmiles(
-            molecule,
-            canonical=True,
-            isomericSmiles=True,
-        )
+        return Chem.MolToSmiles(molecule, canonical=True, isomericSmiles=True)
     except Exception:
         return None
 
@@ -138,11 +130,7 @@ def canonicalize_reactant_fragments(smiles: str) -> Optional[str]:
 
 
 def _fatal_error(line_number: int, error_type: str, detail: str) -> dict:
-    return {
-        "line_number": line_number,
-        "type": error_type,
-        "detail": detail,
-    }
+    return {"line_number": line_number, "type": error_type, "detail": detail}
 
 
 def load_normalized_pools(path: str | Path) -> LoadedPools:
@@ -178,9 +166,7 @@ def load_normalized_pools(path: str | Path) -> LoadedPools:
                 record = json.loads(stripped)
             except json.JSONDecodeError as error:
                 audit["malformed_json_lines"] += 1
-                fatal_errors.append(
-                    _fatal_error(line_number, "malformed_json", str(error))
-                )
+                fatal_errors.append(_fatal_error(line_number, "malformed_json", str(error)))
                 continue
             if not isinstance(record, Mapping):
                 audit["malformed_json_lines"] += 1
@@ -194,11 +180,7 @@ def load_normalized_pools(path: str | Path) -> LoadedPools:
             if missing:
                 audit["missing_required_fields"] += 1
                 fatal_errors.append(
-                    _fatal_error(
-                        line_number,
-                        "missing_required_fields",
-                        ",".join(missing),
-                    )
+                    _fatal_error(line_number, "missing_required_fields", ",".join(missing))
                 )
                 continue
 
@@ -214,9 +196,7 @@ def load_normalized_pools(path: str | Path) -> LoadedPools:
                 continue
             if not math.isfinite(prior):
                 audit["nonfinite_prior_records"] += 1
-                fatal_errors.append(
-                    _fatal_error(line_number, "nonfinite_prior", repr(prior))
-                )
+                fatal_errors.append(_fatal_error(line_number, "nonfinite_prior", repr(prior)))
                 continue
 
             audit["candidate_records"] += 1
@@ -246,9 +226,7 @@ def load_normalized_pools(path: str | Path) -> LoadedPools:
             product_pool = pools.get(product_identity)
             if product_pool is None:
                 product_pool = ProductPool(
-                    identity=product_identity,
-                    raw_product=raw_product,
-                    first_seen_line=line_number,
+                    identity=product_identity, raw_product=raw_product, first_seen_line=line_number
                 )
                 pools[product_identity] = product_pool
                 product_order.append(product_identity)
@@ -261,9 +239,7 @@ def load_normalized_pools(path: str | Path) -> LoadedPools:
             audit["canonical_duplicate_records"] += int(was_duplicate)
 
     audit["unique_products"] = len(pools)
-    audit["unique_candidates"] = sum(
-        len(pool.candidates_by_identity) for pool in pools.values()
-    )
+    audit["unique_candidates"] = sum(len(pool.candidates_by_identity) for pool in pools.values())
     return LoadedPools(
         path=str(source_path.resolve()),
         product_order=product_order,
@@ -275,12 +251,11 @@ def load_normalized_pools(path: str | Path) -> LoadedPools:
 
 
 def prior_within_tolerance(reference: float, regenerated: float) -> bool:
-    limit = max(
-        ABSOLUTE_PRIOR_TOLERANCE,
-        RELATIVE_PRIOR_TOLERANCE * abs(reference),
-    )
-    return math.isfinite(reference) and math.isfinite(regenerated) and (
-        abs(regenerated - reference) <= limit
+    limit = max(ABSOLUTE_PRIOR_TOLERANCE, RELATIVE_PRIOR_TOLERANCE * abs(reference))
+    return (
+        math.isfinite(reference)
+        and math.isfinite(regenerated)
+        and (abs(regenerated - reference) <= limit)
     )
 
 
@@ -319,14 +294,9 @@ def float32_ulp_distance(reference: float, regenerated: float) -> Optional[int]:
     return abs(regenerated_integer - reference_integer)
 
 
-def _append_issue(
-    discrepancy_map: Dict[str, dict],
-    product_key: str,
-    issue: dict,
-) -> None:
+def _append_issue(discrepancy_map: Dict[str, dict], product_key: str, issue: dict) -> None:
     discrepancy = discrepancy_map.setdefault(
-        product_key,
-        {"product_key": product_key, "issues": []},
+        product_key, {"product_key": product_key, "issues": []}
     )
     discrepancy["issues"].append(issue)
 
@@ -357,8 +327,7 @@ def _product_order_issues(
 
 
 def compare_loaded_pools(
-    reference: LoadedPools,
-    regenerated: LoadedPools,
+    reference: LoadedPools, regenerated: LoadedPools
 ) -> Tuple[dict, List[dict]]:
     """Compare two already loaded artifacts and return summary plus discrepancies."""
     discrepancy_map: Dict[str, dict] = {}
@@ -367,22 +336,12 @@ def compare_loaded_pools(
     regenerated_keys = set(regenerated.pools)
 
     for product_key in sorted(reference_keys - regenerated_keys):
-        _append_issue(
-            discrepancy_map,
-            product_key,
-            {"type": "missing_product"},
-        )
+        _append_issue(discrepancy_map, product_key, {"type": "missing_product"})
     for product_key in sorted(regenerated_keys - reference_keys):
-        _append_issue(
-            discrepancy_map,
-            product_key,
-            {"type": "extra_product"},
-        )
+        _append_issue(discrepancy_map, product_key, {"type": "extra_product"})
 
     product_order_exact = _product_order_issues(
-        reference.product_order,
-        regenerated.product_order,
-        discrepancy_map,
+        reference.product_order, regenerated.product_order, discrepancy_map
     )
     identity_order_exact = True
     prior_tolerance_passed = True
@@ -414,53 +373,31 @@ def compare_loaded_pools(
                 },
             )
 
-        regenerated_by_identity = {
-            item.identity: item for item in regenerated_candidates
-        }
+        regenerated_by_identity = {item.identity: item for item in regenerated_candidates}
         aligned_regenerated_priors: List[float] = []
         for reference_candidate in reference_candidates:
-            regenerated_candidate = regenerated_by_identity.get(
-                reference_candidate.identity
-            )
+            regenerated_candidate = regenerated_by_identity.get(reference_candidate.identity)
             if regenerated_candidate is None:
                 continue
             aligned_prior_count += 1
-            exact_float_prior_count += int(
-                regenerated_candidate.prior == reference_candidate.prior
-            )
+            exact_float_prior_count += int(regenerated_candidate.prior == reference_candidate.prior)
             aligned_regenerated_priors.append(regenerated_candidate.prior)
-            absolute_difference = abs(
-                regenerated_candidate.prior - reference_candidate.prior
-            )
+            absolute_difference = abs(regenerated_candidate.prior - reference_candidate.prior)
             relative_difference = _relative_difference(
-                reference_candidate.prior,
-                regenerated_candidate.prior,
+                reference_candidate.prior, regenerated_candidate.prior
             )
-            max_absolute_difference = max(
-                max_absolute_difference,
-                absolute_difference,
-            )
-            max_relative_difference = max(
-                max_relative_difference,
-                relative_difference,
-            )
+            max_absolute_difference = max(max_absolute_difference, absolute_difference)
+            max_relative_difference = max(max_relative_difference, relative_difference)
             ulp_distance = float32_ulp_distance(
-                reference_candidate.prior,
-                regenerated_candidate.prior,
+                reference_candidate.prior, regenerated_candidate.prior
             )
             if ulp_distance is None:
                 float32_ulp_unavailable_count += 1
             elif max_float32_ulp_distance is None:
                 max_float32_ulp_distance = ulp_distance
             else:
-                max_float32_ulp_distance = max(
-                    max_float32_ulp_distance,
-                    ulp_distance,
-                )
-            if not prior_within_tolerance(
-                reference_candidate.prior,
-                regenerated_candidate.prior,
-            ):
+                max_float32_ulp_distance = max(max_float32_ulp_distance, ulp_distance)
+            if not prior_within_tolerance(reference_candidate.prior, regenerated_candidate.prior):
                 prior_tolerance_passed = False
                 _append_issue(
                     discrepancy_map,
@@ -473,28 +410,20 @@ def compare_loaded_pools(
                         "absolute_difference": absolute_difference,
                         "allowed_difference": max(
                             ABSOLUTE_PRIOR_TOLERANCE,
-                            RELATIVE_PRIOR_TOLERANCE
-                            * abs(reference_candidate.prior),
+                            RELATIVE_PRIOR_TOLERANCE * abs(reference_candidate.prior),
                         ),
                     },
                 )
 
         # Compare regenerated scores in reference identity order.  A negative
         # adjacent difference is an explicit inversion of the frozen ranking.
-        for left, right in zip(
-            aligned_regenerated_priors,
-            aligned_regenerated_priors[1:],
-        ):
+        for left, right in zip(aligned_regenerated_priors, aligned_regenerated_priors[1:]):
             if left < right:
                 prior_inversion_count += 1
                 _append_issue(
                     discrepancy_map,
                     product_key,
-                    {
-                        "type": "prior_order_inversion",
-                        "left_prior": left,
-                        "right_prior": right,
-                    },
+                    {"type": "prior_order_inversion", "left_prior": left, "right_prior": right},
                 )
 
     if reference.fatal_errors:
@@ -503,10 +432,7 @@ def compare_loaded_pools(
         )
     if regenerated.fatal_errors:
         global_issues.append(
-            {
-                "type": "regenerated_fatal_load_errors",
-                "errors": regenerated.fatal_errors,
-            }
+            {"type": "regenerated_fatal_load_errors", "errors": regenerated.fatal_errors}
         )
     audit_fields = sorted(set(reference.audit).union(regenerated.audit))
     audit_count_differences = {
@@ -520,10 +446,7 @@ def compare_loaded_pools(
     audit_counts_exact = not audit_count_differences
     if not audit_counts_exact:
         global_issues.append(
-            {
-                "type": "raw_audit_counts_mismatch",
-                "differences": audit_count_differences,
-            }
+            {"type": "raw_audit_counts_mismatch", "differences": audit_count_differences}
         )
     rejected_records_exact = (
         reference.rejected_smiles_records == regenerated.rejected_smiles_records
@@ -564,17 +487,13 @@ def compare_loaded_pools(
             "path": reference.path,
             "audit": reference.audit,
             "fatal_error_count": len(reference.fatal_errors),
-            "rejected_smiles_record_count": len(
-                reference.rejected_smiles_records
-            ),
+            "rejected_smiles_record_count": len(reference.rejected_smiles_records),
         },
         "regenerated": {
             "path": regenerated.path,
             "audit": regenerated.audit,
             "fatal_error_count": len(regenerated.fatal_errors),
-            "rejected_smiles_record_count": len(
-                regenerated.rejected_smiles_records
-            ),
+            "rejected_smiles_record_count": len(regenerated.rejected_smiles_records),
         },
         "tolerance": {
             "absolute": ABSOLUTE_PRIOR_TOLERANCE,
@@ -600,9 +519,7 @@ def compare_loaded_pools(
             "aligned_prior_count": aligned_prior_count,
             "exact_float_prior_count": exact_float_prior_count,
             "exact_float_prior_fraction": (
-                exact_float_prior_count / aligned_prior_count
-                if aligned_prior_count
-                else None
+                exact_float_prior_count / aligned_prior_count if aligned_prior_count else None
             ),
             "max_absolute_prior_difference": max_absolute_difference,
             "max_relative_prior_difference": max_relative_difference,
@@ -617,8 +534,7 @@ def compare_loaded_pools(
 
 
 def compare_candidate_pools(
-    reference_path: str | Path,
-    regenerated_path: str | Path,
+    reference_path: str | Path, regenerated_path: str | Path
 ) -> Tuple[dict, List[dict]]:
     reference = load_normalized_pools(reference_path)
     regenerated = load_normalized_pools(regenerated_path)
@@ -643,8 +559,7 @@ def validate_manifest_schema(manifest: Any) -> List[str]:
 
     for field_name in ("protocol_id", "comparator"):
         if field_name in manifest and (
-            not isinstance(manifest[field_name], str)
-            or not manifest[field_name].strip()
+            not isinstance(manifest[field_name], str) or not manifest[field_name].strip()
         ):
             errors.append(f"{field_name} must be a non-empty string")
     if "single_intended_change" in manifest and not _nonempty_change(
@@ -666,21 +581,16 @@ def validate_manifest_schema(manifest: Any) -> List[str]:
                     if required not in fingerprint:
                         errors.append(f"{prefix} missing {required}")
                 path = fingerprint.get("path")
-                if path is not None and (
-                    not isinstance(path, str) or not path.strip()
-                ):
+                if path is not None and (not isinstance(path, str) or not path.strip()):
                     errors.append(f"{prefix}.path must be a non-empty string")
                 size = fingerprint.get("size_bytes")
                 if size is not None and (
-                    isinstance(size, bool)
-                    or not isinstance(size, int)
-                    or size < 0
+                    isinstance(size, bool) or not isinstance(size, int) or size < 0
                 ):
                     errors.append(f"{prefix}.size_bytes must be a non-negative integer")
                 sha256 = fingerprint.get("sha256")
                 if sha256 is not None and (
-                    not isinstance(sha256, str)
-                    or re.fullmatch(r"[0-9a-fA-F]{64}", sha256) is None
+                    not isinstance(sha256, str) or re.fullmatch(r"[0-9a-fA-F]{64}", sha256) is None
                 ):
                     errors.append(f"{prefix}.sha256 must contain 64 hexadecimal digits")
 
@@ -741,10 +651,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if summary_path == discrepancies_path:
         raise ValueError("Summary and discrepancy reports require distinct paths.")
 
-    summary, discrepancies = compare_candidate_pools(
-        args.reference,
-        args.regenerated,
-    )
+    summary, discrepancies = compare_candidate_pools(args.reference, args.regenerated)
     try:
         with Path(args.manifest_json).open("r", encoding="utf-8") as handle:
             manifest = json.load(handle)
@@ -762,18 +669,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         discrepancies.append(
             {
                 "product_key": None,
-                "issues": [
-                    {"type": "manifest_schema_invalid", "errors": manifest_errors}
-                ],
+                "issues": [{"type": "manifest_schema_invalid", "errors": manifest_errors}],
             }
         )
         summary["discrepancy_record_count"] = len(discrepancies)
-    write_reports(
-        summary,
-        discrepancies,
-        summary_path,
-        discrepancies_path,
-    )
+    write_reports(summary, discrepancies, summary_path, discrepancies_path)
     return 0 if summary["passed"] else 1
 
 

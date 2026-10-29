@@ -3,10 +3,10 @@
   "package": "candidate-pool-retro-reranking",
   "version": "0.1.0",
   "status": "development",
-  "updated_at_utc": "2026-10-29T04:06:24.436526+00:00",
+  "updated_at_utc": "2026-10-29T04:23:58.282207+00:00",
   "checksum_file": "checksums.sha256",
   "payload_file_count": 320,
-  "payload_size_bytes": 43700680,
+  "payload_size_bytes": 43715319,
   "common_test_cohort": {
     "path": "data/common_test_3814",
     "reactions": 3814,

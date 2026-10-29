@@ -1,23 +1,4 @@
-"""
-MODULE 2 — UniMol Encoder
-==========================
-Encodes SMILES strings into UniMol embeddings.
-
-Two modes:
-    1. encode_smiles(smiles_list) -> np.ndarray shape (N, 512)
-       Molecular-level CLS token embeddings (one vector per molecule).
-
-    2. encode_atoms(smiles) -> np.ndarray shape (n_atoms, 512)
-       Atom-level token embeddings — required by DATA SPEC for 3D features.
-       This is the representation used by atom_set_similarity / reaction_distance.
-
-Requirements (per AGENT.md):
-    - Handle invalid SMILES (return zero vector / zero matrix)
-    - Use caching (LRU)
-    - Batch encode when possible
-    - Used as a *feature extractor*, NOT a decision model
-"""
-
+"""Uni-Mol molecular and atom representations with caching and fallback handling."""
 from __future__ import annotations
 
 import logging
@@ -32,7 +13,6 @@ logger = logging.getLogger(__name__)
 EMBED_DIM = 512
 
 
-
 # Internal helpers
 
 
@@ -43,12 +23,14 @@ def _try_import_unimol() -> Optional[type]:
     """
     try:
         from unimol_tools import UniMolRepr  # type: ignore
+
         return UniMolRepr
     except ImportError:
         pass
 
     try:
         from unimol import UniMolModel  # type: ignore
+
         return UniMolModel
     except ImportError:
         pass
@@ -58,7 +40,6 @@ def _try_import_unimol() -> Optional[type]:
         "Install with: pip install unimol_tools"
     )
     return None
-
 
 
 # Main class
@@ -86,10 +67,7 @@ class UniMolEncoder:
     """
 
     def __init__(
-        self,
-        cache_size: int = 4096,
-        device: str = "cpu",
-        use_zero_fallback: bool = True,
+        self, cache_size: int = 4096, device: str = "cpu", use_zero_fallback: bool = True
     ) -> None:
         self._device = device
         self._use_zero_fallback = use_zero_fallback
@@ -97,17 +75,11 @@ class UniMolEncoder:
         self._UniMolClass = _try_import_unimol()
 
         # CLS-token (molecular-level) cache
-        self._encode_cls_cached = lru_cache(maxsize=cache_size)(
-            self._encode_cls_uncached
-        )
+        self._encode_cls_cached = lru_cache(maxsize=cache_size)(self._encode_cls_uncached)
         # Atom-level cache — returns (n_atoms, 512) tuples stored as bytes-key
-        self._encode_atoms_cached = lru_cache(maxsize=cache_size)(
-            self._encode_atoms_uncached
-        )
-
+        self._encode_atoms_cached = lru_cache(maxsize=cache_size)(self._encode_atoms_uncached)
 
     # Model initialisation
-
 
     def _load_model(self) -> None:
         """Instantiate UniMol model on first use."""
@@ -118,10 +90,7 @@ class UniMolEncoder:
             return
 
         try:
-            self._model = self._UniMolClass(
-                data_type="molecule",
-                remove_hs=True,
-            )
+            self._model = self._UniMolClass(data_type="molecule", remove_hs=True)
             logger.info("UniMol model loaded successfully.")
         except TypeError:
             try:
@@ -131,14 +100,13 @@ class UniMolEncoder:
                 logger.error("Failed to load UniMol model: %s", exc)
                 self._model = None
 
-
     # SMILES validation
-
 
     def _is_valid_smiles(self, smiles: str) -> bool:
         """Return True if RDKit can parse the SMILES."""
         try:
             from rdkit import Chem  # type: ignore
+
             return Chem.MolFromSmiles(smiles) is not None
         except Exception:
             return False
@@ -147,14 +115,13 @@ class UniMolEncoder:
         """Return number of heavy atoms in molecule (0 on failure)."""
         try:
             from rdkit import Chem  # type: ignore
+
             mol = Chem.MolFromSmiles(smiles)
             return mol.GetNumHeavyAtoms() if mol is not None else 0
         except Exception:
             return 0
 
-
     # CLS (molecular-level) encoding
-
 
     def _encode_cls_uncached(self, smiles: str) -> np.ndarray:
         """
@@ -185,10 +152,11 @@ class UniMolEncoder:
             if arr.shape[0] != EMBED_DIM:
                 logger.warning(
                     "UniMol CLS dim mismatch: got %d, expected %d. Padding.",
-                    arr.shape[0], EMBED_DIM,
+                    arr.shape[0],
+                    EMBED_DIM,
                 )
                 padded = np.zeros(EMBED_DIM, dtype=np.float32)
-                padded[: min(arr.shape[0], EMBED_DIM)] = arr[: EMBED_DIM]
+                padded[: min(arr.shape[0], EMBED_DIM)] = arr[:EMBED_DIM]
                 arr = padded
 
             return arr
@@ -197,9 +165,7 @@ class UniMolEncoder:
             logger.debug("UniMol CLS encoding failed for '%s': %s", smiles, exc)
             return np.zeros(EMBED_DIM, dtype=np.float32)
 
-
     # Atom-level encoding  ← NEW (DATA SPEC requirement)
-
 
     def _encode_atoms_uncached(self, smiles: str) -> np.ndarray:
         """
@@ -239,7 +205,8 @@ class UniMolEncoder:
             if arr.ndim != 2 or arr.shape[1] != EMBED_DIM:
                 logger.warning(
                     "UniMol atom-repr shape unexpected %s for '%s'. Using fallback.",
-                    arr.shape, smiles,
+                    arr.shape,
+                    smiles,
                 )
                 n_atoms = max(self._count_heavy_atoms(smiles), 1)
                 return np.zeros((n_atoms, EMBED_DIM), dtype=np.float32)
@@ -251,9 +218,7 @@ class UniMolEncoder:
             n_atoms = max(self._count_heavy_atoms(smiles), 1)
             return np.zeros((n_atoms, EMBED_DIM), dtype=np.float32)
 
-
     # Public API — CLS-level
-
 
     def encode_smiles(self, smiles_list: List[str]) -> np.ndarray:
         """
@@ -294,9 +259,7 @@ class UniMolEncoder:
         """
         return self.encode_smiles([smiles])[0]
 
-
     # Public API — Atom-level  ← NEW (DATA SPEC requirement)
-
 
     def encode_atoms(self, smiles: str) -> np.ndarray:
         """
@@ -347,9 +310,7 @@ class UniMolEncoder:
             return np.zeros((1, EMBED_DIM), dtype=np.float32)
         return np.concatenate(atom_embs, axis=0).astype(np.float32)
 
-    def encode_atoms_fragments_batch(
-        self, smiles_list: List[str]
-    ) -> List[np.ndarray]:
+    def encode_atoms_fragments_batch(self, smiles_list: List[str]) -> List[np.ndarray]:
         """
         Batch-encode multiple candidate SMILES to atom-level embeddings.
 
@@ -396,28 +357,20 @@ class UniMolEncoder:
         results: List[np.ndarray] = []
         for frags in parsed:
             atom_embs = [
-                frag_cache[f] for f in frags
-                if f in frag_cache and np.any(frag_cache[f] != 0.0)
+                frag_cache[f] for f in frags if f in frag_cache and np.any(frag_cache[f] != 0.0)
             ]
             if not atom_embs:
                 results.append(np.zeros((1, EMBED_DIM), dtype=np.float32))
             else:
-                results.append(
-                    np.concatenate(atom_embs, axis=0).astype(np.float32)
-                )
+                results.append(np.concatenate(atom_embs, axis=0).astype(np.float32))
 
         return results
 
-
     # Cache management
-
 
     def cache_info(self) -> Tuple:
         """Return (cls_cache_info, atoms_cache_info) tuple."""
-        return (
-            self._encode_cls_cached.cache_info(),
-            self._encode_atoms_cached.cache_info(),
-        )
+        return (self._encode_cls_cached.cache_info(), self._encode_atoms_cached.cache_info())
 
     def cache_clear(self) -> None:
         """Clear both CLS and atom-level caches."""

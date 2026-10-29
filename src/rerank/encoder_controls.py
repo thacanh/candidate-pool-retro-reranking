@@ -20,11 +20,7 @@ from typing import Any, Callable, Mapping, Optional, Protocol, Sequence
 import numpy as np
 
 
-CONTROL_FEATURE_NAMES = (
-    "atom_set_similarity",
-    "reaction_distance",
-    "cosine_reaction_vec",
-)
+CONTROL_FEATURE_NAMES = ("atom_set_similarity", "reaction_distance", "cosine_reaction_vec")
 FULL_FEATURE_NAMES = (
     "prior_or_log_prob",
     "morgan_similarity",
@@ -42,9 +38,7 @@ MORGAN_USE_CHIRALITY = False
 GROVER_REPOSITORY_COMMIT = "40b6d97098e4508687912f3c05eca369fc2c6213"
 GROVER_CHECKPOINT_BASENAME = "grover_base.pt"
 GROVER_CHECKPOINT_SIZE = 193_589_423
-GROVER_CHECKPOINT_SHA256 = (
-    "47e095880d71baf29ea6f6253473cd56d5406213fa82959c6e14ea469e06b1de"
-)
+GROVER_CHECKPOINT_SHA256 = "47e095880d71baf29ea6f6253473cd56d5406213fa82959c6e14ea469e06b1de"
 
 
 class EncoderControlError(RuntimeError):
@@ -52,11 +46,14 @@ class EncoderControlError(RuntimeError):
 
 
 class AtomEncoder(Protocol):
-    def initialize(self) -> None: ...
+    def initialize(self) -> None:
+        ...
 
-    def encode_fragments_batch(self, smiles: Sequence[str]) -> list[np.ndarray]: ...
+    def encode_fragments_batch(self, smiles: Sequence[str]) -> list[np.ndarray]:
+        ...
 
-    def metadata(self) -> dict: ...
+    def metadata(self) -> dict:
+        ...
 
 
 class GroverAtomBackend(Protocol):
@@ -64,7 +61,8 @@ class GroverAtomBackend(Protocol):
 
     def encode_atom_states(
         self, smiles_batch: Sequence[str], device: str
-    ) -> Sequence[Mapping[str, Any]]: ...
+    ) -> Sequence[Mapping[str, Any]]:
+        ...
 
 
 def file_sha256(path: str | Path, chunk_size: int = 1024 * 1024) -> str:
@@ -78,11 +76,7 @@ def file_sha256(path: str | Path, chunk_size: int = 1024 * 1024) -> str:
 def file_fingerprint(path: str | Path) -> dict:
     resolved = Path(path).expanduser().resolve()
     stat = resolved.stat()
-    return {
-        "path": str(resolved),
-        "size_bytes": int(stat.st_size),
-        "sha256": file_sha256(resolved),
-    }
+    return {"path": str(resolved), "size_bytes": int(stat.st_size), "sha256": file_sha256(resolved)}
 
 
 def _split_fragments(smiles: str) -> list[str]:
@@ -96,12 +90,8 @@ def _split_fragments(smiles: str) -> list[str]:
 def _atom_set_similarity(product: np.ndarray, reactant: np.ndarray) -> float:
     if product.size == 0 or reactant.size == 0:
         return 0.0
-    product_norm = product / (
-        np.linalg.norm(product, axis=1, keepdims=True) + 1e-10
-    )
-    reactant_norm = reactant / (
-        np.linalg.norm(reactant, axis=1, keepdims=True) + 1e-10
-    )
+    product_norm = product / (np.linalg.norm(product, axis=1, keepdims=True) + 1e-10)
+    reactant_norm = reactant / (np.linalg.norm(reactant, axis=1, keepdims=True) + 1e-10)
     similarities = product_norm @ reactant_norm.T
     product_to_reactant = similarities.max(axis=1).mean()
     reactant_to_product = similarities.max(axis=0).mean()
@@ -123,8 +113,7 @@ def _cosine(first: np.ndarray, second: np.ndarray) -> float:
 
 
 def compute_control_scalars(
-    product_atom_states: np.ndarray,
-    reactant_atom_states: np.ndarray,
+    product_atom_states: np.ndarray, reactant_atom_states: np.ndarray
 ) -> np.ndarray:
     """Compute the frozen f5/f6/f8 formulas without retaining atom states."""
     product = np.asarray(product_atom_states, dtype=np.float32)
@@ -149,10 +138,7 @@ def compute_control_scalars(
 
 
 def compute_query_control_features(
-    encoder: AtomEncoder,
-    product_smiles: str,
-    candidate_smiles: Sequence[str],
-    batch_size: int,
+    encoder: AtomEncoder, product_smiles: str, candidate_smiles: Sequence[str], batch_size: int
 ) -> np.ndarray:
     """Stream one query through an encoder and retain only three scalars/pair."""
     if batch_size < 1:
@@ -165,10 +151,7 @@ def compute_query_control_features(
         candidate_states = encoder.encode_fragments_batch(batch)
         if len(candidate_states) != len(batch):
             raise EncoderControlError("Encoder output is not batch-aligned.")
-        rows.extend(
-            compute_control_scalars(product_states, states)
-            for states in candidate_states
-        )
+        rows.extend(compute_control_scalars(product_states, states) for states in candidate_states)
         del candidate_states
     del product_states
     if not rows:
@@ -193,9 +176,7 @@ def compute_full_query_features(
         raise EncoderControlError("Priors are not aligned to candidate rows.")
     if not np.isfinite(prior_values).all():
         raise EncoderControlError("Candidate priors must be finite.")
-    controls = compute_query_control_features(
-        encoder, product_smiles, candidates, batch_size
-    )
+    controls = compute_query_control_features(encoder, product_smiles, candidates, batch_size)
     product_molecule = Chem.MolFromSmiles(product_smiles)
     if product_molecule is None or product_molecule.GetNumHeavyAtoms() == 0:
         raise EncoderControlError("Product is not a valid non-empty molecule.")
@@ -218,11 +199,7 @@ def compute_full_query_features(
         rows[index] = np.asarray(
             [
                 prior_values[index],
-                float(
-                    DataStructs.TanimotoSimilarity(
-                        product_fingerprint, candidate_fingerprint
-                    )
-                ),
+                float(DataStructs.TanimotoSimilarity(product_fingerprint, candidate_fingerprint)),
                 controls[index, 0],
                 controls[index, 1],
                 controls[index, 2],
@@ -323,9 +300,7 @@ def _default_git_head(repo_path: Path) -> str:
 
 def _load_factory(specification: str, repo_path: Path) -> Callable[..., Any]:
     if ":" not in specification:
-        raise EncoderControlError(
-            "GROVER backend factory must use the form 'module:function'."
-        )
+        raise EncoderControlError("GROVER backend factory must use the form 'module:function'.")
     module_name, function_name = specification.split(":", 1)
     sys.path.insert(0, str(repo_path))
     try:
@@ -368,9 +343,7 @@ class GroverAtomEncoder:
         expectations: GroverAssetExpectations = GroverAssetExpectations(),
         git_head_reader: Callable[[Path], str] = _default_git_head,
     ) -> None:
-        self.repo_path = Path(
-            repo_path or os.environ.get("GROVER_REPO", "")
-        ).expanduser()
+        self.repo_path = Path(repo_path or os.environ.get("GROVER_REPO", "")).expanduser()
         self.checkpoint_path = Path(
             checkpoint_path or os.environ.get("GROVER_CHECKPOINT", "")
         ).expanduser()
@@ -465,10 +438,7 @@ class GroverAtomEncoder:
         self._metadata = {
             "name": "GroverAtomEncoder",
             "device": self.device,
-            "repository": {
-                "path": str(repo),
-                "commit": repository_commit,
-            },
+            "repository": {"path": str(repo), "commit": repository_commit},
             "checkpoint": checkpoint_fingerprint,
             "atom_state_choice": self.atom_state_choice,
             "atom_state_choice_required_by_plan": True,
@@ -497,9 +467,7 @@ class GroverAtomEncoder:
         if not isinstance(output, Mapping):
             raise EncoderControlError("GROVER backend output must be a mapping.")
         if "atom_representations" not in output or "rdkit_atom_indices" not in output:
-            raise EncoderControlError(
-                "GROVER output lacks explicit atom representations/indices."
-            )
+            raise EncoderControlError("GROVER output lacks explicit atom representations/indices.")
         states = np.asarray(output["atom_representations"], dtype=np.float32)
         indices = [int(value) for value in output["rdkit_atom_indices"]]
         expected_count = molecule.GetNumAtoms()
@@ -536,8 +504,9 @@ class GroverAtomEncoder:
             for fragment, output in zip(batch, outputs):
                 fragment_states[fragment] = self._align(fragment, output)
         results = [
-            np.concatenate([fragment_states[fragment] for fragment in fragments], axis=0)
-            .astype(np.float32, copy=False)
+            np.concatenate([fragment_states[fragment] for fragment in fragments], axis=0).astype(
+                np.float32, copy=False
+            )
             for fragments in parsed
         ]
         del fragment_states

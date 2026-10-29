@@ -14,9 +14,7 @@ from pathlib import Path
 
 PROTOCOL_ID = "f1-chemformer-checkpoint-migration-v1"
 EXPECTED_SOURCE_SIZE = 537_441_893
-EXPECTED_SOURCE_SHA256 = (
-    "44203e603e0ed9919213fdd822cb0bff844bd9fbae6f5f5882e1771046f0b287"
-)
+EXPECTED_SOURCE_SHA256 = "44203e603e0ed9919213fdd822cb0bff844bd9fbae6f5f5882e1771046f0b287"
 EXPECTED_VOCABULARY_SIZE = 523
 
 
@@ -142,9 +140,7 @@ def main() -> None:
     import torch
 
     record = migrate(
-        Path(args.source).resolve(),
-        Path(args.output).resolve(),
-        Path(args.manifest).resolve(),
+        Path(args.source).resolve(), Path(args.output).resolve(), Path(args.manifest).resolve()
     )
     print(json.dumps(record, indent=2))
 

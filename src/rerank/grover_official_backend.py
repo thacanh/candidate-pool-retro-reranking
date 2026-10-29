@@ -17,11 +17,7 @@ from typing import Any, Mapping, Sequence
 import numpy as np
 
 
-ATOM_STATE_CHOICES = (
-    "atom_from_atom",
-    "atom_from_bond",
-    "concatenation",
-)
+ATOM_STATE_CHOICES = ("atom_from_atom", "atom_from_bond", "concatenation")
 
 
 class OfficialGroverBackendError(RuntimeError):
@@ -128,9 +124,7 @@ class OfficialGroverAtomBackend:
             return atom_from_bond
         return self._torch.cat((atom_from_atom, atom_from_bond), dim=1)
 
-    def encode_atom_states(
-        self, smiles_batch: Sequence[str], device: str
-    ) -> list[dict]:
+    def encode_atom_states(self, smiles_batch: Sequence[str], device: str) -> list[dict]:
         from rdkit import Chem
 
         if str(device) != self.device:
@@ -177,11 +171,7 @@ class OfficialGroverAtomBackend:
             if atom_start < 0 or atom_stop > int(states.shape[0]):
                 raise OfficialGroverBackendError("a_scope points outside atom-state rows.")
             matrix = (
-                states[atom_start:atom_stop]
-                .detach()
-                .cpu()
-                .numpy()
-                .astype(np.float32, copy=False)
+                states[atom_start:atom_stop].detach().cpu().numpy().astype(np.float32, copy=False)
             )
             if matrix.shape[0] != expected_count or not np.isfinite(matrix).all():
                 raise OfficialGroverBackendError(
@@ -190,10 +180,7 @@ class OfficialGroverAtomBackend:
             # Official MolGraph builds f_atoms by iterating mol.GetAtoms() and
             # BatchMolGraph concatenates without a within-molecule permutation.
             results.append(
-                {
-                    "atom_representations": matrix,
-                    "rdkit_atom_indices": list(range(expected_count)),
-                }
+                {"atom_representations": matrix, "rdkit_atom_indices": list(range(expected_count))}
             )
         return results
 
@@ -210,7 +197,5 @@ class OfficialGroverAtomBackend:
                 "concatenates pooled atom_from_atom and atom_from_bond views; "
                 "documented as rationale, not scientific approval"
             ),
-            "rdkit_atom_order": (
-                "MolGraph mol.GetAtoms order; exact a_scope slice; identity map"
-            ),
+            "rdkit_atom_order": ("MolGraph mol.GetAtoms order; exact a_scope slice; identity map"),
         }

@@ -69,17 +69,13 @@ def _fingerprint(smiles: str, use_chirality: bool):
 def morgan_similarity(left: str, right: str, use_chirality: bool) -> float:
     return float(
         DataStructs.TanimotoSimilarity(
-            _fingerprint(str(left), use_chirality),
-            _fingerprint(str(right), use_chirality),
+            _fingerprint(str(left), use_chirality), _fingerprint(str(right), use_chirality)
         )
     )
 
 
 def replace_morgan_column(
-    product: str,
-    candidates: Iterable[dict[str, Any]],
-    matrix: np.ndarray,
-    audit: dict[str, Any],
+    product: str, candidates: Iterable[dict[str, Any]], matrix: np.ndarray, audit: dict[str, Any]
 ) -> np.ndarray:
     candidates = list(candidates)
     result = np.asarray(matrix, dtype=np.float32).copy()
@@ -124,18 +120,13 @@ def prepare_selection(args: argparse.Namespace) -> dict[str, Any]:
     if output.exists():
         raise FileExistsError(f"Refusing to overwrite F2 selection bundle: {output}")
     primary_freeze = validate_selection_freeze(args.primary_freeze)
-    if "sha256:" + file_sha256(args.primary_selection) != primary_freeze[
-        "selection_bundle_sha256"
-    ]:
+    if "sha256:" + file_sha256(args.primary_selection) != primary_freeze["selection_bundle_sha256"]:
         raise ValueError("Primary selection bundle does not belong to its freeze.")
     bundle = load_selection_bundle(args.primary_selection)
     audit = _new_audit()
     for product in bundle["train_products"]:
         product["features"] = replace_morgan_column(
-            str(product["product_smiles"]),
-            product["candidates"],
-            product["features"],
-            audit,
+            str(product["product_smiles"]), product["candidates"], product["features"], audit
         )
     validation = bundle["validation_payload"]
     validation["eval_features"] = [
@@ -158,9 +149,7 @@ def prepare_selection(args: argparse.Namespace) -> dict[str, Any]:
     bundle["representation_provenance"] = {
         **bundle["representation_provenance"],
         "source_protocol_id": F2_PROTOCOL_ID,
-        "base_source_protocol_id": bundle["representation_provenance"].get(
-            "source_protocol_id"
-        ),
+        "base_source_protocol_id": bundle["representation_provenance"].get("source_protocol_id"),
     }
     bundle["input_fingerprints"] = {
         **bundle["input_fingerprints"],
@@ -234,9 +223,7 @@ def fit_validation(args: argparse.Namespace) -> dict[str, Any]:
     for seed in SEEDS:
         result_path = _trial_path(root, args.arm, seed)
         if result_path.exists():
-            completed[str(seed)] = _validate_trial(
-                root, args.arm, seed, config, bundle_sha
-            )
+            completed[str(seed)] = _validate_trial(root, args.arm, seed, config, bundle_sha)
             continue
         run_dir = result_path.parent
         checkpoint = run_dir / "best_checkpoint.pt"
@@ -292,8 +279,7 @@ def freeze(args: argparse.Namespace) -> dict[str, Any]:
         config = _config(primary, arm)
         selected[arm] = {
             "trials": {
-                str(seed): _validate_trial(root, arm, seed, config, bundle_sha)
-                for seed in SEEDS
+                str(seed): _validate_trial(root, arm, seed, config, bundle_sha) for seed in SEEDS
             }
         }
     record = {
@@ -303,9 +289,7 @@ def freeze(args: argparse.Namespace) -> dict[str, Any]:
         "primary_selection_fingerprint": primary["selection_fingerprint"],
         "primary_freeze": file_fingerprint(args.primary_freeze),
         "selection_bundle": file_fingerprint(args.selection_bundle),
-        "retained_primary_train_test_cache_sha256": primary[
-            "retained_train_test_cache_sha256"
-        ],
+        "retained_primary_train_test_cache_sha256": primary["retained_train_test_cache_sha256"],
         "selected_prior_transform": primary["selected_prior_transform"],
         "selected_baseline": selected["baseline"],
         "selected_augmented": selected["augmented"],
@@ -315,9 +299,12 @@ def freeze(args: argparse.Namespace) -> dict[str, Any]:
         "test_partition_loaded": False,
         "complete": True,
     }
-    record["freeze_fingerprint"] = "sha256:" + __import__("hashlib").sha256(
-        json.dumps(record, sort_keys=True, separators=(",", ":")).encode()
-    ).hexdigest()
+    record["freeze_fingerprint"] = (
+        "sha256:"
+        + __import__("hashlib")
+        .sha256(json.dumps(record, sort_keys=True, separators=(",", ":")).encode())
+        .hexdigest()
+    )
     immutable_json_dump(record, args.output, "F2 chirality model freeze")
     return record
 
@@ -339,8 +326,7 @@ def _primary_prediction_fingerprints(manifest_path: Path) -> dict[str, Any]:
     prediction_dir = manifest_path.parent / "predictions"
     return {
         arm: {
-            str(seed): file_fingerprint(prediction_dir / f"{arm}_seed_{seed}.csv")
-            for seed in SEEDS
+            str(seed): file_fingerprint(prediction_dir / f"{arm}_seed_{seed}.csv") for seed in SEEDS
         }
         for arm in ("baseline", "augmented")
     }
@@ -383,15 +369,14 @@ def evaluate_test(args: argparse.Namespace) -> dict[str, Any]:
     )
     primary_manifest_path = Path(args.primary_test_manifest)
     primary_manifest = json.loads(primary_manifest_path.read_text(encoding="utf-8"))
-    if (
-        primary_manifest.get("selection_fingerprint")
-        != freeze_record["primary_selection_fingerprint"]
-        or not primary_manifest.get("test_partition_loaded_only_after_selection_freeze")
-    ):
+    if primary_manifest.get("selection_fingerprint") != freeze_record[
+        "primary_selection_fingerprint"
+    ] or not primary_manifest.get("test_partition_loaded_only_after_selection_freeze"):
         raise ValueError("Frozen primary false-chirality test manifest is incompatible.")
-    if json.loads(Path(args.f2_freeze).read_text(encoding="utf-8"))[
-        "freeze_fingerprint"
-    ] != original_fingerprint:
+    if (
+        json.loads(Path(args.f2_freeze).read_text(encoding="utf-8"))["freeze_fingerprint"]
+        != original_fingerprint
+    ):
         raise RuntimeError("F2 freeze changed during test evaluation.")
     record = {
         "schema_version": 1,
@@ -403,10 +388,7 @@ def evaluate_test(args: argparse.Namespace) -> dict[str, Any]:
             primary_manifest_path
         ),
         "false_chirality_metrics": primary_manifest["per_seed_metrics"],
-        "true_chirality_metrics": {
-            "baseline": true_baseline,
-            "augmented": true_augmented,
-        },
+        "true_chirality_metrics": {"baseline": true_baseline, "augmented": true_augmented},
         "true_chirality_descriptive_summary": summarize_paired_metrics(
             true_baseline, true_augmented
         ),

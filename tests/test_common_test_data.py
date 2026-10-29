@@ -39,7 +39,7 @@ def test_every_reaction_has_four_covered_ordered_lists():
             assert record['product_smiles'] == reactions[rid]['canonical_product']
             candidates = record['candidates']
             assert 1 <= len(candidates) <= 10
-            assert [c['prior_rank'] for c in candidates] == list(range(1, len(candidates)+1))
+            assert [c['prior_rank'] for c in candidates] == list(range(1, len(candidates) + 1))
             identities = {c['reactants_smiles'] for c in candidates}
             assert len(identities) == len(candidates)
             assert reactions[rid]['canonical_reference_reactants'] in identities
@@ -63,8 +63,8 @@ def test_paired_ranks_reproduce_all_frozen_reaction_effects():
         assert 1 <= int(row['prior_reference_rank']) <= n <= 10
         assert 1 <= a <= n and 1 <= b <= n
         assert n == int(descriptors[key]['candidate_count'])
-        effects[key][0] += (float(a == 1) - float(b == 1))/20
-        effects[key][1] += (1/a - 1/b)/20
+        effects[key][0] += (float(a == 1) - float(b == 1)) / 20
+        effects[key][1] += (1 / a - 1 / b) / 20
     assert set(effects) == set(descriptors)
     for key, effect in effects.items():
         assert seeds[key] == set(range(42, 62))

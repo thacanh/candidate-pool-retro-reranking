@@ -1,15 +1,8 @@
-"""
-cached_encoder.py
-==================
-CachedUniMolEncoder: serves atom-level embeddings from a precomputed
-pickle cache (built by build_embedding.py).
+"""Read precomputed atom embeddings from pickle or SQLite caches.
 
-FIXES:
-  FIX #7: log_misses defaults to True so cache misses are visible.
-  FIX #7: strict=True raises on miss (use during dataset build to catch gaps).
-  FIX #6: coverage_report() helper to check cache hit rate before training.
+Cache misses can be reported or rejected with strict=True. Coverage counters
+allow callers to check whether every required fragment has an embedding.
 """
-
 import os
 import pickle
 import sqlite3
@@ -22,6 +15,7 @@ EMBED_DIM = 512
 
 
 from functools import lru_cache
+
 
 @lru_cache(maxsize=100000)
 def canon(s: str) -> Optional[str]:
@@ -39,8 +33,8 @@ class CachedUniMolEncoder:
         self,
         cache_path: str,
         fallback_device: str = "cpu",
-        log_misses: bool = True,    # FIX #7: default True — misses are now visible
-        strict: bool = False,       # FIX #7: raise on miss during debug
+        log_misses: bool = True,  # default True — misses are now visible
+        strict: bool = False,  # raise on miss during debug
     ):
         self._cache: Dict[str, Optional[np.ndarray]] = {}
         self._fallback_device = fallback_device
@@ -55,25 +49,19 @@ class CachedUniMolEncoder:
 
         self._load_cache(cache_path)
 
-
-    # LOAD CACHE
-
     def _load_cache(self, path: str) -> None:
         with open(path, "rb") as f:
             raw = pickle.load(f)
 
         for smi, emb in raw.items():
-            self._cache[smi] = (
-                None if emb is None else np.asarray(emb, dtype=np.float32)
-            )
+            self._cache[smi] = None if emb is None else np.asarray(emb, dtype=np.float32)
 
         print(
             f"[CachedUniMolEncoder] Cache loaded: {self.cache_size} valid "
             f"/ {self.cache_failed} failed / {self.cache_total} total"
         )
 
-
-    # FIX #6 — coverage report
+    # coverage report
 
     def coverage_report(self, smiles_list: List[str]) -> Dict[str, float]:
         """
@@ -103,21 +91,17 @@ class CachedUniMolEncoder:
         hit_rate = hits / max(n_total, 1)
         if hit_rate < 0.8:
             import logging
+
             logging.getLogger(__name__).warning(
                 "WARNING - LOW CACHE COVERAGE: %.1f%% (%d/%d fragments hit).\n"
                 "   Features f5,f6,f7,f8,f11 will be ZERO for missing entries.\n"
                 "   Run: python -m rerank.data.build_embedding --jsonl outputs/rerank_dataset.jsonl",
-                hit_rate * 100, hits, n_total,
+                hit_rate * 100,
+                hits,
+                n_total,
             )
 
-        return {
-            "hit_rate": hit_rate,
-            "n_hits": hits,
-            "n_total": n_total,
-            "n_missing": len(missing),
-        }
-
-
+        return {"hit_rate": hit_rate, "n_hits": hits, "n_total": n_total, "n_missing": len(missing)}
 
     # CORE ENCODING (fragment-level)
 
@@ -145,10 +129,12 @@ class CachedUniMolEncoder:
                 self.skipped_fragments += 1
                 if self.log_misses:
                     import logging
+
                     logging.getLogger(__name__).warning(
                         "[CACHE MISS] '%s' (canonical: '%s') — skipping fragment. "
                         "Re-run build_embedding.py to populate cache.",
-                        frag, c,
+                        frag,
+                        c,
                     )
                 if self.strict:
                     raise RuntimeError(
@@ -162,6 +148,7 @@ class CachedUniMolEncoder:
                 self.skipped_fragments += 1
                 if self.log_misses:
                     import logging
+
                     logging.getLogger(__name__).warning(
                         "[FAILED EMBEDDING] '%s' — encoding failed during build. "
                         "Skipping fragment.",
@@ -189,33 +176,22 @@ class CachedUniMolEncoder:
             "coverage_ratio": coverage_ratio,
         }
 
-
     # Alias used by FeatureExtractor
     encode_atoms_fragments = encode_atoms
-
-
-    # REQUIRED BY FEATURE EXTRACTOR
 
     def encode_atoms_fragments_batch(self, smiles_list: List[str]) -> List[np.ndarray]:
         """Batch-encode a list of SMILES. Returns list of (n_atoms, EMBED_DIM) arrays."""
         return [self.encode_atoms(s) for s in smiles_list]
 
-
-    # HIGH LEVEL API
-
     def encode_smiles(self, smiles_list: List[str]) -> np.ndarray:
         """Encode list of SMILES to molecular-level CLS embeddings (N, EMBED_DIM)."""
-        return np.stack(
-            [self.encode_atoms(s).mean(axis=0) for s in smiles_list],
-            axis=0,
-        ).astype(np.float32)
+        return np.stack([self.encode_atoms(s).mean(axis=0) for s in smiles_list], axis=0).astype(
+            np.float32
+        )
 
     def encode_single(self, smiles: str) -> np.ndarray:
         """Encode one SMILES to a CLS-level vector (EMBED_DIM,)."""
         return self.encode_smiles([smiles])[0]
-
-
-    # DEBUG / INFO
 
     @property
     def cache_size(self) -> int:
@@ -281,19 +257,15 @@ class SqliteCachedUniMolEncoder:
     @lru_cache(maxsize=2048)
     def _fetch(self, canonical_smiles: str) -> Optional[np.ndarray]:
         row = self._connection.execute(
-            "SELECT n_rows, n_cols, data FROM embeddings WHERE smiles=?",
-            (canonical_smiles,),
+            "SELECT n_rows, n_cols, data FROM embeddings WHERE smiles=?", (canonical_smiles,)
         ).fetchone()
         if row is None and self._repair_connection is not None:
             row = self._repair_connection.execute(
-                "SELECT n_rows, n_cols, data FROM embeddings WHERE smiles=?",
-                (canonical_smiles,),
+                "SELECT n_rows, n_cols, data FROM embeddings WHERE smiles=?", (canonical_smiles,)
             ).fetchone()
         if row is None or row[2] is None:
             return None
-        array = np.frombuffer(row[2], dtype=np.float32).reshape(
-            int(row[0]), int(row[1])
-        )
+        array = np.frombuffer(row[2], dtype=np.float32).reshape(int(row[0]), int(row[1]))
         # Detach from SQLite's transient bytes object before caching.
         return array.copy()
 
@@ -311,6 +283,7 @@ class SqliteCachedUniMolEncoder:
                 self.skipped_fragments += 1
                 if self.log_misses:
                     import logging
+
                     logging.getLogger(__name__).warning(
                         "[SQLITE CACHE MISS] '%s' (canonical: '%s')", fragment, canonical
                     )

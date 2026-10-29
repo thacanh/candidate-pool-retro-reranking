@@ -13,10 +13,7 @@ from rerank.experiments.run_chirality_sensitivity import (
 
 def test_chirality_sensitivity_changes_only_morgan_column() -> None:
     product = "F[C@H](Cl)Br"
-    candidates = [
-        {"smiles": "F[C@@H](Cl)Br", "prior": 0.9},
-        {"smiles": "CCO", "prior": 0.1},
-    ]
+    candidates = [{"smiles": "F[C@@H](Cl)Br", "prior": 0.9}, {"smiles": "CCO", "prior": 0.1}]
     matrix = np.asarray(
         [
             [0.9, morgan_similarity(product, candidates[0]["smiles"], False), 1, 2, 3, 4, 5],
@@ -28,9 +25,7 @@ def test_chirality_sensitivity_changes_only_morgan_column() -> None:
 
     transformed = replace_morgan_column(product, candidates, matrix, audit)
 
-    np.testing.assert_array_equal(
-        transformed[:, [0, 2, 3, 4, 5, 6]], matrix[:, [0, 2, 3, 4, 5, 6]]
-    )
+    np.testing.assert_array_equal(transformed[:, [0, 2, 3, 4, 5, 6]], matrix[:, [0, 2, 3, 4, 5, 6]])
     assert transformed[0, MORGAN_COLUMN] != matrix[0, MORGAN_COLUMN]
     assert audit == {
         "pairs_checked": 2,

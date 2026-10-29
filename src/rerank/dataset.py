@@ -1,30 +1,9 @@
+"""Build product-grouped positive/negative pairs from labeled candidates.
+
+Each JSONL row contains product, reactant, label and prior fields. Features come
+from the configured extractor and supplied encoder or cache. Official-split
+experiments prepare their training and validation inputs through study_data.
 """
-MODULE 4 — Dataset Builder (AiZynthFinder edition)
-====================================================
-Builds pairwise training samples from a pre-labeled JSONL file produced
-by AiZynthFinder — NO Chemformer, NO candidate generation.
-
-Input file: outputs/rerank_dataset.jsonl
-    Each line: {"product": str, "reactant": str, "label": 0|1, "prior": float}
-    Multiple rows per product (one per candidate).
-
-Process:
-    1. Stream JSONL; group all candidates per product.
-    2. Sort candidates by prior DESC → assign rank (0-based).
-    3. Split into positives (label=1) and negatives (label=0).
-    4. For each positive: sample up to max_neg_per_pos negatives.
-    5. Batch-encode all candidates via UniMolEncoder (one pass per product).
-    6. Extract 11-dim feature vectors via FeatureExtractor.
-    7. Return PairwiseRankingDataset of (x_pos, x_neg) float32 tensor pairs.
-
-DATA SPEC compliance:
-    - product_atom_emb  : encode_atoms(product_smiles)   — computed ONCE per product.
-    - candidate embs    : encode_atoms_fragments_batch() — ALL candidates in one pass.
-    - prior             : used in place of log_prob for f1 and rank assignment.
-    - FEATURE_DIM stays at 11 (unchanged from features.py).
-    - EmbeddingStore    : optional; used for product embeddings when available.
-"""
-
 from __future__ import annotations
 
 import json
@@ -39,6 +18,7 @@ import numpy as np
 try:
     import torch
     from torch.utils.data import Dataset
+
     _TORCH_AVAILABLE = True
 except ImportError:
     _TORCH_AVAILABLE = False
@@ -51,10 +31,10 @@ logger = logging.getLogger(__name__)
 # Suppress RDKit C++ valence / atom warnings
 try:
     from rdkit import RDLogger as _RDLogger
+
     _RDLogger.DisableLog("rdApp.*")
 except Exception:
     pass
-
 
 
 # Internal data structure
@@ -63,11 +43,11 @@ except Exception:
 @dataclass
 class _Candidate:
     """One AiZynthFinder candidate for a given product."""
-    reactant: str
-    label:    int    # 0 or 1
-    prior:    float
-    rank:     int = field(default=0, init=False)  # assigned after sorting
 
+    reactant: str
+    label: int  # 0 or 1
+    prior: float
+    rank: int = field(default=0, init=False)  # assigned after sorting
 
 
 # SMILES canonicalisation helper
@@ -77,6 +57,7 @@ def _canonicalize(smiles: str) -> str:
     """Return canonical SMILES using RDKit, or original string on failure."""
     try:
         from rdkit import Chem  # type: ignore
+
         mol = Chem.MolFromSmiles(smiles)
         if mol is None:
             return smiles
@@ -84,7 +65,6 @@ def _canonicalize(smiles: str) -> str:
         return canonical if canonical else smiles
     except Exception:
         return smiles
-
 
 
 # JSONL streaming + grouping
@@ -115,10 +95,10 @@ def _load_and_group(jsonl_path: str) -> Dict[str, List[_Candidate]]:
                 n_skipped += 1
                 continue
 
-            product  = rec.get("product",  "")
+            product = rec.get("product", "")
             reactant = rec.get("reactant", "")
-            label    = int(rec.get("label", 0))
-            prior    = float(rec.get("prior", 0.0))
+            label = int(rec.get("label", 0))
+            prior = float(rec.get("prior", 0.0))
 
             if not product or not reactant:
                 n_skipped += 1
@@ -126,9 +106,7 @@ def _load_and_group(jsonl_path: str) -> Dict[str, List[_Candidate]]:
 
             groups[product].append(_Candidate(reactant=reactant, label=label, prior=prior))
 
-    logger.info(
-        "Grouped %d unique products (%d lines skipped).", len(groups), n_skipped
-    )
+    logger.info("Grouped %d unique products (%d lines skipped).", len(groups), n_skipped)
 
     # Assign rank within each product (prior DESC → rank 0 = best)
     for cands in groups.values():
@@ -139,15 +117,14 @@ def _load_and_group(jsonl_path: str) -> Dict[str, List[_Candidate]]:
     return dict(groups)
 
 
-
 # Core builder — extracts features and assembles pairs
 
 
 def build_pairwise_dataset(
-    jsonl_path:          str,
+    jsonl_path: str,
     feature_extractor,
-    max_neg_per_pos:     Optional[int] = None,
-    seed:                int = 42,
+    max_neg_per_pos: Optional[int] = None,
+    seed: int = 42,
     embedding_store=None,
     negative_mining: Literal["random", "mixed"] = "random",
 ) -> "PairwiseRankingDataset":
@@ -206,13 +183,12 @@ def build_pairwise_dataset(
 
     all_pairs: List[Tuple[np.ndarray, np.ndarray]] = []
 
-    n_products          = len(groups)
-    n_with_positives    = 0
+    n_products = len(groups)
+    n_with_positives = 0
     n_without_positives = 0
     n_without_negatives = 0
 
     for product_smi, candidates in tqdm(groups.items(), desc="Building pairs", unit="product"):
-
         positives = [c for c in candidates if c.label == 1]
         negatives = [c for c in candidates if c.label == 0]
 
@@ -232,7 +208,7 @@ def build_pairwise_dataset(
         # Sort by rank so the feature extractor receives them in priority order
         # (positives and negatives interleaved as they appear in the ranked list).
         all_cands_sorted = sorted(candidates, key=lambda c: c.rank)
-        cand_smiles      = [c.reactant for c in all_cands_sorted]
+        cand_smiles = [c.reactant for c in all_cands_sorted]
 
         # prior replaces log_prob: passed directly as the f1 scalar signal
         cand_priors = [c.prior for c in all_cands_sorted]
@@ -253,16 +229,15 @@ def build_pairwise_dataset(
         feature_matrix = feature_extractor.extract_features_batch(
             product_smiles=product_smi,
             candidates=cand_smiles,
-            log_probs=cand_priors,   # prior ← replaces log_prob
-            ranks=ranks,             # f2: correct prior-sorted rank
+            log_probs=cand_priors,  # prior ← replaces log_prob
+            ranks=ranks,  # f2: correct prior-sorted rank
             dataset_idx=dataset_idx,
         )
         # feature_matrix shape: (len(all_cands_sorted), FEATURE_DIM)
 
         # Build a lookup: reactant_smiles → feature_vector
         feat_by_reactant: Dict[str, np.ndarray] = {
-            cand.reactant: feature_matrix[i]
-            for i, cand in enumerate(all_cands_sorted)
+            cand.reactant: feature_matrix[i] for i, cand in enumerate(all_cands_sorted)
         }
 
         # Pairwise (pos, neg) assembly
@@ -297,13 +272,16 @@ def build_pairwise_dataset(
         ratio = cov["coverage_ratio"]
         logger.info(
             "Runtime Cache Coverage Summary: %.1f%% (%d/%d fragments hit, %d skipped)",
-            ratio * 100, cov["hit_fragments"], cov["total_fragments"], cov["skipped_fragments"]
+            ratio * 100,
+            cov["hit_fragments"],
+            cov["total_fragments"],
+            cov["skipped_fragments"],
         )
         if ratio < 0.95:
             logger.warning(
                 "WARNING - LOW RUNTIME CACHE COVERAGE: %.1f%%. This means 3D features are "
                 "being zeroed out for missing fragments, potentially invalidating results.",
-                ratio * 100
+                ratio * 100,
             )
 
     logger.info(
@@ -317,7 +295,6 @@ def build_pairwise_dataset(
     )
 
     return PairwiseRankingDataset(all_pairs, seed=seed)
-
 
 
 # PyTorch Dataset (interface unchanged)
@@ -338,16 +315,12 @@ class PairwiseRankingDataset(Dataset):
         seed:  Random seed (stored for reproducibility metadata).
     """
 
-    def __init__(
-        self,
-        pairs: List[Tuple[np.ndarray, np.ndarray]],
-        seed: int = 42,
-    ) -> None:
+    def __init__(self, pairs: List[Tuple[np.ndarray, np.ndarray]], seed: int = 42) -> None:
         if not _TORCH_AVAILABLE:
             raise ImportError("torch is required for PairwiseRankingDataset.")
 
         self._pairs = pairs
-        self._seed  = seed
+        self._seed = seed
         self._tensor_pos = None
         self._tensor_neg = None
 
@@ -358,10 +331,7 @@ class PairwiseRankingDataset(Dataset):
         if self._tensor_pos is not None and self._tensor_neg is not None:
             return self._tensor_pos[idx], self._tensor_neg[idx]
         x_pos, x_neg = self._pairs[idx]
-        return (
-            torch.tensor(x_pos, dtype=torch.float32),
-            torch.tensor(x_neg, dtype=torch.float32),
-        )
+        return (torch.tensor(x_pos, dtype=torch.float32), torch.tensor(x_neg, dtype=torch.float32))
 
     @property
     def feature_dim(self) -> int:
@@ -392,10 +362,12 @@ class PairwiseRankingDataset(Dataset):
             leave=False,
             disable=not show_progress,
         ):
-            new_pairs.append((
-                normalizer.transform(np.asarray(x_pos, dtype=np.float32)),
-                normalizer.transform(np.asarray(x_neg, dtype=np.float32)),
-            ))
+            new_pairs.append(
+                (
+                    normalizer.transform(np.asarray(x_pos, dtype=np.float32)),
+                    normalizer.transform(np.asarray(x_neg, dtype=np.float32)),
+                )
+            )
         self._pairs = new_pairs
         # Materialize contiguous tensors once.  The previous implementation
         # rebuilt two tensors for every pair in every epoch, even though the
@@ -407,28 +379,21 @@ class PairwiseRankingDataset(Dataset):
         self._tensor_neg = torch.from_numpy(
             np.stack([pair[1] for pair in self._pairs]).astype(np.float32, copy=False)
         )
-        logger.info(
-            "apply_normalizer: re-normalized %d pairs in-place.", len(self._pairs)
-        )
-
+        logger.info("apply_normalizer: re-normalized %d pairs in-place.", len(self._pairs))
 
 
 # High-level helper: load 1 file → auto-split train / eval by product
 
 
 def build_train_eval_datasets(
-    jsonl_path:      str,
+    jsonl_path: str,
     feature_extractor,
-    train_ratio:     float = 0.8,
+    train_ratio: float = 0.8,
     max_neg_per_pos: Optional[int] = None,
-    split_seed:      int = 42,
-    train_seed:      int = 42,
+    split_seed: int = 42,
+    train_seed: int = 42,
     negative_mining: Literal["random", "mixed"] = "random",
-) -> Tuple[
-    "PairwiseRankingDataset",
-    List[Tuple[str, List[dict]]],
-    List[str],
-]:
+) -> Tuple["PairwiseRankingDataset", List[Tuple[str, List[dict]]], List[str]]:
     """
     Load 1 JSONL → split at **product level** → build train dataset + eval groups.
 
@@ -457,24 +422,28 @@ def build_train_eval_datasets(
 
     # Only keep products that have at least 1 positive AND 1 negative
     valid_products = [
-        p for p in all_products
-        if any(c.label == 1 for c in groups[p])
-        and any(c.label == 0 for c in groups[p])
+        p
+        for p in all_products
+        if any(c.label == 1 for c in groups[p]) and any(c.label == 0 for c in groups[p])
     ]
     logger.info(
         "Total products: %d | valid (has pos+neg): %d | discarded: %d",
-        len(all_products), len(valid_products), len(all_products) - len(valid_products),
+        len(all_products),
+        len(valid_products),
+        len(all_products) - len(valid_products),
     )
 
     # 2. Split at product level
     rng_split.shuffle(valid_products)
     n_train = max(1, int(len(valid_products) * train_ratio))
     train_products = set(valid_products[:n_train])
-    eval_products  = set(valid_products[n_train:])
+    eval_products = set(valid_products[n_train:])
 
     logger.info(
         "Split: %d train products | %d eval products  (ratio=%.0f%%)",
-        len(train_products), len(eval_products), train_ratio * 100,
+        len(train_products),
+        len(eval_products),
+        train_ratio * 100,
     )
 
     # 3. Build training JSONL groups
@@ -492,8 +461,8 @@ def build_train_eval_datasets(
 
         all_cands_sorted = sorted(candidates, key=lambda c: c.rank)
         cand_smiles = [c.reactant for c in all_cands_sorted]
-        cand_priors = [c.prior    for c in all_cands_sorted]
-        ranks       = [c.rank     for c in all_cands_sorted]
+        cand_priors = [c.prior for c in all_cands_sorted]
+        ranks = [c.rank for c in all_cands_sorted]
 
         feature_matrix = feature_extractor.extract_features_batch(
             product_smiles=product_smi,
@@ -538,13 +507,16 @@ def build_train_eval_datasets(
         ratio = cov["coverage_ratio"]
         logger.info(
             "Runtime Cache Coverage Summary: %.1f%% (%d/%d fragments hit, %d skipped)",
-            ratio * 100, cov["hit_fragments"], cov["total_fragments"], cov["skipped_fragments"]
+            ratio * 100,
+            cov["hit_fragments"],
+            cov["total_fragments"],
+            cov["skipped_fragments"],
         )
         if ratio < 0.95:
             logger.warning(
                 "WARNING - LOW RUNTIME CACHE COVERAGE: %.1f%%. This means 3D features are "
                 "being zeroed out for missing fragments, potentially invalidating results.",
-                ratio * 100
+                ratio * 100,
             )
 
     # 5. Build eval groups (format cho TripleComparison)
@@ -558,15 +530,16 @@ def build_train_eval_datasets(
             continue
         cands_for_eval = sorted(
             [{"smiles": c.reactant, "prior": c.prior} for c in candidates],
-            key=lambda c: c["prior"], reverse=True,
+            key=lambda c: c["prior"],
+            reverse=True,
         )
         eval_products_with_cands.append((prod, cands_for_eval))
         eval_ground_truths.append(gt)
 
     logger.info(
         "Eval: %d products, %d ground truths.",
-        len(eval_products_with_cands), len(eval_ground_truths),
+        len(eval_products_with_cands),
+        len(eval_ground_truths),
     )
 
     return train_dataset, eval_products_with_cands, eval_ground_truths
-

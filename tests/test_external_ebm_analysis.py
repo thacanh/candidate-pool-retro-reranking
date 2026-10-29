@@ -33,8 +33,7 @@ def _external(seed: int) -> pd.DataFrame:
 
 def test_external_analysis_pairs_and_counts_rank_changes():
     aligned = {
-        seed: align_predictions(_reference(), _external(seed))
-        for seed in PUBLISHED_EBM_SEEDS
+        seed: align_predictions(_reference(), _external(seed)) for seed in PUBLISHED_EBM_SEEDS
     }
     matrices, summary = build_paired_matrices(aligned)
     assert matrices["top1"].shape == (3, 3)

@@ -1,16 +1,4 @@
-"""
-MODULE 7 — Training Loop
-=========================
-Full training loop for the MLP reranker.
-
-FIXES APPLIED:
-  1. Loss: uses PairwiseRankingLoss (BPR) — NOT BCE/MSE
-  2. FeatureNormalizer: fitted on training data and attached to extractor
-  3. f2 leakage: rank scaled to [0,1] via /max_rank during feature extraction
-  4. Embedding validation: warns when std(embedding) ≈ 0 (zero vectors)
-  5. log_misses / strict: surfaced via TrainerConfig.encoder_strict
-"""
-
+"""Pairwise MLP training, validation and checkpoint selection."""
 from __future__ import annotations
 
 import logging
@@ -27,10 +15,10 @@ try:
     import torch
     import torch.optim as optim
     from torch.utils.data import DataLoader, random_split
+
     _TORCH_AVAILABLE = True
 except ImportError:
     _TORCH_AVAILABLE = False
-
 
 
 # Training configuration
@@ -52,7 +40,7 @@ class TrainerConfig:
     batch_size: int = 256
 
     # Loss
-    margin: float = 0.0          # 0 = BPR; try 1.0 for hinge variant
+    margin: float = 0.0  # 0 = BPR; try 1.0 for hinge variant
 
     # Regularisation
     grad_clip: float = 1.0
@@ -72,10 +60,9 @@ class TrainerConfig:
     # Early stopping
     early_stopping_patience: int = 10
 
-    # FIX #4 / #7: encoder debug settings
-    encoder_log_misses: bool = True   # warn on cache miss
-    encoder_strict: bool = False      # raise on cache miss (set True to debug)
-
+    # encoder debug settings
+    encoder_log_misses: bool = True  # warn on cache miss
+    encoder_strict: bool = False  # raise on cache miss (set True to debug)
 
 
 # RankerTrainer
@@ -104,15 +91,11 @@ class RankerTrainer:
         self._shuffle_generator.manual_seed(self.cfg.seed)
 
         from rerank.loss import PairwiseRankingLoss
-        self.criterion = PairwiseRankingLoss(
-            margin=self.cfg.margin,
-            reduction="mean",
-        )
+
+        self.criterion = PairwiseRankingLoss(margin=self.cfg.margin, reduction="mean")
 
         self.optimizer = optim.AdamW(
-            self.model.parameters(),
-            lr=self.cfg.learning_rate,
-            weight_decay=self.cfg.weight_decay,
+            self.model.parameters(), lr=self.cfg.learning_rate, weight_decay=self.cfg.weight_decay
         )
 
         self.scheduler = optim.lr_scheduler.CosineAnnealingLR(
@@ -126,9 +109,7 @@ class RankerTrainer:
         self.best_val_loss = float("inf")
         self._epochs_no_improve = 0
 
-
     # Public API
-
 
     def fit(self, dataset) -> None:
         """
@@ -153,7 +134,7 @@ class RankerTrainer:
                 f"or RankerMLP.for_3d() for 3D datasets (dim=10)."
             )
 
-        # FIX #6: validate embeddings before training
+        # validate embeddings before training
         self._validate_embeddings(dataset)
 
         train_loader, val_loader = self._make_dataloaders(dataset)
@@ -228,9 +209,7 @@ class RankerTrainer:
             self.model.save(self.cfg.checkpoint_path)
             logger.info("No checkpoint found; saved final model to %s", self.cfg.checkpoint_path)
 
-
-    # FIX #6 — Embedding validation
-
+    # Embedding validation
 
     def _validate_embeddings(self, dataset) -> None:
         """
@@ -247,7 +226,7 @@ class RankerTrainer:
             sample_feats.append(x_pos.numpy())
             sample_feats.append(x_neg.numpy())
 
-        X = np.stack(sample_feats, axis=0)   # (2*n_check, dim)
+        X = np.stack(sample_feats, axis=0)  # (2*n_check, dim)
         means = X.mean(axis=0)
         stds = X.std(axis=0)
         mins = X.min(axis=0)
@@ -255,6 +234,7 @@ class RankerTrainer:
 
         dim = X.shape[1]
         from rerank.features import FEATURE_NAMES_MAP
+
         feature_names = []
         for mode, names in FEATURE_NAMES_MAP.items():
             if len(names) == dim:
@@ -267,11 +247,15 @@ class RankerTrainer:
         logger.info("=" * 80)
         logger.info("FEATURE DISTRIBUTION DIAGNOSTICS (sampled from %d vectors)", len(X))
         logger.info("=" * 80)
-        logger.info(f"{'Index':<6} {'Feature Name':<25} {'Mean':>10} {'Std':>10} {'Min':>10} {'Max':>10}")
+        logger.info(
+            f"{'Index':<6} {'Feature Name':<25} {'Mean':>10} {'Std':>10} {'Min':>10} {'Max':>10}"
+        )
         logger.info("-" * 80)
         for idx in range(dim):
             name = feature_names[idx]
-            logger.info(f"{idx:<6} {name:<25} {means[idx]:>10.4f} {stds[idx]:>10.4f} {mins[idx]:>10.4f} {maxs[idx]:>10.4f}")
+            logger.info(
+                f"{idx:<6} {name:<25} {means[idx]:>10.4f} {stds[idx]:>10.4f} {mins[idx]:>10.4f} {maxs[idx]:>10.4f}"
+            )
         logger.info("=" * 80)
 
         # Check for zero-std features (cache misses)
@@ -292,7 +276,7 @@ class RankerTrainer:
             corr = np.corrcoef(X.T)
             # Log correlation matrix for debug/manual review
             logger.debug("Feature Correlation Matrix:\n%s", np.round(corr, 3))
-            
+
             redundant_pairs = []
             for i in range(dim):
                 for j in range(i + 1, dim):
@@ -300,17 +284,16 @@ class RankerTrainer:
                     if abs(r_val) > 0.92:
                         redundant_pairs.append((feature_names[i], feature_names[j], r_val))
             if redundant_pairs:
-                logger.warning("HIGHLY CORRELATED (REDUNDANT) FEATURES DETECTED (threshold |r| > 0.92):")
+                logger.warning(
+                    "HIGHLY CORRELATED (REDUNDANT) FEATURES DETECTED (threshold |r| > 0.92):"
+                )
                 for f1_name, f2_name, r_val in redundant_pairs:
                     logger.warning("   * %s vs %s: r = %.4f", f1_name, f2_name, r_val)
             else:
                 logger.info("Correlation check passed: no feature pairs have |r| > 0.92.")
         logger.info("=" * 80)
 
-
-
     # Epoch-level methods
-
 
     def _train_epoch(self, dataloader: "DataLoader", epoch: int) -> float:
         self.model.train()
@@ -337,9 +320,7 @@ class RankerTrainer:
                 loss = self.criterion(score_pos, score_neg)
                 loss.backward()
                 if self.cfg.grad_clip > 0:
-                    torch.nn.utils.clip_grad_norm_(
-                        self.model.parameters(), self.cfg.grad_clip
-                    )
+                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.cfg.grad_clip)
                 self.optimizer.step()
                 total_loss += loss.item()
                 n_batches += 1
@@ -351,7 +332,7 @@ class RankerTrainer:
 
             self.optimizer.zero_grad()
 
-            # FIX #1: pairwise ranking loss — model.score() returns (B,)
+            # pairwise ranking loss — model.score() returns (B,)
             score_pos = self.model.score(x_pos)
             score_neg = self.model.score(x_neg)
 
@@ -359,9 +340,7 @@ class RankerTrainer:
             loss.backward()
 
             if self.cfg.grad_clip > 0:
-                torch.nn.utils.clip_grad_norm_(
-                    self.model.parameters(), self.cfg.grad_clip
-                )
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.cfg.grad_clip)
 
             self.optimizer.step()
 
@@ -389,13 +368,9 @@ class RankerTrainer:
 
         return total_loss / max(n_batches, 1)
 
-
     # Helpers
 
-
-    def _make_dataloaders(
-        self, dataset
-    ) -> Tuple["DataLoader", Optional["DataLoader"]]:
+    def _make_dataloaders(self, dataset) -> Tuple["DataLoader", Optional["DataLoader"]]:
         n_total = len(dataset)
         n_val = max(1, int(n_total * self.cfg.val_fraction)) if self.cfg.val_fraction > 0 else 0
         n_train = n_total - n_val
@@ -404,14 +379,9 @@ class RankerTrainer:
         generator.manual_seed(self.cfg.seed)
 
         if n_val > 0:
-            train_ds, val_ds = random_split(
-                dataset, [n_train, n_val], generator=generator,
-            )
+            train_ds, val_ds = random_split(dataset, [n_train, n_val], generator=generator)
             val_loader = DataLoader(
-                val_ds,
-                batch_size=self.cfg.batch_size,
-                shuffle=False,
-                drop_last=False,
+                val_ds, batch_size=self.cfg.batch_size, shuffle=False, drop_last=False
             )
         else:
             train_ds = dataset

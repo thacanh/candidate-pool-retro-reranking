@@ -36,11 +36,7 @@ from rerank.analysis.analyze_predictions import (
 from rerank.evaluate import evaluate_reranking
 from rerank.features import FeatureNormalizer
 from rerank.model import RankerMLP
-from rerank.tuning import (
-    feature_columns_for_arm,
-    file_sha256,
-    transform_feature_matrix,
-)
+from rerank.tuning import feature_columns_for_arm, file_sha256, transform_feature_matrix
 from rerank.study_data import load_reactions
 from rerank.pool_streaming import atomic_json, fingerprint, sha256_file, utc_now
 from rerank.experiments import run_pool_ranking as ws_e
@@ -78,9 +74,7 @@ def project_root() -> Path:
 
 def default_output_root(root: Path) -> Path:
     return (
-        root
-        / "outputs/digital_discovery_round_jk/reviewer_sensitivity"
-        / "shared_hyperparameters"
+        root / "outputs/digital_discovery_round_jk/reviewer_sensitivity" / "shared_hyperparameters"
     )
 
 
@@ -114,9 +108,7 @@ def require_fingerprint(record: Mapping[str, Any], label: str) -> Path:
 
 
 def _git_head(root: Path) -> str:
-    return subprocess.check_output(
-        ["git", "rev-parse", "HEAD"], cwd=root, text=True
-    ).strip()
+    return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
 
 
 def environment_record() -> dict[str, Any]:
@@ -273,7 +265,10 @@ def validate_approval(root: Path) -> dict[str, Any]:
 
 
 def _primary_freeze(root: Path) -> Path:
-    return root / "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/freeze/model_selection.json"
+    return (
+        root
+        / "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/freeze/model_selection.json"
+    )
 
 
 def _historical_search(root: Path) -> Path:
@@ -313,10 +308,7 @@ def _validate_primary_configs(root: Path) -> dict[str, Any]:
 
 def _historical_trial_path(root: Path, stratum: str, arm: str, seed: int) -> Path:
     index = int(STRATA[stratum]["index"])
-    return (
-        _historical_search(root)
-        / f"search/{arm}/raw/config_{index:03d}/seed_{seed}/trial.json"
-    )
+    return _historical_search(root) / f"search/{arm}/raw/config_{index:03d}/seed_{seed}/trial.json"
 
 
 def _validate_historical_trial(root: Path, stratum: str, arm: str, seed: int) -> dict:
@@ -380,7 +372,9 @@ def preflight(root: Path) -> dict[str, Any]:
             require_fingerprint(record, f"K1 {pool} selection input")
         for stratum, matching_arm in MATCHING_ARM.items():
             for seed in SEEDS:
-                path = _source_models(root, pool) / f"validation/{matching_arm}/seed_{seed}/trial.json"
+                path = (
+                    _source_models(root, pool) / f"validation/{matching_arm}/seed_{seed}/trial.json"
+                )
                 _validate_source_trial(path, pool, matching_arm, seed, STRATA[stratum])
                 source_count += 1
     return {
@@ -438,12 +432,7 @@ def _selection_subset(root: Path, pool: str, approval: Mapping[str, Any]) -> dic
 
 
 def _imported_trial(
-    source_path: Path,
-    pool: str,
-    stratum: str,
-    arm: str,
-    seed: int,
-    approval: Mapping[str, Any],
+    source_path: Path, pool: str, stratum: str, arm: str, seed: int, approval: Mapping[str, Any]
 ) -> dict[str, Any]:
     source = _validate_source_trial(source_path, pool, arm, seed, STRATA[stratum])
     result = copy.deepcopy(source)
@@ -472,15 +461,15 @@ def prepare(root: Path, output_root: Path) -> dict[str, Any]:
         for pool in ALT_POOLS:
             pool_root = _pool_root(output_root, stratum, pool)
             write_immutable_json(
-                pool_root / "selection/manifest.json",
-                _selection_subset(root, pool, approval),
+                pool_root / "selection/manifest.json", _selection_subset(root, pool, approval)
             )
             for seed in SEEDS:
-                source = _source_models(root, pool) / f"validation/{matching_arm}/seed_{seed}/trial.json"
+                source = (
+                    _source_models(root, pool) / f"validation/{matching_arm}/seed_{seed}/trial.json"
+                )
                 target = pool_root / f"models/validation/{matching_arm}/seed_{seed}/trial.json"
                 write_immutable_json(
-                    target,
-                    _imported_trial(source, pool, stratum, matching_arm, seed, approval),
+                    target, _imported_trial(source, pool, stratum, matching_arm, seed, approval)
                 )
     manifest_path = output_root / "preparation_manifest.json"
     existing_created_at = (
@@ -550,7 +539,10 @@ def run_missing_fits(root: Path, output_root: Path, workers: int, device: str) -
         arm = "augmented" if MATCHING_ARM[stratum] == "baseline" else "baseline"
         for pool in ALT_POOLS:
             for seed in SEEDS:
-                trial = _pool_root(output_root, stratum, pool) / f"models/validation/{arm}/seed_{seed}/trial.json"
+                trial = (
+                    _pool_root(output_root, stratum, pool)
+                    / f"models/validation/{arm}/seed_{seed}/trial.json"
+                )
                 if not trial.exists():
                     jobs.append(
                         [
@@ -581,7 +573,9 @@ def run_missing_fits(root: Path, output_root: Path, workers: int, device: str) -
             completed_count += 1
             print(f"\rShared-HP fits: {completed_count}/{total}", end="", flush=True)
             if returncode:
-                failures.append({"command": command, "returncode": returncode, "output": output[-4000:]})
+                failures.append(
+                    {"command": command, "returncode": returncode, "output": output[-4000:]}
+                )
     print(flush=True)
     if failures:
         raise RuntimeError(json.dumps(failures, indent=2))
@@ -648,7 +642,10 @@ def _load_historical_test_payload(root: Path, freeze_path: Path) -> dict[str, An
     if not freeze.get("complete") or freeze.get("protocol_id") != PROTOCOL_ID:
         raise PermissionError("Historical test scoring requires a complete sensitivity freeze.")
     primary = _validate_primary_configs(root)
-    cache = root / "outputs/jcheminform_revision/conformers/seed_42/features/official_3d_prior_schema1.pkl"
+    cache = (
+        root
+        / "outputs/jcheminform_revision/conformers/seed_42/features/official_3d_prior_schema1.pkl"
+    )
     if sha256_file(cache) != primary["retained_train_test_cache_sha256"]:
         raise PermissionError("Historical train/test cache differs from the primary freeze.")
     with open(cache, "rb") as handle:
@@ -663,12 +660,7 @@ def _load_historical_test_payload(root: Path, freeze_path: Path) -> dict[str, An
 
 
 def _score_historical_arm(
-    root: Path,
-    output_root: Path,
-    stratum: str,
-    arm: str,
-    payload: Mapping[str, Any],
-    device: str,
+    root: Path, output_root: Path, stratum: str, arm: str, payload: Mapping[str, Any], device: str
 ) -> dict[str, Any]:
     metrics = {}
     prediction_dir = _stratum_root(output_root, stratum) / "historical/test_results/predictions"
@@ -696,9 +688,16 @@ def _score_historical_arm(
         with torch.no_grad():
             for (_, candidates), matrix in zip(payload["eval_pwc"], payload["eval_features"]):
                 features = transform_feature_matrix(matrix, "raw", columns)
-                scores = model.score(
-                    torch.as_tensor(normalizer.transform(features), dtype=torch.float32, device=device)
-                ).detach().cpu().numpy()
+                scores = (
+                    model.score(
+                        torch.as_tensor(
+                            normalizer.transform(features), dtype=torch.float32, device=device
+                        )
+                    )
+                    .detach()
+                    .cpu()
+                    .numpy()
+                )
                 order = np.argsort(-scores, kind="stable")
                 reranked.append(([candidates[index] for index in order], scores[order]))
         evaluation = evaluate_reranking(
@@ -822,7 +821,9 @@ def _load_historical_matrix(output_root: Path, stratum: str) -> tuple[dict, pd.D
         for seed in SEEDS:
             frame = pd.read_csv(prediction_dir / f"{arm}_seed_{seed}.csv")
             if frame["reaction_id"].duplicated().any():
-                raise RuntimeError("Historical sensitivity predictions contain duplicate reactions.")
+                raise RuntimeError(
+                    "Historical sensitivity predictions contain duplicate reactions."
+                )
             if reference is None:
                 reference = frame[identity].copy()
             elif not reference.equals(frame[identity]):
@@ -893,7 +894,9 @@ def analyze(root: Path, output_root: Path) -> dict[str, Any]:
         alt = {}
         common_ids = set(historical_ids.tolist())
         for pool in ALT_POOLS:
-            prediction = _pool_root(output_root, stratum, pool) / "test_results/reaction_ranks.jsonl"
+            prediction = (
+                _pool_root(output_root, stratum, pool) / "test_results/reaction_ranks.jsonl"
+            )
             input_records.append(fingerprint(prediction))
             alt[pool] = _load_alt_matrix(prediction)
             covered_ids = set(
@@ -903,8 +906,7 @@ def analyze(root: Path, output_root: Path) -> dict[str, Any]:
         common = sorted(common_ids)
         try:
             clusters_all = np.asarray(
-                [test_reactions[int(item)].product_key for item in historical_ids],
-                dtype=object,
+                [test_reactions[int(item)].product_key for item in historical_ids], dtype=object
             )
         except KeyError as error:
             raise RuntimeError(f"Historical prediction has a non-test reaction: {error}") from error
@@ -919,11 +921,12 @@ def analyze(root: Path, output_root: Path) -> dict[str, Any]:
                 ids = frame.loc[keep, "reaction_id"].astype(int).to_numpy()
                 try:
                     clusters = np.asarray(
-                        [test_reactions[int(item)].product_key for item in ids],
-                        dtype=object,
+                        [test_reactions[int(item)].product_key for item in ids], dtype=object
                     )
                 except KeyError as error:
-                    raise RuntimeError(f"Alternative prediction has a non-test reaction: {error}") from error
+                    raise RuntimeError(
+                        f"Alternative prediction has a non-test reaction: {error}"
+                    ) from error
                 matrices = {
                     metric: {arm: values[arm][:, keep] for arm in values}
                     for metric, values in matrices.items()
@@ -1023,8 +1026,12 @@ def status(output_root: Path) -> dict[str, Any]:
     for stratum in STRATA:
         item: dict[str, Any] = {"historical": {}, "alternative": {}}
         item["historical"] = {
-            "freeze": (_stratum_root(output_root, stratum) / "historical/model_freeze.json").is_file(),
-            "test": (_stratum_root(output_root, stratum) / "historical/test_results/manifest.json").is_file(),
+            "freeze": (
+                _stratum_root(output_root, stratum) / "historical/model_freeze.json"
+            ).is_file(),
+            "test": (
+                _stratum_root(output_root, stratum) / "historical/test_results/manifest.json"
+            ).is_file(),
         }
         for pool in ALT_POOLS:
             pool_root = _pool_root(output_root, stratum, pool)
@@ -1061,10 +1068,22 @@ def run_all(root: Path, output_root: Path, workers: int, device: str) -> dict[st
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=(
-        "preflight", "lock-approval", "lock-analysis-patch", "prepare", "fit-one", "run-fits",
-        "freeze", "evaluate", "analyze", "status", "run-all",
-    ))
+    parser.add_argument(
+        "command",
+        choices=(
+            "preflight",
+            "lock-approval",
+            "lock-analysis-patch",
+            "prepare",
+            "fit-one",
+            "run-fits",
+            "freeze",
+            "evaluate",
+            "analyze",
+            "status",
+            "run-all",
+        ),
+    )
     parser.add_argument("--root", type=Path, default=project_root())
     parser.add_argument("--output-root", type=Path)
     parser.add_argument("--commit")

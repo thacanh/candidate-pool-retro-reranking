@@ -98,9 +98,9 @@ def file_fingerprint(path: str | Path) -> dict:
 
 
 def canonical_fingerprint(payload: object) -> str:
-    encoded = json.dumps(
-        payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    ).encode("utf-8")
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
+        "utf-8"
+    )
     return "sha256:" + hashlib.sha256(encoded).hexdigest()
 
 
@@ -126,14 +126,10 @@ def immutable_target(path: str | Path, label: str) -> Path:
 
 
 def verify_pinned_repository(
-    repository: str | Path,
-    expected_commit: str,
-    core_files: Sequence[str] = (),
+    repository: str | Path, expected_commit: str, core_files: Sequence[str] = ()
 ) -> dict:
     root = Path(repository).resolve()
-    head = subprocess.check_output(
-        ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
-    ).strip()
+    head = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
     if head != expected_commit:
         raise RuntimeError(
             f"Pinned repository mismatch at {root}: expected {expected_commit}, got {head}."
@@ -150,11 +146,7 @@ def verify_pinned_repository(
         if changed != 0:
             raise RuntimeError(f"Pinned upstream core file is modified: {relative}")
         fingerprints[relative] = file_fingerprint(path)
-    return {
-        "path": str(root),
-        "commit": head,
-        "core_files": fingerprints,
-    }
+    return {"path": str(root), "commit": head, "core_files": fingerprints}
 
 
 def import_pinned_rxn_ebm(repository: str | Path):
@@ -252,9 +244,7 @@ def training_query_rows(train_products: Sequence[Mapping]) -> list[QueryRow]:
         for positive in positives:
             order = [positive, *negatives]
             smiles = tuple(str(candidates[index]["smiles"]) for index in order)
-            keys = tuple(
-                str(candidates[index].get("canonical_smiles") or "") for index in order
-            )
+            keys = tuple(str(candidates[index].get("canonical_smiles") or "") for index in order)
             if any(canonicalize_reactant_set(smi) != key for smi, key in zip(smiles, keys)):
                 raise ValueError("Training candidate identity changed during D5 adaptation.")
             result.append(
@@ -316,12 +306,8 @@ def adapter_audit(train_rows: Sequence[QueryRow], valid_rows: Sequence[QueryRow]
         "validation_rows": len(valid_rows),
         "validation_unique_products": len({row.product_key for row in valid_rows}),
         "max_candidate_count_train": max(len(row.candidate_smiles) for row in train_rows),
-        "max_candidate_count_validation": max(
-            len(row.candidate_smiles) for row in valid_rows
-        ),
-        "train_identity_fingerprint": canonical_fingerprint(
-            [row.identity() for row in train_rows]
-        ),
+        "max_candidate_count_validation": max(len(row.candidate_smiles) for row in valid_rows),
+        "train_identity_fingerprint": canonical_fingerprint([row.identity() for row in train_rows]),
         "validation_identity_fingerprint": canonical_fingerprint(
             [row.identity() for row in valid_rows]
         ),
@@ -350,27 +336,19 @@ def _fingerprint_query_worker(task: tuple[str, tuple[str, ...]]) -> sparse.csr_m
         reactant_fp, product_fp = _WORKER_FP_UTILS.rcts_prod_fps_from_rxn_smi_dist(
             f"{candidate}>>{product}", FP_RADIUS, FP_SIZE
         )
-        reaction_fps.append(
-            _WORKER_FP_UTILS.make_rxn_fp(
-                reactant_fp, product_fp, RXN_TYPE
-            ).tocsr()
-        )
+        reaction_fps.append(_WORKER_FP_UTILS.make_rxn_fp(reactant_fp, product_fp, RXN_TYPE).tocsr())
     missing = CANDIDATE_WIDTH - len(reaction_fps)
     if missing < 0:
         raise ValueError("Candidate count exceeds the frozen cap-10 width.")
     if missing:
         reaction_fps.extend(
-            sparse.csr_matrix((1, REACTION_FP_DIM), dtype=np.int32)
-            for _ in range(missing)
+            sparse.csr_matrix((1, REACTION_FP_DIM), dtype=np.int32) for _ in range(missing)
         )
     return sparse.hstack(reaction_fps, format="csr", dtype=np.int32)
 
 
 def build_fingerprint_matrix(
-    rows: Sequence[QueryRow],
-    repository: str | Path,
-    workers: int = 1,
-    progress=None,
+    rows: Sequence[QueryRow], repository: str | Path, workers: int = 1, progress=None
 ) -> sparse.csr_matrix:
     tasks = [(row.product_smiles, row.candidate_smiles) for row in rows]
     if workers < 1:
@@ -416,9 +394,7 @@ class SparseQueryDataset(Dataset):
         return self.matrix.shape[0]
 
     def __getitem__(self, index: int):
-        dense = self.matrix[index].toarray().reshape(
-            CANDIDATE_WIDTH, REACTION_FP_DIM
-        )
+        dense = self.matrix[index].toarray().reshape(CANDIDATE_WIDTH, REACTION_FP_DIM)
         mask = np.any(dense != 0, axis=1)
         return torch.from_numpy(dense.astype(np.float32)), torch.from_numpy(mask)
 
@@ -442,8 +418,7 @@ def ranking_metrics(
 ) -> dict:
     ranks = stable_ranks(energies, candidate_counts)
     true_ranks = np.asarray(
-        [ranks[index, int(true)] for index, true in enumerate(true_indices)],
-        dtype=np.int32,
+        [ranks[index, int(true)] for index, true in enumerate(true_indices)], dtype=np.int32
     )
     if np.any(true_ranks < 1):
         raise AssertionError("A ground-truth index lies outside its candidate pool.")

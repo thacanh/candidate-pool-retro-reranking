@@ -25,7 +25,9 @@ def test_baseline_shard_covers_all_prior_transforms_and_never_mentions_test(tmp_
     commands = workflow.stage_commands(_args("baseline-shard"), paths)
     assert len(commands) == 3
     assert {command[command.index("--prior-transform") + 1] for command in commands} == {
-        "raw", "log", "rank"
+        "raw",
+        "log",
+        "rank",
     }
     assert all("evaluate-test" not in command for command in commands)
     assert all(command[command.index("--shard-index") + 1] == "2" for command in commands)
@@ -39,16 +41,16 @@ def test_search_budget_deadline_is_forwarded_without_test_access(tmp_path):
     args.stop_margin_seconds = 900.0
     commands = workflow.stage_commands(args, paths)
     assert all("--stop-after-epoch" in command for command in commands)
-    assert all(command[command.index("--stop-margin-seconds") + 1] == "900.0" for command in commands)
+    assert all(
+        command[command.index("--stop-margin-seconds") + 1] == "900.0" for command in commands
+    )
     assert all("evaluate-test" not in command for command in commands)
 
 
 def test_augmented_search_requires_prior_freeze_and_test_is_post_freeze(tmp_path):
     paths = workflow.workflow_paths(tmp_path / "tuned")
     paths.prior_freeze.parent.mkdir(parents=True)
-    paths.prior_freeze.write_text(
-        '{"selected_prior_transform":"log"}', encoding="utf-8"
-    )
+    paths.prior_freeze.write_text('{"selected_prior_transform":"log"}', encoding="utf-8")
     augmented = workflow.stage_commands(_args("augmented-shard"), paths)[0]
     assert "--prior-freeze" in augmented
     assert augmented[augmented.index("--prior-transform") + 1] == "log"

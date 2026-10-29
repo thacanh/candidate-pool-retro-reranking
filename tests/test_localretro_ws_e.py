@@ -23,17 +23,11 @@ from rerank.experiments.run_localretro import (
 
 def _jsonl(path: Path, records: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        "".join(json.dumps(record) + "\n" for record in records),
-        encoding="utf-8",
-    )
+    path.write_text("".join(json.dumps(record) + "\n" for record in records), encoding="utf-8")
 
 
 def test_mapped_reaction_gate_preserves_chemistry_and_requires_product_maps() -> None:
-    audit = validate_mapped_reaction(
-        "CO.CN>>CO",
-        "[CH3:1][OH:2].CN>>[CH3:1][OH:2]",
-    )
+    audit = validate_mapped_reaction("CO.CN>>CO", "[CH3:1][OH:2].CN>>[CH3:1][OH:2]")
     assert audit["product_atom_count"] == 2
     assert audit["reactant_unmapped_atom_count"] == 2
     with pytest.raises(ValueError, match="chemically identical"):
@@ -41,13 +35,9 @@ def test_mapped_reaction_gate_preserves_chemistry_and_requires_product_maps() ->
     with pytest.raises(ValueError, match="positive atom-map"):
         validate_mapped_reaction("CO>>CO", "CO>>CO")
     with pytest.raises(ValueError, match="absent from the reactants"):
-        validate_mapped_reaction(
-            "CO>>CO", "[CH3:1][OH:2]>>[CH3:1][OH:3]"
-        )
+        validate_mapped_reaction("CO>>CO", "[CH3:1][OH:2]>>[CH3:1][OH:3]")
     audit = validate_mapped_reaction(
-        "CO>>CO",
-        "[CH3:1][OH:2]>>[CH3:1][OH:3]",
-        allow_unbalanced_product=True,
+        "CO>>CO", "[CH3:1][OH:2]>>[CH3:1][OH:3]", allow_unbalanced_product=True
     )
     assert audit["product_atom_maps_absent_from_reactants"] == 1
 
@@ -55,8 +45,7 @@ def test_mapped_reaction_gate_preserves_chemistry_and_requires_product_maps() ->
 def test_atom_map_transfer_restores_exact_original_stereochemistry() -> None:
     unmapped = "N[C@@H](C)C(=O)O>>N[C@@H](C)C(=O)O"
     mapper_output = (
-        "[NH2:1][C@H:2]([CH3:3])[C:4](=[O:5])[OH:6]"
-        ">>[NH2:1][C@H:2]([CH3:3])[C:4](=[O:5])[OH:6]"
+        "[NH2:1][C@H:2]([CH3:3])[C:4](=[O:5])[OH:6]" ">>[NH2:1][C@H:2]([CH3:3])[C:4](=[O:5])[OH:6]"
     )
     assert reaction_identity(unmapped) != reaction_identity(mapper_output)
     restored, transfer = transfer_atom_maps_to_original(unmapped, mapper_output)
@@ -126,11 +115,7 @@ def test_compile_mapping_writes_train_valid_only(tmp_path: Path) -> None:
     for index, record in enumerate(records):
         data_path, manifest_path = _mapped_paths(mapping_root, index, 2)
         _jsonl(data_path, [record])
-        exclusion_path = (
-            mapping_root
-            / "shards"
-            / f"mapping_exclusions_{index:03d}_of_002.json"
-        )
+        exclusion_path = mapping_root / "shards" / f"mapping_exclusions_{index:03d}_of_002.json"
         exclusions = []
         if index == 1:
             exclusions.append(
@@ -142,12 +127,7 @@ def test_compile_mapping_writes_train_valid_only(tmp_path: Path) -> None:
                 }
             )
         exclusion_path.write_text(
-            json.dumps(
-                {
-                    "protocol_id": MAPPING_PROTOCOL,
-                    "exclusions": exclusions,
-                }
-            ),
+            json.dumps({"protocol_id": MAPPING_PROTOCOL, "exclusions": exclusions}),
             encoding="utf-8",
         )
         manifest_path.write_text(
@@ -219,15 +199,10 @@ def test_compile_decoded_predictions_deduplicates_canonically(tmp_path: Path) ->
     inventory = tmp_path / "inventory.jsonl"
     _jsonl(inventory, [{"test_id": 0, "product": "CCO"}])
     decoded = tmp_path / "decoded.txt"
-    decoded.write_text(
-        "0\t('C.O', 0.9)\t('O.C', 0.8)\t('N', 0.7)\n",
-        encoding="utf-8",
-    )
+    decoded.write_text("0\t('C.O', 0.9)\t('O.C', 0.8)\t('N', 0.7)\n", encoding="utf-8")
     output = tmp_path / "predictions.jsonl"
     counts = compile_decoded_predictions(
-        decoded_path=decoded,
-        inventory_path=inventory,
-        output_path=output,
+        decoded_path=decoded, inventory_path=inventory, output_path=output
     )
     records = [json.loads(line) for line in output.read_text().splitlines()]
     assert counts["canonical_duplicates_removed"] == 1
@@ -269,10 +244,7 @@ def test_three_pool_builder_preserves_sources_and_coverage(tmp_path: Path) -> No
             },
         ],
     )
-    _jsonl(
-        inventory,
-        [{"test_id": 0, "product": "CCO"}, {"test_id": 1, "product": "CCN"}],
-    )
+    _jsonl(inventory, [{"test_id": 0, "product": "CCO"}, {"test_id": 1, "product": "CCN"}])
     _jsonl(
         local,
         [
@@ -311,7 +283,9 @@ def test_three_pool_builder_preserves_sources_and_coverage(tmp_path: Path) -> No
         json.loads(line)
         for line in (output / "merged_canonical_union.jsonl").read_text().splitlines()
     ]
-    both = [record for record in merged if record["product"] == "CCO" and record["reactant"] == "C.O"]
+    both = [
+        record for record in merged if record["product"] == "CCO" and record["reactant"] == "C.O"
+    ]
     assert len(both) == 1
     assert both[0]["source_aizynthfinder"] == 1
     assert both[0]["source_localretro"] == 1

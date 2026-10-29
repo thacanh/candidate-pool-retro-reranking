@@ -35,8 +35,7 @@ def test_align_requires_identical_scientific_identity() -> None:
     # The production loader establishes the 3,985-row denominator; this unit
     # isolates the merge semantics by temporarily repeating unique identities.
     false_frame = pd.concat(
-        [false_frame.assign(reaction_id=index) for index in range(3_985)],
-        ignore_index=True,
+        [false_frame.assign(reaction_id=index) for index in range(3_985)], ignore_index=True
     )
     true_frame = false_frame.copy()
     aligned = _align(false_frame, true_frame)

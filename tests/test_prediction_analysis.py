@@ -43,10 +43,7 @@ def test_sign_flip_null_and_net_flip_counts():
 
 def test_descriptor_figure_is_written(tmp_path):
     frame = pd.DataFrame(
-        {
-            "promoted": [0, 0, 1, 1],
-            **{name: [0.0, 1.0, 0.5, 1.5] for name in CONTINUOUS_PREDICTORS},
-        }
+        {"promoted": [0, 0, 1, 1], **{name: [0.0, 1.0, 0.5, 1.5] for name in CONTINUOUS_PREDICTORS}}
     )
     target = tmp_path / "descriptors.png"
     plot_descriptor_figure(frame, target)

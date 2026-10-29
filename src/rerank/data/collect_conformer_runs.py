@@ -39,9 +39,7 @@ def verify_checksums(seed_root: Path) -> dict:
             raise RuntimeError(f"Missing retained artifact: {path}")
         observed = _sha256(path)
         if observed != digest:
-            raise RuntimeError(
-                f"Checksum mismatch for {path}: {observed} != {digest}."
-            )
+            raise RuntimeError(f"Checksum mismatch for {path}: {observed} != {digest}.")
         checked += 1
     return {"checked_files": checked, "passed": True}
 
@@ -76,9 +74,7 @@ def collect_runs(root: str | Path, seeds=ALLOWED_CONFORMER_SEEDS) -> tuple[list[
                 "mrr_mean": summary["mrr_mean"],
                 "mrr_std": summary["mrr_std"],
                 "runtime_seconds": completed["runtime_seconds"],
-                "large_atom_cache_retained": completed[
-                    "large_atom_cache_retained"
-                ],
+                "large_atom_cache_retained": completed["large_atom_cache_retained"],
                 "retained_file_count": completed["retained_file_count"],
                 "checksum_files_verified": checksum_validation["checked_files"],
                 "seed_folder": str(seed_root),
@@ -100,21 +96,14 @@ def collect_runs(root: str | Path, seeds=ALLOWED_CONFORMER_SEEDS) -> tuple[list[
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--root", default="outputs/jcheminform_revision/conformers"
-    )
-    parser.add_argument(
-        "--output-dir",
-        default="outputs/jcheminform_revision/conformer_aggregate",
-    )
+    parser.add_argument("--root", default="outputs/jcheminform_revision/conformers")
+    parser.add_argument("--output-dir", default="outputs/jcheminform_revision/conformer_aggregate")
     args = parser.parse_args()
     rows, audit = collect_runs(args.root)
     output = Path(args.output_dir)
     output.mkdir(parents=True, exist_ok=True)
     fieldnames = list(rows[0])
-    with open(
-        output / "conformer_run_index.csv", "w", encoding="utf-8", newline=""
-    ) as handle:
+    with open(output / "conformer_run_index.csv", "w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)

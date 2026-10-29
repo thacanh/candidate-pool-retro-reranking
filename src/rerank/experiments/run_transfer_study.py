@@ -14,12 +14,7 @@ from pathlib import Path
 from typing import Mapping
 
 from rerank.experiments import run_pool_ranking as ws_e
-from rerank.pool_streaming import (
-    AUGMENTED_COLUMNS,
-    BASELINE_COLUMNS,
-    atomic_json,
-    fingerprint,
-)
+from rerank.pool_streaming import AUGMENTED_COLUMNS, BASELINE_COLUMNS, atomic_json, fingerprint
 
 
 PROTOCOL_ID = "dd-expanded-pool-cap10-d1-v1"
@@ -32,18 +27,8 @@ PROTECTED_PREFIXES = (
     Path("paper/overleaf"),
 )
 EXPECTED_CONFIGS = {
-    "baseline": {
-        "hidden_width": 128,
-        "dropout": 0.0,
-        "learning_rate": 0.001,
-        "margin": 0.3,
-    },
-    "augmented": {
-        "hidden_width": 128,
-        "dropout": 0.1,
-        "learning_rate": 0.001,
-        "margin": 0.1,
-    },
+    "baseline": {"hidden_width": 128, "dropout": 0.0, "learning_rate": 0.001, "margin": 0.3},
+    "augmented": {"hidden_width": 128, "dropout": 0.1, "learning_rate": 0.001, "margin": 0.1},
 }
 
 
@@ -52,10 +37,7 @@ def _load_json(path: str | Path) -> dict:
 
 
 def _config_without_index(record: Mapping) -> dict:
-    return {
-        key: record[key]
-        for key in ("hidden_width", "dropout", "learning_rate", "margin")
-    }
+    return {key: record[key] for key in ("hidden_width", "dropout", "learning_rate", "margin")}
 
 
 def _assert_primary_freeze(path: str | Path) -> dict:
@@ -226,10 +208,7 @@ def fit_validation(args: argparse.Namespace) -> dict:
     if int(result["model_parameters"]) != expected_parameters:
         raise RuntimeError("K1 model parameter assertion failed.")
     result["round_jk_approval"] = approval
-    atomic_json(
-        output / "validation" / args.arm / f"seed_{args.seed}" / "trial.json",
-        result,
-    )
+    atomic_json(output / "validation" / args.arm / f"seed_{args.seed}" / "trial.json", result)
     return result
 
 
@@ -347,7 +326,9 @@ def parse_args() -> argparse.Namespace:
     show.add_argument("--pool-root", required=True)
     args = parser.parse_args()
     if args.command == "preflight" and len(args.feature_freeze) != len(POOLS):
-        parser.error("preflight requires three --feature-freeze values in AiZ, LocalRetro, merged order")
+        parser.error(
+            "preflight requires three --feature-freeze values in AiZ, LocalRetro, merged order"
+        )
     return args
 
 

@@ -56,9 +56,7 @@ def merge_feature_partitions(
             raise ValueError(f"Partition has an invalid frozen query range: {path}")
         if int(manifest.get("completed_query_count", -1)) != stop - start:
             raise ValueError(f"Partition query count differs from its range: {path}")
-        if identity.get("parallelization") != (
-            "independent_query_scoped_worker_partition"
-        ):
+        if identity.get("parallelization") != ("independent_query_scoped_worker_partition"):
             raise ValueError(f"Partition does not attest query-scoped encoding: {path}")
         records.append((start, stop, path, manifest))
     records.sort(key=lambda item: item[0])
@@ -82,9 +80,7 @@ def merge_feature_partitions(
 
     for partition_index, (start, stop, path, manifest) in enumerate(records):
         if start != next_query_index:
-            raise ValueError(
-                f"Partition ranges are not contiguous at {next_query_index}: {path}"
-            )
+            raise ValueError(f"Partition ranges are not contiguous at {next_query_index}: {path}")
         identity = manifest["identity"]
         for field in comparable_identity_fields:
             if identity.get(field) != reference_identity.get(field):
@@ -117,9 +113,7 @@ def merge_feature_partitions(
 
             merged_shard = deepcopy(shard)
             merged_shard["index"] = len(merged_shards)
-            merged_shard["path"] = os.path.relpath(
-                shard_path, output.parent
-            ).replace("\\", "/")
+            merged_shard["path"] = os.path.relpath(shard_path, output.parent).replace("\\", "/")
             merged_shards.append(merged_shard)
 
         if observed_partition_queries != stop - start:
@@ -147,13 +141,10 @@ def merge_feature_partitions(
         raise ValueError(f"Merged pair total {pair_total} != expected {expected_pair_count}.")
 
     merged_identity = deepcopy(reference_identity)
-    merged_identity["query_range"] = {
-        "start_inclusive": 0,
-        "stop_exclusive": expected_query_count,
-    }
-    merged_identity["parallelization"] = (
-        "independent_query_scoped_workers_no_cross_query_encoder_batches"
-    )
+    merged_identity["query_range"] = {"start_inclusive": 0, "stop_exclusive": expected_query_count}
+    merged_identity[
+        "parallelization"
+    ] = "independent_query_scoped_workers_no_cross_query_encoder_batches"
     merged_identity["partition_count"] = len(records)
     merged = {
         "schema_version": 3,

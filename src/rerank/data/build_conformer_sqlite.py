@@ -34,13 +34,9 @@ EMBEDDING_DIM = 512
 PINNED_UNIMOL_VERSION = "0.1.3"
 PINNED_RDKIT_VERSION = "2025.09.6"
 PINNED_CHECKPOINT_NAME = "mol_pre_no_h_220816.pt"
-PINNED_CHECKPOINT_SHA256 = (
-    "da27196af09a8c6d089e10b7764b6a716bcc33da227fc118f5b45b0e484585e9"
-)
+PINNED_CHECKPOINT_SHA256 = "da27196af09a8c6d089e10b7764b6a716bcc33da227fc118f5b45b0e484585e9"
 PINNED_DICTIONARY_NAME = "mol.dict.txt"
-PINNED_DICTIONARY_SHA256 = (
-    "94135cb9a9198f988de684cb61e2c372882a3bd59b8320effbae704c38057127"
-)
+PINNED_DICTIONARY_SHA256 = "94135cb9a9198f988de684cb61e2c372882a3bd59b8320effbae704c38057127"
 CACHE_SCHEMA_VERSION = 1
 
 
@@ -60,9 +56,7 @@ def _json_metadata(connection: sqlite3.Connection, key: str, value) -> None:
 
 
 def _read_metadata(connection: sqlite3.Connection, key: str, default=None):
-    row = connection.execute(
-        "SELECT value FROM metadata WHERE key=?", (str(key),)
-    ).fetchone()
+    row = connection.execute("SELECT value FROM metadata WHERE key=?", (str(key),)).fetchone()
     if row is None:
         return default
     try:
@@ -93,15 +87,12 @@ def _backend_identity(metadata: dict) -> dict:
 def validate_conformer_seed(seed: int) -> int:
     seed = int(seed)
     if seed not in ALLOWED_CONFORMER_SEEDS:
-        raise ValueError(
-            f"Conformer seed must be one of {ALLOWED_CONFORMER_SEEDS}; got {seed}."
-        )
+        raise ValueError(f"Conformer seed must be one of {ALLOWED_CONFORMER_SEEDS}; got {seed}.")
     return seed
 
 
 def discover_weight_paths(
-    checkpoint: Optional[str | Path] = None,
-    dictionary: Optional[str | Path] = None,
+    checkpoint: Optional[str | Path] = None, dictionary: Optional[str | Path] = None
 ) -> tuple[Path, Path]:
     if checkpoint is None:
         configured = os.environ.get("UNIMOL_WEIGHT_DIR")
@@ -116,22 +107,16 @@ def discover_weight_paths(
     else:
         checkpoint_path = Path(checkpoint)
     dictionary_path = (
-        checkpoint_path.parent / PINNED_DICTIONARY_NAME
-        if dictionary is None
-        else Path(dictionary)
+        checkpoint_path.parent / PINNED_DICTIONARY_NAME if dictionary is None else Path(dictionary)
     )
     return checkpoint_path.resolve(), dictionary_path.resolve()
 
 
 def validate_weight_paths(checkpoint: Path, dictionary: Path) -> dict:
     if checkpoint.name != PINNED_CHECKPOINT_NAME or not checkpoint.is_file():
-        raise FileNotFoundError(
-            f"Expected checkpoint {PINNED_CHECKPOINT_NAME}, got {checkpoint}."
-        )
+        raise FileNotFoundError(f"Expected checkpoint {PINNED_CHECKPOINT_NAME}, got {checkpoint}.")
     if dictionary.name != PINNED_DICTIONARY_NAME or not dictionary.is_file():
-        raise FileNotFoundError(
-            f"Expected dictionary {PINNED_DICTIONARY_NAME}, got {dictionary}."
-        )
+        raise FileNotFoundError(f"Expected dictionary {PINNED_DICTIONARY_NAME}, got {dictionary}.")
     if checkpoint.parent != dictionary.parent:
         raise RuntimeError("Checkpoint and dictionary must share one weight directory.")
     checkpoint_hash = _sha256(checkpoint)
@@ -192,9 +177,7 @@ class SeededUniMolBackend:
                 f"Expected unimol-tools {PINNED_UNIMOL_VERSION}, got {installed_unimol}."
             )
         if installed_rdkit.replace(".9.6", ".09.6") != PINNED_RDKIT_VERSION:
-            raise RuntimeError(
-                f"Expected RDKit {PINNED_RDKIT_VERSION}, got {installed_rdkit}."
-            )
+            raise RuntimeError(f"Expected RDKit {PINNED_RDKIT_VERSION}, got {installed_rdkit}.")
 
         assets = validate_weight_paths(self.checkpoint, self.dictionary)
         if any(name.startswith("unimol_tools") for name in sys.modules):
@@ -261,9 +244,7 @@ class SeededUniMolBackend:
             "cuda_device": (
                 {
                     "name": torch.cuda.get_device_name(0),
-                    "total_memory_bytes": int(
-                        torch.cuda.get_device_properties(0).total_memory
-                    ),
+                    "total_memory_bytes": int(torch.cuda.get_device_properties(0).total_memory),
                     "capability": list(torch.cuda.get_device_capability(0)),
                 }
                 if use_cuda
@@ -311,9 +292,7 @@ class SeededUniMolBackend:
         atomic = raw.get("atomic_reprs", raw.get("atom_repr"))
         if not isinstance(atomic, (list, tuple)) or len(atomic) != len(payloads):
             raise RuntimeError("Uni-Mol returned misaligned atomic representations.")
-        self._smallest_inference_chunk = min(
-            self._smallest_inference_chunk, len(payloads)
-        )
+        self._smallest_inference_chunk = min(self._smallest_inference_chunk, len(payloads))
         return list(atomic)
 
     def encode_batch(
@@ -344,9 +323,7 @@ class SeededUniMolBackend:
         valid_indices = [index for index, item in enumerate(payloads) if item is not None]
         aligned: list[Optional[np.ndarray]] = [None] * len(payloads)
         if valid_indices:
-            atomic = self._infer_payloads(
-                [payloads[index] for index in valid_indices]
-            )
+            atomic = self._infer_payloads([payloads[index] for index in valid_indices])
             for index, representation in zip(valid_indices, atomic):
                 array = np.asarray(representation, dtype=np.float32)
                 if array.ndim != 2 or array.shape[1] != EMBEDDING_DIM:
@@ -368,10 +345,7 @@ class SeededUniMolBackend:
 
 
 def _create_or_validate_database(
-    path: Path,
-    seed: int,
-    required_count: int,
-    required_sha256: str,
+    path: Path, seed: int, required_count: int, required_sha256: str
 ) -> sqlite3.Connection:
     path.parent.mkdir(parents=True, exist_ok=True)
     existed = path.exists()
@@ -429,12 +403,8 @@ def build_sqlite_cache(
     if inventory_audit.get("required_key_count") != len(required):
         raise ValueError("Inventory audit count does not match required SMILES.")
     output = Path(output_path).resolve()
-    connection = _create_or_validate_database(
-        output, seed, len(required), required_hash
-    )
-    stored = {
-        row[0] for row in connection.execute("SELECT smiles FROM embeddings")
-    }
+    connection = _create_or_validate_database(output, seed, len(required), required_hash)
+    stored = {row[0] for row in connection.execute("SELECT smiles FROM embeddings")}
     pending = [value for value in required if value not in stored]
     started = time.perf_counter()
     print(
@@ -478,14 +448,10 @@ def build_sqlite_cache(
                     )
                 )
         connection.executemany(
-            "INSERT INTO embeddings(smiles,n_rows,n_cols,data,status,error) "
-            "VALUES(?,?,?,?,?,?)",
+            "INSERT INTO embeddings(smiles,n_rows,n_cols,data,status,error) " "VALUES(?,?,?,?,?,?)",
             rows,
         )
-        if (
-            (batch_index + 1) % commit_interval_batches == 0
-            or start + len(batch) == len(pending)
-        ):
+        if (batch_index + 1) % commit_interval_batches == 0 or start + len(batch) == len(pending):
             connection.commit()
         completed = len(stored) + start + len(batch)
         if completed % 1000 < len(batch) or completed == len(required):
@@ -507,9 +473,7 @@ def build_sqlite_cache(
         ).fetchall()
     )
     null_count = int(
-        connection.execute(
-            "SELECT COUNT(*) FROM embeddings WHERE data IS NULL"
-        ).fetchone()[0]
+        connection.execute("SELECT COUNT(*) FROM embeddings WHERE data IS NULL").fetchone()[0]
     )
     bad_shape_count = int(
         connection.execute(
@@ -595,9 +559,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--threads", type=int, default=8)
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
     parser.add_argument(
-        "--limit",
-        type=int,
-        help="Infrastructure smoke test only; never use for a scientific run.",
+        "--limit", type=int, help="Infrastructure smoke test only; never use for a scientific run."
     )
     return parser.parse_args()
 

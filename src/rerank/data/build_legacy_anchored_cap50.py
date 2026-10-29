@@ -23,7 +23,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
-from rerank.analysis.compare_candidate_pools import CandidateEntry, LoadedPools, load_normalized_pools
+from rerank.analysis.compare_candidate_pools import (
+    CandidateEntry,
+    LoadedPools,
+    load_normalized_pools,
+)
 
 
 SCHEMA_VERSION = 1
@@ -42,7 +46,9 @@ def sha256_file(path: str | Path) -> str:
     return digest.hexdigest()
 
 
-def file_fingerprint(path: str | Path, *, reported_path: str | Path | None = None) -> dict[str, Any]:
+def file_fingerprint(
+    path: str | Path, *, reported_path: str | Path | None = None
+) -> dict[str, Any]:
     source = Path(path).resolve()
     return {
         "path": str(Path(reported_path).resolve() if reported_path is not None else source),
@@ -53,9 +59,7 @@ def file_fingerprint(path: str | Path, *, reported_path: str | Path | None = Non
 
 def atomic_json(path: Path, payload: Mapping[str, Any]) -> None:
     temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
-    temporary.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    temporary.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     os.replace(temporary, path)
 
 
@@ -90,8 +94,7 @@ def _anchored_candidates(
     ]
     if missing:
         raise ValueError(
-            "A legacy anchor candidate is absent from regenerated cap-50: "
-            + missing[0]
+            "A legacy anchor candidate is absent from regenerated cap-50: " + missing[0]
         )
 
     anchored: list[tuple[CandidateEntry, str]] = [
@@ -107,9 +110,7 @@ def _anchored_candidates(
             break
 
     extension_candidates = [
-        candidate
-        for candidate, source in anchored
-        if source == "clean_cap50_extension"
+        candidate for candidate, source in anchored if source == "clean_cap50_extension"
     ]
     anchor_floor = legacy_candidates[-1].prior if legacy_candidates else float("inf")
     diagnostics = {
@@ -188,9 +189,7 @@ def build_legacy_anchored_pool(
                 extension_count += len(anchored) - len(legacy_candidates)
                 products_at_cap += int(len(anchored) == cap)
                 min_candidates = (
-                    len(anchored)
-                    if min_candidates is None
-                    else min(min_candidates, len(anchored))
+                    len(anchored) if min_candidates is None else min(min_candidates, len(anchored))
                 )
                 max_candidates = max(max_candidates, len(anchored))
                 for candidate_rank, (candidate, source) in enumerate(anchored, start=1):
@@ -203,9 +202,7 @@ def build_legacy_anchored_pool(
                         "candidate_source": source,
                         "protocol_id": PROTOCOL_ID,
                     }
-                    handle.write(
-                        json.dumps(record, separators=(",", ":"), sort_keys=True) + "\n"
-                    )
+                    handle.write(json.dumps(record, separators=(",", ":"), sort_keys=True) + "\n")
             handle.flush()
             os.fsync(handle.fileno())
 
@@ -243,9 +240,7 @@ def build_legacy_anchored_pool(
             },
             "failed_reproduction_summary": {
                 "sha256": sha256_file(summary_path),
-                "discrepancy_product_count": failed_summary.get(
-                    "discrepancy_product_count"
-                ),
+                "discrepancy_product_count": failed_summary.get("discrepancy_product_count"),
             },
             "created_at_utc": utc_now(),
         }
@@ -294,12 +289,9 @@ def build_legacy_anchored_pool(
             "failures": [],
             "counts": validation["counts"],
             "output": {
-                "candidate_pool": file_fingerprint(
-                    output_path, reported_path=output_final
-                ),
+                "candidate_pool": file_fingerprint(output_path, reported_path=output_final),
                 "anchor_validation": file_fingerprint(
-                    validation_path,
-                    reported_path=final_root / validation_path.name,
+                    validation_path, reported_path=final_root / validation_path.name
                 ),
             },
             "runtime": {"seconds": time.perf_counter() - start},

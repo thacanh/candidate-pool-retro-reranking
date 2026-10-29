@@ -31,9 +31,7 @@ from packaging.version import InvalidVersion, Version
 C1_CONFORMER_SEED = 42
 PINNED_UNIMOL_VERSION = "0.1.3"
 PINNED_RDKIT_VERSION = "2025.09.6"
-PINNED_CHECKPOINT_SHA256 = (
-    "da27196af09a8c6d089e10b7764b6a716bcc33da227fc118f5b45b0e484585e9"
-)
+PINNED_CHECKPOINT_SHA256 = "da27196af09a8c6d089e10b7764b6a716bcc33da227fc118f5b45b0e484585e9"
 REQUIRED_CHECKPOINT_BASENAME = "mol_pre_no_h_220816.pt"
 REQUIRED_DICTIONARY_BASENAME = "mol.dict.txt"
 REPORT_SCHEMA_VERSION = 1
@@ -72,13 +70,17 @@ class InferenceBatch:
 
 
 class TimingBackend(Protocol):
-    def initialize(self) -> None: ...
+    def initialize(self) -> None:
+        ...
 
-    def preprocess(self, smiles: Sequence[str], conformer_seed: int) -> PreparedBatch: ...
+    def preprocess(self, smiles: Sequence[str], conformer_seed: int) -> PreparedBatch:
+        ...
 
-    def infer(self, prepared: PreparedBatch) -> InferenceBatch: ...
+    def infer(self, prepared: PreparedBatch) -> InferenceBatch:
+        ...
 
-    def metadata(self) -> dict: ...
+    def metadata(self) -> dict:
+        ...
 
 
 def file_sha256(path: str | Path, chunk_size: int = 1024 * 1024) -> str:
@@ -92,11 +94,7 @@ def file_sha256(path: str | Path, chunk_size: int = 1024 * 1024) -> str:
 def file_fingerprint(path: str | Path) -> dict:
     resolved = Path(path).resolve()
     stat = resolved.stat()
-    return {
-        "path": str(resolved),
-        "size_bytes": stat.st_size,
-        "sha256": file_sha256(resolved),
-    }
+    return {"path": str(resolved), "size_bytes": stat.st_size, "sha256": file_sha256(resolved)}
 
 
 def _normalized_versions_equal(installed: str, expected: str) -> bool:
@@ -153,9 +151,7 @@ def collect_required_smiles(candidate_jsonl: str | Path) -> RequiredSmilesInvent
                 required.add(canonical)
     smiles = sorted(required)
     audit["required_key_count"] = len(smiles)
-    audit["required_keys_sha256"] = hashlib.sha256(
-        "\n".join(smiles).encode("utf-8")
-    ).hexdigest()
+    audit["required_keys_sha256"] = hashlib.sha256("\n".join(smiles).encode("utf-8")).hexdigest()
     return RequiredSmilesInventory(smiles=smiles, audit=audit)
 
 
@@ -186,24 +182,17 @@ def collect_official_feature_workload(
     reactions = load_reactions(source_csv, metadata_csv)
     pools, pool_audit = load_candidate_pools(candidate_jsonl)
     non_train_products = {
-        reaction.product_key
-        for reaction in reactions
-        if reaction.source_split != train_split
+        reaction.product_key for reaction in reactions if reaction.source_split != train_split
     }
     train_ground_truths: dict[str, set[str]] = {}
     train_overlap_reactions_excluded = 0
     for reaction in reactions:
         if reaction.source_split != train_split:
             continue
-        if (
-            exclude_cross_split_train_products
-            and reaction.product_key in non_train_products
-        ):
+        if exclude_cross_split_train_products and reaction.product_key in non_train_products:
             train_overlap_reactions_excluded += 1
             continue
-        train_ground_truths.setdefault(reaction.product_key, set()).add(
-            reaction.ground_truth_key
-        )
+        train_ground_truths.setdefault(reaction.product_key, set()).add(reaction.ground_truth_key)
 
     eligible_train_products: set[str] = set()
     train_products_uncovered = 0
@@ -226,9 +215,7 @@ def collect_official_feature_workload(
     eval_audit: dict[str, dict] = {}
     eligible_eval_products: set[str] = set()
     for split in eval_splits:
-        split_reactions = [
-            reaction for reaction in reactions if reaction.source_split == split
-        ]
+        split_reactions = [reaction for reaction in reactions if reaction.source_split == split]
         covered = [
             reaction
             for reaction in split_reactions
@@ -282,9 +269,7 @@ def collect_official_feature_workload(
         "eligible_unique_products": len(eligible_products),
         "invalid_retained_fragments": invalid_retained_fragments,
         "required_key_count": len(smiles),
-        "required_keys_sha256": hashlib.sha256(
-            "\n".join(smiles).encode("utf-8")
-        ).hexdigest(),
+        "required_keys_sha256": hashlib.sha256("\n".join(smiles).encode("utf-8")).hexdigest(),
     }
     return RequiredSmilesInventory(smiles=smiles, audit=audit)
 
@@ -300,9 +285,7 @@ def heavy_atom_stratum(count: int) -> str:
     for name, lower, upper in HEAVY_ATOM_STRATA:
         if count >= lower and (upper is None or count <= upper):
             return name
-    raise ValueError(
-        f"Heavy-atom count {count} is outside the prespecified 1-128 workload."
-    )
+    raise ValueError(f"Heavy-atom count {count} is outside the prespecified 1-128 workload.")
 
 
 def _stable_sample_key(smiles: str, seed: int) -> bytes:
@@ -317,9 +300,7 @@ def stratified_sample(
 ) -> tuple[list[dict], dict]:
     if sample_per_stratum < 1:
         raise ValueError("sample_per_stratum must be positive")
-    population: dict[str, list[tuple[str, int]]] = {
-        name: [] for name, _, _ in HEAVY_ATOM_STRATA
-    }
+    population: dict[str, list[tuple[str, int]]] = {name: [] for name, _, _ in HEAVY_ATOM_STRATA}
     for smiles in sorted(set(required_smiles)):
         count = int(atom_counter(smiles))
         population[heavy_atom_stratum(count)].append((smiles, count))
@@ -328,22 +309,18 @@ def stratified_sample(
     audit: dict[str, dict] = {}
     for name, _, _ in HEAVY_ATOM_STRATA:
         members = sorted(
-            population[name],
-            key=lambda item: (_stable_sample_key(item[0], sample_seed), item[0]),
+            population[name], key=lambda item: (_stable_sample_key(item[0], sample_seed), item[0])
         )
         sample = members if name == TAIL_CENSUS_STRATUM else members[:sample_per_stratum]
         selected.extend(
-            {"smiles": smiles, "heavy_atoms": count, "stratum": name}
-            for smiles, count in sample
+            {"smiles": smiles, "heavy_atoms": count, "stratum": name} for smiles, count in sample
         )
         audit[name] = {
             "population_count": len(members),
             "sample_count": len(sample),
             "population_heavy_atom_min": min((item[1] for item in members), default=None),
             "population_heavy_atom_max": max((item[1] for item in members), default=None),
-            "sampling_mode": (
-                "census" if name == TAIL_CENSUS_STRATUM else "fixed_size"
-            ),
+            "sampling_mode": ("census" if name == TAIL_CENSUS_STRATUM else "fixed_size"),
         }
     return selected, audit
 
@@ -368,15 +345,10 @@ def select_disjoint_warmup(
         count = int(atom_counter(smiles))
         stratum = heavy_atom_stratum(count)
         if stratum in available:
-            available[stratum].append(
-                {"smiles": smiles, "heavy_atoms": count, "stratum": stratum}
-            )
+            available[stratum].append({"smiles": smiles, "heavy_atoms": count, "stratum": stratum})
     for stratum in WARMUP_STRATA:
         available[stratum].sort(
-            key=lambda item: (
-                _stable_sample_key(item["smiles"], sample_seed + 1),
-                item["smiles"],
-            )
+            key=lambda item: (_stable_sample_key(item["smiles"], sample_seed + 1), item["smiles"])
         )
 
     selected: list[dict] = []
@@ -397,9 +369,7 @@ def select_disjoint_warmup(
     return selected
 
 
-def serialize_and_discard(
-    representations: Sequence[Optional[np.ndarray]],
-) -> dict:
+def serialize_and_discard(representations: Sequence[Optional[np.ndarray]]) -> dict:
     """Serialize representations in memory, retain only scalar diagnostics."""
     arrays = 0
     elements = 0
@@ -520,9 +490,7 @@ def _timed_batch(
     rss_after_serialization = rss_reader()
     failures = sum(
         status == "failure" or representation is None
-        for status, representation in zip(
-            prepared.statuses, inferred.atom_representations
-        )
+        for status, representation in zip(prepared.statuses, inferred.atom_representations)
     )
     fallbacks = sum(status.startswith("fallback") for status in prepared.statuses)
     observed_rss = [
@@ -572,9 +540,7 @@ def _interleaved_stratum_batches(
         left += 1
         right -= 1
     by_stratum = {
-        name: _chunks(
-            [item for item in selected if item["stratum"] == name], batch_size
-        )
+        name: _chunks([item for item in selected if item["stratum"] == name], batch_size)
         for name in names
     }
     schedule: list[tuple[str, int, list[dict]]] = []
@@ -586,10 +552,7 @@ def _interleaved_stratum_batches(
     return schedule
 
 
-def _aggregate_strata(
-    sample_audit: dict,
-    batch_rows: Sequence[dict],
-) -> tuple[list[dict], dict]:
+def _aggregate_strata(sample_audit: dict, batch_rows: Sequence[dict]) -> tuple[list[dict], dict]:
     strata_rows = []
     total_estimate = 0.0
     total_lower = 0.0
@@ -598,14 +561,8 @@ def _aggregate_strata(
         rows = [row for row in batch_rows if row["stratum"] == name]
         audit = sample_audit[name]
         sample_count = sum(row["attempted"] for row in rows)
-        stage_names = (
-            "preprocess_seconds",
-            "inference_seconds",
-            "serialization_discard_seconds",
-        )
-        stage_totals = {
-            stage: sum(float(row[stage]) for row in rows) for stage in stage_names
-        }
+        stage_names = ("preprocess_seconds", "inference_seconds", "serialization_discard_seconds")
+        stage_totals = {stage: sum(float(row[stage]) for row in rows) for stage in stage_names}
         total_seconds = sum(stage_totals.values())
         per_key_batch_times = [
             sum(float(row[stage]) for stage in stage_names) / row["attempted"]
@@ -633,8 +590,7 @@ def _aggregate_strata(
         )
         rss_peaks = {
             f"{key.removesuffix('_bytes')}_peak_bytes": max(
-                (row[key] for row in rows if row.get(key) is not None),
-                default=None,
+                (row[key] for row in rows if row.get(key) is not None), default=None
             )
             for key in rss_keys
         }
@@ -693,10 +649,7 @@ def run_timing_pilot(
         raise ValueError("warmup_count cannot be negative")
 
     selected, sample_audit = stratified_sample(
-        required_smiles,
-        sample_per_stratum,
-        sample_seed,
-        atom_counter,
+        required_smiles, sample_per_stratum, sample_seed, atom_counter
     )
     if not selected:
         raise ValueError("No molecular SMILES were available for timing.")
@@ -704,11 +657,7 @@ def run_timing_pilot(
     if required_inventory_audit.get("required_key_count") != required_key_count:
         raise ValueError("Required-key audit count does not match the supplied key set.")
     warmup_items = select_disjoint_warmup(
-        required_smiles,
-        selected,
-        warmup_count,
-        sample_seed,
-        atom_counter,
+        required_smiles, selected, warmup_count, sample_seed, atom_counter
     )
 
     system = _system_metadata()
@@ -739,9 +688,7 @@ def run_timing_pilot(
 
     batch_rows: list[dict] = []
     batch_schedule = _interleaved_stratum_batches(selected, batch_size)
-    for schedule_index, (stratum_name, stratum_batch_index, batch) in enumerate(
-        batch_schedule
-    ):
+    for schedule_index, (stratum_name, stratum_batch_index, batch) in enumerate(batch_schedule):
         row = _timed_batch(
             backend,
             [item["smiles"] for item in batch],
@@ -762,11 +709,7 @@ def run_timing_pilot(
     strata_rows, extrapolation = _aggregate_strata(sample_audit, batch_rows)
     stage_totals = {
         stage: sum(float(row[stage]) for row in batch_rows)
-        for stage in (
-            "preprocess_seconds",
-            "inference_seconds",
-            "serialization_discard_seconds",
-        )
+        for stage in ("preprocess_seconds", "inference_seconds", "serialization_discard_seconds")
     }
     steady_seconds = sum(stage_totals.values())
     attempts = sum(row["attempted"] for row in batch_rows)
@@ -800,11 +743,7 @@ def run_timing_pilot(
             default=None,
         ),
     }
-    rss_observations = [
-        value
-        for value in rss_stage_peaks.values()
-        if value is not None
-    ]
+    rss_observations = [value for value in rss_stage_peaks.values() if value is not None]
     system["process_rss_stage_peaks_bytes"] = rss_stage_peaks
     system["process_rss_observed_peak_bytes"] = max(rss_observations, default=None)
     _updated_ram_metadata(system)
@@ -831,9 +770,7 @@ def run_timing_pilot(
                 for name in WARMUP_STRATA
             },
             "keys_sha256": hashlib.sha256(
-                "\n".join(sorted(item["smiles"] for item in warmup_items)).encode(
-                    "utf-8"
-                )
+                "\n".join(sorted(item["smiles"] for item in warmup_items)).encode("utf-8")
             ).hexdigest(),
             "rss_observed_peak_bytes": max(
                 (
@@ -862,9 +799,7 @@ def run_timing_pilot(
         "required_key_count_exact": required_key_count,
         "sample": {
             "count": len(selected),
-            "keys_sha256": hashlib.sha256(
-                "\n".join(sampled_smiles).encode("utf-8")
-            ).hexdigest(),
+            "keys_sha256": hashlib.sha256("\n".join(sampled_smiles).encode("utf-8")).hexdigest(),
             "strata": strata_rows,
             "tail_sampling": "census",
             "batch_schedule": {
@@ -886,9 +821,7 @@ def run_timing_pilot(
             "successful_throughput_keys_per_second": (
                 successes / steady_seconds if steady_seconds else None
             ),
-            "serialized_bytes_in_memory": sum(
-                row["serialized_bytes"] for row in batch_rows
-            ),
+            "serialized_bytes_in_memory": sum(row["serialized_bytes"] for row in batch_rows),
             "nonfinite_values": sum(row["nonfinite_values"] for row in batch_rows),
             "rss_stage_peaks_bytes": {
                 "preprocess": max(
@@ -983,9 +916,7 @@ class UniMolCpuTimingBackend:
         if self._initialized:
             return
         installed_version = importlib.metadata.version("unimol-tools")
-        if not _normalized_versions_equal(
-            installed_version, self.expected_unimol_version
-        ):
+        if not _normalized_versions_equal(installed_version, self.expected_unimol_version):
             raise RuntimeError(
                 f"Expected unimol-tools {self.expected_unimol_version}, got {installed_version}."
             )
@@ -999,8 +930,7 @@ class UniMolCpuTimingBackend:
         dictionary_path = self.dictionary_path.expanduser().resolve()
         if checkpoint_path.name != REQUIRED_CHECKPOINT_BASENAME:
             raise RuntimeError(
-                "Pinned Uni-Mol checkpoint must be named "
-                f"{REQUIRED_CHECKPOINT_BASENAME}."
+                "Pinned Uni-Mol checkpoint must be named " f"{REQUIRED_CHECKPOINT_BASENAME}."
             )
         if dictionary_path.name != REQUIRED_DICTIONARY_BASENAME:
             raise RuntimeError(
@@ -1202,25 +1132,17 @@ class UniMolCpuTimingBackend:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-csv", default="data/uspto_smiles.csv")
-    parser.add_argument(
-        "--metadata-csv", default="data/uspto_reaction_metadata.csv"
-    )
+    parser.add_argument("--metadata-csv", default="data/uspto_reaction_metadata.csv")
     parser.add_argument("--candidate-jsonl", default="outputs/rerank_dataset.jsonl")
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--dictionary")
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--threads", type=int, default=1)
-    parser.add_argument(
-        "--sample-per-stratum", type=int, default=DEFAULT_SAMPLE_PER_STRATUM
-    )
+    parser.add_argument("--sample-per-stratum", type=int, default=DEFAULT_SAMPLE_PER_STRATUM)
     parser.add_argument("--warmup-count", type=int, default=DEFAULT_WARMUP_COUNT)
+    parser.add_argument("--output-json", default="outputs/revision_timing/c1_cpu_timing_pilot.json")
     parser.add_argument(
-        "--output-json",
-        default="outputs/revision_timing/c1_cpu_timing_pilot.json",
-    )
-    parser.add_argument(
-        "--output-csv",
-        default="outputs/revision_timing/c1_cpu_timing_pilot_strata.csv",
+        "--output-csv", default="outputs/revision_timing/c1_cpu_timing_pilot_strata.csv"
     )
     return parser.parse_args()
 
@@ -1249,13 +1171,18 @@ def main() -> None:
         warmup_count=args.warmup_count,
     )
     write_reports(report, args.output_json, args.output_csv)
-    print(json.dumps({
-        "json_report": str(Path(args.output_json).resolve()),
-        "csv_report": str(Path(args.output_csv).resolve()),
-        "required_key_count": report["required_key_count_exact"],
-        "sample_count": report["sample"]["count"],
-        "embedding_artifacts_written": False,
-    }, indent=2))
+    print(
+        json.dumps(
+            {
+                "json_report": str(Path(args.output_json).resolve()),
+                "csv_report": str(Path(args.output_csv).resolve()),
+                "required_key_count": report["required_key_count_exact"],
+                "sample_count": report["sample"]["count"],
+                "embedding_artifacts_written": False,
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

@@ -78,26 +78,17 @@ def _load_feature_products(manifest_path: str | Path) -> tuple[dict[str, dict], 
             query_ids = [str(value) for value in payload["query_ids"].tolist()]
             product_smiles = [str(value) for value in payload["product_smiles"].tolist()]
             product_keys = [
-                str(value)
-                for value in payload["canonical_product_identities"].tolist()
+                str(value) for value in payload["canonical_product_identities"].tolist()
             ]
             offsets = np.asarray(payload["query_offsets"], dtype=np.int64)
-            candidate_smiles = [
-                str(value) for value in payload["candidate_smiles"].tolist()
-            ]
+            candidate_smiles = [str(value) for value in payload["candidate_smiles"].tolist()]
             candidate_keys = [
-                str(value)
-                for value in payload["canonical_candidate_identities"].tolist()
+                str(value) for value in payload["canonical_candidate_identities"].tolist()
             ]
             priors = np.asarray(payload["priors"], dtype=np.float32)
             ranks = np.asarray(payload["ranks"], dtype=np.int32)
             features = np.asarray(payload["features"], dtype=np.float32)
-        if not (
-            len(query_ids)
-            == len(product_smiles)
-            == len(product_keys)
-            == len(offsets) - 1
-        ):
+        if not (len(query_ids) == len(product_smiles) == len(product_keys) == len(offsets) - 1):
             raise ValueError("Query-level shard arrays are misaligned.")
         if not (
             len(candidate_smiles)
@@ -132,7 +123,9 @@ def _load_feature_products(manifest_path: str | Path) -> tuple[dict[str, dict], 
                 raise ValueError(f"Product identity mismatch for {query_id}.")
             if len(set(canonical_candidates)) != len(canonical_candidates):
                 raise ValueError(f"Duplicate candidate identity remains in {query_id}.")
-            if [canonicalize_reactant_set(value) for value in raw_candidates] != canonical_candidates:
+            if [
+                canonicalize_reactant_set(value) for value in raw_candidates
+            ] != canonical_candidates:
                 raise ValueError(f"Candidate identity mismatch for {query_id}.")
             if not np.array_equal(query_ranks, np.arange(stop - start, dtype=np.int32)):
                 raise ValueError(f"Candidate ranks are not contiguous for {query_id}.")
@@ -143,11 +136,7 @@ def _load_feature_products(manifest_path: str | Path) -> tuple[dict[str, dict], 
                 "product_smiles": product,
                 "product_key": product_key,
                 "candidates": [
-                    {
-                        "smiles": raw,
-                        "prior": float(prior),
-                        "canonical_smiles": canonical,
-                    }
+                    {"smiles": raw, "prior": float(prior), "canonical_smiles": canonical}
                     for raw, prior, canonical in zip(
                         raw_candidates, query_priors, canonical_candidates
                     )
@@ -182,9 +171,7 @@ def _build_training_payload(reactions, products: dict[str, dict]) -> tuple[list[
         if reaction.product_key in non_train_products:
             overlap_excluded += 1
             continue
-        ground_truths.setdefault(reaction.product_key, set()).add(
-            reaction.ground_truth_key
-        )
+        ground_truths.setdefault(reaction.product_key, set()).add(reaction.ground_truth_key)
         reaction_ids.setdefault(reaction.product_key, []).append(reaction.reaction_id)
         source_smiles.setdefault(reaction.product_key, reaction.product_smiles)
 
@@ -206,9 +193,7 @@ def _build_training_payload(reactions, products: dict[str, dict]) -> tuple[list[
             uncovered += 1
             continue
         positive_set = set(positive_indices)
-        negative_indices = [
-            index for index in range(len(candidates)) if index not in positive_set
-        ]
+        negative_indices = [index for index in range(len(candidates)) if index not in positive_set]
         if not negative_indices:
             without_negative += 1
             continue
@@ -220,8 +205,7 @@ def _build_training_payload(reactions, products: dict[str, dict]) -> tuple[list[
                 "positive_indices": positive_indices,
                 "negative_indices": negative_indices,
                 "labels": np.asarray(
-                    [index in positive_set for index in range(len(candidates))],
-                    dtype=np.int8,
+                    [index in positive_set for index in range(len(candidates))], dtype=np.int8
                 ),
                 "source_reaction_ids": reaction_ids[product_key],
                 "features": product["features"].copy(),
@@ -238,9 +222,7 @@ def _build_training_payload(reactions, products: dict[str, dict]) -> tuple[list[
 def _build_evaluation_payload(
     reactions, products: dict[str, dict], split: str
 ) -> tuple[dict, dict]:
-    split_reactions = [
-        reaction for reaction in reactions if reaction.source_split == split
-    ]
+    split_reactions = [reaction for reaction in reactions if reaction.source_split == split]
     eval_pwc = []
     eval_ground_truths = []
     eval_metadata = []
@@ -253,8 +235,7 @@ def _build_evaluation_payload(
         product = products.get(reaction.product_key)
         candidates = [] if product is None else product["candidates"]
         matches = [
-            candidate["canonical_smiles"] == reaction.ground_truth_key
-            for candidate in candidates
+            candidate["canonical_smiles"] == reaction.ground_truth_key for candidate in candidates
         ]
         positions = [index for index, match in enumerate(matches) if match]
         if not positions:
@@ -263,15 +244,12 @@ def _build_evaluation_payload(
             continue
         covered_products.add(reaction.product_key)
         clean_pool = [
-            {"smiles": candidate["smiles"], "prior": candidate["prior"]}
-            for candidate in candidates
+            {"smiles": candidate["smiles"], "prior": candidate["prior"]} for candidate in candidates
         ]
         eval_pwc.append((reaction.product_smiles, clean_pool))
         eval_ground_truths.append(reaction.ground_truth)
         metadata = reaction.metadata()
-        metadata.update(
-            {"candidate_count": len(candidates), "coverage_rank": positions[0] + 1}
-        )
+        metadata.update({"candidate_count": len(candidates), "coverage_rank": positions[0] + 1})
         eval_metadata.append(metadata)
         eval_features.append(product["features"].copy())
         eval_labels.append(np.asarray(matches, dtype=np.int8))
@@ -308,17 +286,14 @@ def compile_encoder_control_caches(
     validation_path = Path(validation_output).resolve()
     if train_test_path == validation_path:
         raise ValueError("Train/test and validation outputs must be separate files.")
-    existing_targets = [
-        path for path in (train_test_path, validation_path) if path.exists()
-    ]
+    existing_targets = [path for path in (train_test_path, validation_path) if path.exists()]
     if existing_targets:
         raise FileExistsError(
             "Refusing to overwrite existing encoder-control cache target(s): "
             + ", ".join(str(path) for path in existing_targets)
         )
     staging_paths = [
-        path.with_suffix(path.suffix + ".tmp")
-        for path in (train_test_path, validation_path)
+        path.with_suffix(path.suffix + ".tmp") for path in (train_test_path, validation_path)
     ]
     existing_staging = [path for path in staging_paths if path.exists()]
     if existing_staging:
@@ -331,9 +306,7 @@ def compile_encoder_control_caches(
     reactions = load_reactions(source_csv, metadata_csv)
     train_products, train_audit = _build_training_payload(reactions, products)
     test_payload, test_audit = _build_evaluation_payload(reactions, products, "test")
-    validation_payload, validation_audit = _build_evaluation_payload(
-        reactions, products, "valid"
-    )
+    validation_payload, validation_audit = _build_evaluation_payload(reactions, products, "valid")
     if not train_products or not test_payload["eval_pwc"] or not validation_payload["eval_pwc"]:
         raise ValueError("Compiled official train/valid/test payload is unexpectedly empty.")
 

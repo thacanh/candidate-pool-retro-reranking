@@ -86,14 +86,22 @@ def main() -> None:
         sys.executable,
         "-m",
         "rerank.experiments.run_controlled_study",
-        "--candidate-jsonl", "outputs/rerank_dataset.jsonl",
-        "--source-csv", "data/uspto_smiles.csv",
-        "--metadata-csv", "data/uspto_reaction_metadata.csv",
-        "--feature-mode", "2d+prior",
-        "--seeds", ",".join(map(str, SEEDS)),
-        "--device", "cpu",
-        "--output-dir", str(ranking),
-        "--feature-cache-dir", str(features),
+        "--candidate-jsonl",
+        "outputs/rerank_dataset.jsonl",
+        "--source-csv",
+        "data/uspto_smiles.csv",
+        "--metadata-csv",
+        "data/uspto_reaction_metadata.csv",
+        "--feature-mode",
+        "2d+prior",
+        "--seeds",
+        ",".join(map(str, SEEDS)),
+        "--device",
+        "cpu",
+        "--output-dir",
+        str(ranking),
+        "--feature-cache-dir",
+        str(features),
     ]
     subprocess.run(command, check=True)
     inner = validate_ranking(ranking)
@@ -115,17 +123,21 @@ def main() -> None:
     }
     atomic_json(root / "manifest.json", manifest)
     retained = sorted(
-        path for path in root.rglob("*")
+        path
+        for path in root.rglob("*")
         if path.is_file() and path.name not in {"COMPLETED.json", "checksums.sha256"}
     )
     with open(root / "checksums.sha256", "w", encoding="utf-8", newline="\n") as handle:
         for path in retained:
             handle.write(f"{sha256(path)}  {path.relative_to(root).as_posix()}\n")
-    atomic_json(root / "COMPLETED.json", {
-        "status": "complete",
-        "protocol_id": PROTOCOL_ID,
-        "manifest_sha256": sha256(root / "manifest.json"),
-    })
+    atomic_json(
+        root / "COMPLETED.json",
+        {
+            "status": "complete",
+            "protocol_id": PROTOCOL_ID,
+            "manifest_sha256": sha256(root / "manifest.json"),
+        },
+    )
     print(f"Shared trained 2D comparator complete: {root}")
 
 

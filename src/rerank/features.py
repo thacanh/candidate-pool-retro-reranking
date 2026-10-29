@@ -1,38 +1,12 @@
+"""Feature views for the paired reranking comparisons.
+
+The `2d+prior` view has four columns: prior, Morgan similarity, fragment count
+and heavy-atom ratio. The `3d+prior` view adds atom-set similarity, reaction
+distance and cosine reaction-vector similarity from Uni-Mol atom embeddings.
+
+Column names and order are defined in FEATURE_NAMES_MAP. These features measure
+a representation-assisted ranking effect; they do not isolate 3D pretraining.
 """
-MODULE 3 — Feature Extraction (v3 — fixed ablation)
-======================================================
-Separate feature vectors into two completely independent modes:
-
-  MODE '2d+prior'  (FEATURE_DIM_2D = 4):
-      f1  = prior                         (AiZynth score)
-      f3  = morgan_fingerprint_similarity  (2D Tanimoto)
-      f9  = number_of_fragments            (structural)
-      f10 = heavy_atom_ratio               (structural)
-
-  MODE '3d+prior'  (FEATURE_DIM_3D = 7):
-      f1  = prior
-      f3  = morgan_fingerprint_similarity
-      f5  = atom_set_similarity  (UniMol 3D — soft atom-set Chamfer)
-      f6  = reaction_distance    (UniMol 3D — L2 norm of mean-emb diff)
-      f8  = cosine_reaction_vec  (UniMol 3D — angle between prod_mean & reaction_vec)
-      f9  = number_of_fragments
-      f10 = heavy_atom_ratio
-
-FIXES vs v2:
-  - REMOVED reaction_vec_norm  (= reaction_distance exactly, r=1.000 — pure duplicate)
-  - REMOVED cosine_mean        (r=-0.956 with reaction_distance — near-collinear via
-                                 d²=2(1−cos) identity when embeddings are normalized)
-  - REMOVED atom_count_penalty because it is algebraically redundant with
-            heavy_atom_ratio in the frozen feature set
-
-f2 (rank) is completely removed — rank correlates directly with prior, leading to leakage.
-
-Fair comparison between 2D and 3D:
-  - Train model_2d on feature_mode='2d+prior' -> does NOT use UniMol
-  - Train model_3d on feature_mode='3d+prior' -> uses UniMol embeddings
-  - Δ(3D - 2D) isolates the three features derived from UniMol atom embeddings
-"""
-
 from __future__ import annotations
 
 import logging
@@ -42,85 +16,73 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# Feature set modes and dimensions (v3 — explicit ablation abstraction)
+# Feature names and order for each input view.
 FEATURE_NAMES_MAP = {
-    "prior_only": [
-        "prior_or_log_prob",   # f1
-    ],
-    "2d": [
-        "morgan_similarity",   # f3
-        "n_fragments",         # f9
-        "heavy_atom_ratio",    # f10
-    ],
+    "prior_only": ["prior_or_log_prob"],
+    "2d": ["morgan_similarity", "n_fragments", "heavy_atom_ratio"],
     "3d": [
-        "morgan_similarity",   # f3
-        "atom_set_similarity", # f5 (UniMol) — soft Chamfer atom similarity
-        "reaction_distance",   # f6 (UniMol) — L2 norm of mean-emb diff
-        "cosine_reaction_vec", # f8 (UniMol) — cos(prod_mean, reaction_vec)
-        "n_fragments",         # f9
-        "heavy_atom_ratio",    # f10
-        # REMOVED: cosine_mean (r=-0.956 with reaction_distance, near-collinear)
-        # REMOVED: reaction_vec_norm (= reaction_distance exactly, r=1.000)
-        # REMOVED: atom_count_penalty (= |1-heavy_atom_ratio|, r=1.000 with heavy_atom_ratio)
+        "morgan_similarity",
+        "atom_set_similarity",
+        "reaction_distance",
+        "cosine_reaction_vec",
+        "n_fragments",
+        "heavy_atom_ratio",
     ],
-    "2d+prior": [
-        "prior_or_log_prob",   # f1
-        "morgan_similarity",   # f3
-        "n_fragments",         # f9
-        "heavy_atom_ratio",    # f10
-    ],
+    "2d+prior": ["prior_or_log_prob", "morgan_similarity", "n_fragments", "heavy_atom_ratio"],
     "3d+prior": [
-        "prior_or_log_prob",   # f1
-        "morgan_similarity",   # f3
-        "atom_set_similarity", # f5 (UniMol) — soft Chamfer atom similarity
-        "reaction_distance",   # f6 (UniMol) — L2 norm of mean-emb diff
-        "cosine_reaction_vec", # f8 (UniMol) — cos(prod_mean, reaction_vec)
-        "n_fragments",         # f9
-        "heavy_atom_ratio",    # f10
-        # REMOVED: cosine_mean (r=-0.956 with reaction_distance, near-collinear)
-        # REMOVED: reaction_vec_norm (= reaction_distance exactly, r=1.000)
-        # REMOVED: atom_count_penalty (= |1-heavy_atom_ratio|, r=1.000 with heavy_atom_ratio)
-    ]
+        "prior_or_log_prob",
+        "morgan_similarity",
+        "atom_set_similarity",
+        "reaction_distance",
+        "cosine_reaction_vec",
+        "n_fragments",
+        "heavy_atom_ratio",
+    ],
 }
 
-FEATURE_NAMES_2D = FEATURE_NAMES_MAP["2d+prior"]   # Keep old names for backward compat
+FEATURE_NAMES_2D = FEATURE_NAMES_MAP["2d+prior"]  # Keep old names for backward compat
 FEATURE_NAMES_3D = FEATURE_NAMES_MAP["3d+prior"]
 FEATURE_NAMES = FEATURE_NAMES_3D
 FEATURE_DIM_2D = len(FEATURE_NAMES_2D)
 FEATURE_DIM_3D = len(FEATURE_NAMES_3D)
 FEATURE_DIM = FEATURE_DIM_3D
 
-DISABLE_RANK_FEATURE = True  # rank feature REMOVED — was causing leakage
-
+DISABLE_RANK_FEATURE = True  # Rank is excluded from these feature views.
 
 
 from functools import lru_cache
 
 _MORGAN_GEN = None
 
+
 @lru_cache(maxsize=100000)
 def _get_heavy_atom_count(smiles: str) -> int:
     try:
         from rdkit import Chem
+
         mol = Chem.MolFromSmiles(smiles)
         return mol.GetNumHeavyAtoms() if mol is not None else 0
     except Exception:
         return 0
 
+
 @lru_cache(maxsize=100000)
 def _get_morgan_fingerprint(smiles: str, radius: int = 2, n_bits: int = 2048):
     try:
         from rdkit import Chem
+
         mol = Chem.MolFromSmiles(smiles)
         if mol is None:
             return None
         global _MORGAN_GEN
         if _MORGAN_GEN is None:
             from rdkit.Chem.rdFingerprintGenerator import GetMorganGenerator
+
             _MORGAN_GEN = GetMorganGenerator(radius=radius, fpSize=n_bits)
         return _MORGAN_GEN.GetFingerprint(mol)
     except Exception:
         return None
+
 
 def _morgan_similarity(smiles_a: str, smiles_b: str, radius: int = 2, n_bits: int = 2048) -> float:
     try:
@@ -129,6 +91,7 @@ def _morgan_similarity(smiles_a: str, smiles_b: str, radius: int = 2, n_bits: in
         if fp_a is None or fp_b is None:
             return 0.0
         from rdkit import DataStructs
+
         return float(DataStructs.TanimotoSimilarity(fp_a, fp_b))
     except Exception as exc:
         logger.debug("Morgan similarity failed: %s", exc)
@@ -139,9 +102,7 @@ def _atom_count_penalty(product_smiles: str, candidate_smiles: str) -> float:
     try:
         n_product = _get_heavy_atom_count(product_smiles)
         n_candidate = sum(
-            _get_heavy_atom_count(f.strip())
-            for f in candidate_smiles.split(".")
-            if f.strip()
+            _get_heavy_atom_count(f.strip()) for f in candidate_smiles.split(".") if f.strip()
         )
         return abs(n_product - n_candidate) / max(n_product, 1)
     except Exception:
@@ -154,14 +115,11 @@ def _heavy_atom_ratio(product_smiles: str, candidate_smiles: str) -> float:
         if n_product == 0:
             return 1.0
         n_candidate = sum(
-            _get_heavy_atom_count(f.strip())
-            for f in candidate_smiles.split(".")
-            if f.strip()
+            _get_heavy_atom_count(f.strip()) for f in candidate_smiles.split(".") if f.strip()
         )
         return n_candidate / n_product
     except Exception:
         return 1.0
-
 
 
 # Atom-level 3D features (AGENT.md DATA SPEC formulas)
@@ -183,7 +141,6 @@ def _atom_set_similarity(prod_emb: np.ndarray, react_emb: np.ndarray) -> float:
     return float(0.5 * (prod_to_react + react_to_prod))
 
 
-
 def _reaction_distance(prod_emb: np.ndarray, react_emb: np.ndarray) -> float:
     """norm(prod.mean(0) - react.mean(0))"""
     if prod_emb.shape[0] == 0 or react_emb.shape[0] == 0:
@@ -196,8 +153,7 @@ def _cosine(a: np.ndarray, b: np.ndarray) -> float:
     return float(np.dot(a, b) / (na * nb)) if na > 1e-10 and nb > 1e-10 else 0.0
 
 
-
-# FIX #6 — embedding quality check
+# embedding quality check
 
 
 def _check_embedding(name: str, emb: np.ndarray) -> None:
@@ -210,8 +166,7 @@ def _check_embedding(name: str, emb: np.ndarray) -> None:
         )
 
 
-
-# Feature Normalizer (FIX #4)
+# Feature Normalizer
 
 
 class FeatureNormalizer:
@@ -246,7 +201,9 @@ class FeatureNormalizer:
         self._fitted = True
         logger.info(
             "FeatureNormalizer fitted on %d samples. Mean: %s, Std: %s",
-            len(X), self.mean_.round(4), self.std_.round(4),
+            len(X),
+            self.mean_.round(4),
+            self.std_.round(4),
         )
         return self
 
@@ -283,7 +240,6 @@ class FeatureNormalizer:
     @property
     def is_fitted(self) -> bool:
         return self._fitted
-
 
 
 # Main class
@@ -332,10 +288,7 @@ class FeatureExtractor:
     def feature_dim(self) -> int:
         return len(FEATURE_NAMES_MAP[self._feature_mode])
 
-
-
     # Public API — single candidate
-
 
     def extract_features(
         self,
@@ -358,9 +311,7 @@ class FeatureExtractor:
                           Used to scale f2 to [0,1].
         """
         if "3d" in self._feature_mode:
-            prod_emb = self._resolve_product_emb(
-                product_smiles, product_atom_emb, dataset_idx
-            )
+            prod_emb = self._resolve_product_emb(product_smiles, product_atom_emb, dataset_idx)
             react_emb = self.encoder.encode_atoms_fragments(candidate_smiles)
             _check_embedding(f"product:{product_smiles[:20]}", prod_emb)
             _check_embedding(f"reactant:{candidate_smiles[:20]}", react_emb)
@@ -371,13 +322,10 @@ class FeatureExtractor:
             prod_emb = np.empty((0, 0), dtype=np.float32)
             react_emb = np.empty((0, 0), dtype=np.float32)
         return self._compute(
-            product_smiles, candidate_smiles, log_prob, rank,
-            n_candidates, prod_emb, react_emb,
+            product_smiles, candidate_smiles, log_prob, rank, n_candidates, prod_emb, react_emb
         )
 
-
     # Public API — batch (all candidates for one product)
-
 
     def extract_features_batch(
         self,
@@ -421,30 +369,24 @@ class FeatureExtractor:
             react_embs = self.encoder.encode_atoms_fragments_batch(candidates)
         else:
             prod_emb = np.empty((0, 0), dtype=np.float32)
-            react_embs = [
-                np.empty((0, 0), dtype=np.float32) for _ in candidates
-            ]
+            react_embs = [np.empty((0, 0), dtype=np.float32) for _ in candidates]
 
         n_cands = len(candidates)
         features = []
         for i, (cand, prior, react_emb) in enumerate(zip(candidates, values, react_embs)):
             rank = ranks[i] if ranks is not None else i
-            fv = self._compute(
-                product_smiles, cand, prior, rank, n_cands, prod_emb, react_emb,
-            )
+            fv = self._compute(product_smiles, cand, prior, rank, n_cands, prod_emb, react_emb)
             features.append(fv)
 
         result = np.stack(features, axis=0)
 
-        # FIX #4: apply normalizer on the full batch
+        # apply normalizer on the full batch
         if self.normalizer is not None and self.normalizer.is_fitted:
             result = self.normalizer.transform(result)
 
         return result
 
-
     # Internal
-
 
     def _compute(
         self,
@@ -461,17 +403,17 @@ class FeatureExtractor:
         Supports: prior_only, 2d, 3d, 2d+prior, 3d+prior
         """
         feats = {}
-        
+
         # prior (f1)
         feats["prior_or_log_prob"] = float(log_prob)
-        
+
         # 2D features
         fragments = [f.strip() for f in candidate_smiles.split(".") if f.strip()]
         feats["morgan_similarity"] = _morgan_similarity(product_smiles, candidate_smiles)
         feats["atom_count_penalty"] = _atom_count_penalty(product_smiles, candidate_smiles)
         feats["n_fragments"] = float(len(fragments))
         feats["heavy_atom_ratio"] = _heavy_atom_ratio(product_smiles, candidate_smiles)
-        
+
         # 3D features (UniMol)
         if "3d" in self._feature_mode:
             # Safeguard in case embeddings are empty
@@ -490,16 +432,12 @@ class FeatureExtractor:
                 feats["atom_set_similarity"] = 0.0
                 feats["reaction_distance"] = 0.0
                 feats["cosine_reaction_vec"] = 0.0
-                
+
         ordered_names = FEATURE_NAMES_MAP[self._feature_mode]
         return np.array([feats[name] for name in ordered_names], dtype=np.float32)
 
-
     def _resolve_product_emb(
-        self,
-        product_smiles: str,
-        explicit_emb: Optional[np.ndarray],
-        dataset_idx: Optional[int],
+        self, product_smiles: str, explicit_emb: Optional[np.ndarray], dataset_idx: Optional[int]
     ) -> np.ndarray:
         if explicit_emb is not None:
             emb = np.asarray(explicit_emb, dtype=np.float32)
@@ -512,7 +450,6 @@ class FeatureExtractor:
             logger.debug("dataset_idx=%d not in store; falling back to live encode.", dataset_idx)
 
         return self.encoder.encode_atoms(product_smiles)
-
 
 
 # Utility: fit FeatureNormalizer from a PairwiseRankingDataset
@@ -542,11 +479,10 @@ def fit_normalizer_from_dataset(dataset) -> FeatureNormalizer:
         all_feats.append(x_pos.numpy())
         all_feats.append(x_neg.numpy())
 
-    X = np.stack(all_feats, axis=0)   # (2 * N_pairs, FEATURE_DIM)
+    X = np.stack(all_feats, axis=0)  # (2 * N_pairs, FEATURE_DIM)
     norm = FeatureNormalizer()
     norm.fit(X)
     logger.info(
-        "FeatureNormalizer fitted on %d feature vectors (%d pairs).",
-        len(all_feats), len(dataset),
+        "FeatureNormalizer fitted on %d feature vectors (%d pairs).", len(all_feats), len(dataset)
     )
     return norm

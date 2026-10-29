@@ -33,9 +33,7 @@ SCHEMA_VERSION = 1
 PROTOCOL_ID = "localretro-chemformer50k-rxnmapper-filtered-v2"
 DOWNSTREAM_PROTOCOL_ID = "localretro-top50-current-split-filtered-v2"
 RXNMAPPER_COMMIT = "a01ecdcd5ac944850e9691739c1df858e005fd39"
-RXNMAPPER_MODEL_RELATIVE = (
-    "rxnmapper/models/transformers/albert_heads_8_uspto_all_1310k"
-)
+RXNMAPPER_MODEL_RELATIVE = "rxnmapper/models/transformers/albert_heads_8_uspto_all_1310k"
 RXNMAPPER_MODEL_FILES = {
     "config.json": "50bf1efa8c9710b38f017f332bb974ccc39df3bef028ef3d9d3b1f019a195e3f",
     "pytorch_model.bin": "8541f3f500dae71abe678d546bd035ca946e2d1c819f6b2cf41a97faedd7e6a2",
@@ -71,9 +69,7 @@ def fingerprint(path: str | Path) -> dict[str, Any]:
 def atomic_json(path: Path, payload: Mapping[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
-    temporary.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    temporary.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     os.replace(temporary, path)
 
 
@@ -95,9 +91,7 @@ def split_reaction(reaction: str) -> tuple[str, str, str]:
     return parts[0], parts[1], parts[2]
 
 
-def canonical_fragments(
-    smiles: str, *, isomeric_smiles: bool = True
-) -> tuple[str, ...]:
+def canonical_fragments(smiles: str, *, isomeric_smiles: bool = True) -> tuple[str, ...]:
     if not str(smiles):
         return ()
     canonical: list[str] = []
@@ -115,11 +109,7 @@ def canonical_fragments(
         molecule.ClearComputedProps()
         Chem.SanitizeMol(molecule)
         Chem.AssignStereochemistry(molecule, cleanIt=True, force=True)
-        canonical.append(
-            Chem.MolToSmiles(
-                molecule, canonical=True, isomericSmiles=isomeric_smiles
-            )
-        )
+        canonical.append(Chem.MolToSmiles(molecule, canonical=True, isomericSmiles=isomeric_smiles))
     return tuple(sorted(canonical))
 
 
@@ -155,9 +145,7 @@ def _transfer_side_atom_maps(original_side: str, mapped_side: str) -> str:
         key = _unmapped_molecule_key(original)
         candidates = mapped_by_key.get(key, [])
         if not candidates:
-            raise ValueError(
-                "RXNMapper output is not non-stereochemically identical to its input."
-            )
+            raise ValueError("RXNMapper output is not non-stereochemically identical to its input.")
         mapped_molecule = candidates.pop(0)
         query = Chem.Mol(mapped_molecule)
         mapper_numbers = [atom.GetAtomMapNum() for atom in query.GetAtoms()]
@@ -169,12 +157,8 @@ def _transfer_side_atom_maps(original_side: str, mapped_side: str) -> str:
             raise ValueError("Could not transfer RXNMapper indices to the original graph.")
         match = min(full_matches)
         for query_index, original_index in enumerate(match):
-            original.GetAtomWithIdx(original_index).SetAtomMapNum(
-                int(mapper_numbers[query_index])
-            )
-        restored.append(
-            Chem.MolToSmiles(original, canonical=True, isomericSmiles=True)
-        )
+            original.GetAtomWithIdx(original_index).SetAtomMapNum(int(mapper_numbers[query_index]))
+        restored.append(Chem.MolToSmiles(original, canonical=True, isomericSmiles=True))
     if any(values for values in mapped_by_key.values()):
         raise ValueError("RXNMapper output has unmatched molecular fragments.")
     return ".".join(restored)
@@ -186,9 +170,7 @@ def transfer_atom_maps_to_original(unmapped: str, mapped: str) -> tuple[str, dic
     if reaction_identity(unmapped, isomeric_smiles=False) != reaction_identity(
         mapped, isomeric_smiles=False
     ):
-        raise ValueError(
-            "RXNMapper output is not non-stereochemically identical to its input."
-        )
+        raise ValueError("RXNMapper output is not non-stereochemically identical to its input.")
     original_reactants, original_agents, original_product = split_reaction(unmapped)
     mapped_reactants, _mapped_agents, mapped_product = split_reaction(mapped)
     restored = ">".join(
@@ -230,9 +212,7 @@ def validate_mapped_reaction(
             raise ValueError("Mapped reactant fragment is invalid.")
         reactant_atom_count += molecule.GetNumAtoms()
         reactant_maps.extend(
-            atom.GetAtomMapNum()
-            for atom in molecule.GetAtoms()
-            if atom.GetAtomMapNum() > 0
+            atom.GetAtomMapNum() for atom in molecule.GetAtoms() if atom.GetAtomMapNum() > 0
         )
     if len(reactant_maps) != len(set(reactant_maps)):
         raise ValueError("Positive reactant atom-map numbers are not unique.")
@@ -248,9 +228,7 @@ def validate_mapped_reaction(
     }
 
 
-def _load_current_rows(
-    source_csv: str | Path, metadata_csv: str | Path
-) -> list[dict[str, Any]]:
+def _load_current_rows(source_csv: str | Path, metadata_csv: str | Path) -> list[dict[str, Any]]:
     source = pd.read_csv(source_csv)
     metadata = pd.read_csv(metadata_csv)
     if len(source) != len(metadata):
@@ -333,7 +311,10 @@ def verify_rxnmapper_assets(rxnmapper_root: str | Path) -> dict[str, Any]:
 
 def _mapped_paths(output_root: Path, shard_index: int, shard_count: int) -> tuple[Path, Path]:
     stem = f"mapped_shard_{shard_index:03d}_of_{shard_count:03d}"
-    return output_root / "shards" / f"{stem}.jsonl", output_root / "shards" / f"{stem}.manifest.json"
+    return (
+        output_root / "shards" / f"{stem}.jsonl",
+        output_root / "shards" / f"{stem}.manifest.json",
+    )
 
 
 def map_shard(
@@ -382,9 +363,7 @@ def map_shard(
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(2026)
     mapper = BatchedMapper(
-        batch_size=batch_size,
-        model_path=root / RXNMAPPER_MODEL_RELATIVE,
-        canonicalize=True,
+        batch_size=batch_size, model_path=root / RXNMAPPER_MODEL_RELATIVE, canonicalize=True
     )
     mapper.mapper.model.eval()
     start_time = time.perf_counter()
@@ -409,12 +388,9 @@ def map_shard(
                 row["unmapped_reaction"], str(result["mapped_rxn"])
             )
             validation = validate_mapped_reaction(
-                row["unmapped_reaction"], mapped_reaction,
-                allow_unbalanced_product=True,
+                row["unmapped_reaction"], mapped_reaction, allow_unbalanced_product=True
             )
-            missing_product_atoms = int(
-                validation["product_atom_maps_absent_from_reactants"]
-            )
+            missing_product_atoms = int(validation["product_atom_maps_absent_from_reactants"])
             if missing_product_atoms:
                 exclusions.append(
                     {
@@ -426,9 +402,7 @@ def map_shard(
                 )
                 continue
             unmapped_reactant_atoms += validation["reactant_unmapped_atom_count"]
-            stereo_restored_reactions += int(
-                transfer["original_stereochemistry_restored"]
-            )
+            stereo_restored_reactions += int(transfer["original_stereochemistry_restored"])
             output_records.append(
                 {
                     **row,
@@ -440,11 +414,11 @@ def map_shard(
                 }
             )
         except Exception as error:
-            failures.append(
-                {"reaction_id": row["reaction_id"], "error": str(error)}
-            )
+            failures.append({"reaction_id": row["reaction_id"], "error": str(error)})
     if failures:
-        failure_path = output / "shards" / f"mapping_failures_{shard_index:03d}_of_{shard_count:03d}.json"
+        failure_path = (
+            output / "shards" / f"mapping_failures_{shard_index:03d}_of_{shard_count:03d}.json"
+        )
         atomic_json(failure_path, {"protocol_id": PROTOCOL_ID, "failures": failures})
         raise RuntimeError(
             f"Mapping shard failed validation for {len(failures)} reactions; see {failure_path}."
@@ -496,9 +470,7 @@ def map_shard(
             "platform": platform.platform(),
             "torch": torch.__version__,
             "cuda_available": torch.cuda.is_available(),
-            "cuda_device": (
-                torch.cuda.get_device_name(0) if torch.cuda.is_available() else None
-            ),
+            "cuda_device": (torch.cuda.get_device_name(0) if torch.cuda.is_available() else None),
             "rdkit": importlib.metadata.version("rdkit"),
             "rxnmapper": getattr(rxnmapper_package, "__version__", "source-checkout"),
         },
@@ -574,9 +546,7 @@ def compile_mapping(
                 reaction_id = int(record["reaction_id"])
                 if reaction_id in mapped_by_id:
                     raise RuntimeError(f"Duplicate mapped reaction ID {reaction_id}.")
-                validate_mapped_reaction(
-                    record["unmapped_reaction"], record["mapped_reaction"]
-                )
+                validate_mapped_reaction(record["unmapped_reaction"], record["mapped_reaction"])
                 mapped_by_id[reaction_id] = record
     expected_ids = {int(row["reaction_id"]) for row in rows}
     observed_ids = set(mapped_by_id) | set(excluded_by_id)
@@ -598,16 +568,13 @@ def compile_mapping(
             split_rows = [
                 mapped_by_id[int(row["reaction_id"])]
                 for row in rows
-                if row["split"] == split
-                and int(row["reaction_id"]) in mapped_by_id
+                if row["split"] == split and int(row["reaction_id"]) in mapped_by_id
             ]
             frame = pd.DataFrame(
                 {
                     "id": [str(row["reaction_id"]) for row in split_rows],
                     "class": ["UNK"] * len(split_rows),
-                    "reactants>reagents>production": [
-                        row["mapped_reaction"] for row in split_rows
-                    ],
+                    "reactants>reagents>production": [row["mapped_reaction"] for row in split_rows],
                 }
             )
             target_name = "raw_val.csv" if split == "valid" else "raw_train.csv"
@@ -711,9 +678,7 @@ def prepare_product_only_inference(
         {
             "id": [str(index) for index in range(len(products))],
             "class": ["UNK"] * len(products),
-            "reactants>reagents>production": [
-                f"{product}>>{product}" for product in products
-            ],
+            "reactants>reagents>production": [f"{product}>>{product}" for product in products],
         }
     )
     raw_test.parent.mkdir(parents=True, exist_ok=True)
@@ -765,9 +730,7 @@ def crosswalk_audit(
         path = Path(gln_root) / f"schneider50k_{split}.csv"
         gln_files[split] = fingerprint(path)
         frame = pd.read_csv(path)
-        for row_index, reaction in enumerate(
-            frame["reactants>reagents>production"].astype(str)
-        ):
+        for row_index, reaction in enumerate(frame["reactants>reagents>production"].astype(str)):
             mapped_index[reaction_identity(reaction)].append((split, row_index))
     status: collections.Counter[str] = collections.Counter()
     by_split: dict[str, collections.Counter[str]] = collections.defaultdict(collections.Counter)

@@ -41,11 +41,7 @@ D5_PROTOCOL_ID = "D-EXTERNAL-RXN-EBM-FF-CAP10-v1"
 D5_SEEDS = (0, 20210423, 77777777)
 POOL_ORDER = ("historical_cap10", "aizynthfinder_only", "localretro_only", "merged")
 METRICS = ("top1", "top3", "top5", "top10", "mrr")
-FINAL_K1_COVERAGE = {
-    "aizynthfinder_only": 4012,
-    "localretro_only": 4462,
-    "merged": 4584,
-}
+FINAL_K1_COVERAGE = {"aizynthfinder_only": 4012, "localretro_only": 4462, "merged": 4584}
 FINAL_COMMON_COVERED = 3814
 
 
@@ -105,7 +101,9 @@ def _metrics(ranks: Iterable[int]) -> dict[str, float]:
     values = [int(rank) for rank in ranks]
     if not values:
         raise ValueError("Metric denominator is empty.")
-    return {metric: float(np.mean([_metric(rank, metric) for rank in values])) for metric in METRICS}
+    return {
+        metric: float(np.mean([_metric(rank, metric) for rank in values])) for metric in METRICS
+    }
 
 
 def _prediction_path(manifest_path: Path, manifest: Mapping) -> Path:
@@ -150,8 +148,12 @@ def _anchor_gain(prediction_root: str | Path) -> float:
     effects = []
     root = Path(prediction_root)
     for seed in SEEDS:
-        baseline = {int(row["reaction_id"]): row for row in _read_csv(root / f"baseline_seed_{seed}.csv")}
-        augmented = {int(row["reaction_id"]): row for row in _read_csv(root / f"augmented_seed_{seed}.csv")}
+        baseline = {
+            int(row["reaction_id"]): row for row in _read_csv(root / f"baseline_seed_{seed}.csv")
+        }
+        augmented = {
+            int(row["reaction_id"]): row for row in _read_csv(root / f"augmented_seed_{seed}.csv")
+        }
         if baseline.keys() != augmented.keys():
             raise ValueError("Anchor paired prediction IDs differ.")
         effects.extend(
@@ -172,7 +174,9 @@ def j1_j2(args: argparse.Namespace) -> dict:
     manifests: dict[str, dict] = {}
     for pool, path in zip(POOL_ORDER[1:], args.expanded_manifest, strict=True):
         manifest, records = _expanded_records(path)
-        seeds = tuple(sorted(int(seed) for seed in manifest.get("per_seed_metrics", {}).get("baseline", {})))
+        seeds = tuple(
+            sorted(int(seed) for seed in manifest.get("per_seed_metrics", {}).get("baseline", {}))
+        )
         augmented_seeds = tuple(
             sorted(int(seed) for seed in manifest.get("per_seed_metrics", {}).get("augmented", {}))
         )
@@ -180,8 +184,7 @@ def j1_j2(args: argparse.Namespace) -> dict:
         if (
             manifest.get("protocol_id") != K1_PROTOCOL_ID
             or manifest.get("pool_name") != pool
-            or manifest.get("source_pool_protocol_id")
-            != "ws-e-localretro-three-pools-filtered-v2"
+            or manifest.get("source_pool_protocol_id") != "ws-e-localretro-three-pools-filtered-v2"
             or int(manifest.get("candidate_cap", 0)) != 10
             or manifest.get("candidate_ordering")
             != "first rows of the frozen pool order; no re-sorting"
@@ -228,14 +231,7 @@ def j1_j2(args: argparse.Namespace) -> dict:
             ("own_covered", own_metrics, len(own_ids)),
             ("common_four_pool_covered", common_metrics, len(common)),
         ):
-            metric_rows.append(
-                {
-                    "pool": pool,
-                    "scope": scope,
-                    "n_reactions": denominator,
-                    **values,
-                }
-            )
+            metric_rows.append({"pool": pool, "scope": scope, "n_reactions": denominator, **values})
         headroom = 1.0 - own_metrics["top1"]
         capture = None if headroom == 0.0 else gains[pool] / headroom
         headroom_rows.append(
@@ -353,7 +349,10 @@ def j3_j4(args: argparse.Namespace) -> dict:
     candidate_bins = np.asarray([_candidate_bin(int(row["candidate_count"])) for row in reference])
     top1 = np.asarray(
         [
-            [float(int(a["reranked_rank"]) == 1) - float(int(b["reranked_rank"]) == 1) for b, a in zip(bs, aug)]
+            [
+                float(int(a["reranked_rank"]) == 1) - float(int(b["reranked_rank"]) == 1)
+                for b, a in zip(bs, aug)
+            ]
             for bs, aug in zip(baseline, augmented)
         ],
         dtype=np.float64,
@@ -374,7 +373,10 @@ def j3_j4(args: argparse.Namespace) -> dict:
         mask = candidate_bins == label
         for metric_index, (metric, values) in enumerate((("top1", top1), ("mrr", mrr))):
             result = product_cluster_bootstrap(
-                values[:, mask], clusters[mask], args.bootstrap_samples, args.rng_seed + index * 10 + metric_index
+                values[:, mask],
+                clusters[mask],
+                args.bootstrap_samples,
+                args.rng_seed + index * 10 + metric_index,
             )
             j3_rows.append(
                 {
@@ -537,10 +539,7 @@ def k2(args: argparse.Namespace) -> dict:
                 )
                 row["analysis_role"] = "prespecified_inferential"
             rows.append(row)
-    group_rows = [
-        {"group": label, "n_reactions": len(groups[label])}
-        for label in group_labels
-    ]
+    group_rows = [{"group": label, "n_reactions": len(groups[label])} for label in group_labels]
     if sum(row["n_reactions"] for row in group_rows) != 3985:
         raise RuntimeError("K2 groups do not partition the 3,985 anchor reactions.")
     output.mkdir(parents=True, exist_ok=True)
@@ -610,16 +609,10 @@ def k1(args: argparse.Namespace) -> dict:
                 dtype=np.float64,
             )
             product_only = product_cluster_bootstrap(
-                differences,
-                clusters,
-                args.bootstrap_samples,
-                args.rng_seed + metric_index,
+                differences, clusters, args.bootstrap_samples, args.rng_seed + metric_index
             )
             seed_marginal = crossed_product_seed_bootstrap(
-                differences,
-                clusters,
-                args.bootstrap_samples,
-                args.rng_seed + 100 + metric_index,
+                differences, clusters, args.bootstrap_samples, args.rng_seed + 100 + metric_index
             )
             rows.append(
                 {
@@ -716,18 +709,14 @@ def _distribution_summary(values: Iterable[float]) -> dict[str, float | int | No
 
 
 def _prefixed_summary(prefix: str, values: Iterable[float]) -> dict:
-    return {
-        f"{prefix}_{key}": value
-        for key, value in _distribution_summary(values).items()
-    }
+    return {f"{prefix}_{key}": value for key, value in _distribution_summary(values).items()}
 
 
 def _resolve_d5_file(root: Path, relative: str, record: Mapping) -> Path:
     path = root / relative
     actual = file_fingerprint(path)
-    if (
-        actual["sha256"] != record.get("sha256")
-        or int(actual["size_bytes"]) != int(record.get("size_bytes", -1))
+    if actual["sha256"] != record.get("sha256") or int(actual["size_bytes"]) != int(
+        record.get("size_bytes", -1)
     ):
         raise ValueError(f"Frozen D5 artifact checksum mismatch: {path}")
     return path
@@ -743,8 +732,7 @@ def l1(args: argparse.Namespace) -> dict:
     approval_record = _load_json(args.approval_record)
     if (
         approval_record.get("l1_protocol_id") != L1_PROTOCOL_ID
-        or approval_record.get("l1_status")
-        != "approved_forward_only_no_retraining_or_retuning"
+        or approval_record.get("l1_status") != "approved_forward_only_no_retraining_or_retuning"
         or not approval_record.get("l1_approval_date")
         or not approval_record.get("l1_approval_quote")
     ):
@@ -775,15 +763,9 @@ def l1(args: argparse.Namespace) -> dict:
         or freeze.get("test_partition_loaded") is not False
     ):
         raise PermissionError("L1 requires the frozen post-selection D5 artifacts.")
-    _resolve_d5_file(
-        d5_root,
-        "freeze/model_selection.json",
-        test_manifest["selection_freeze"],
-    )
+    _resolve_d5_file(d5_root, "freeze/model_selection.json", test_manifest["selection_freeze"])
     fingerprint_path = _resolve_d5_file(
-        d5_root,
-        "test_results/test_fingerprints.npz",
-        test_manifest["test_fingerprints"],
+        d5_root, "test_results/test_fingerprints.npz", test_manifest["test_fingerprints"]
     )
 
     prediction_rows = {}
@@ -796,15 +778,16 @@ def l1(args: argparse.Namespace) -> dict:
         prediction_rows[seed] = _read_csv(path)
     reference_ids = [int(row["reaction_id"]) for row in prediction_rows[D5_SEEDS[0]]]
     candidate_counts = np.asarray(
-        [int(row["candidate_count"]) for row in prediction_rows[D5_SEEDS[0]]],
-        dtype=np.int64,
+        [int(row["candidate_count"]) for row in prediction_rows[D5_SEEDS[0]]], dtype=np.int64
     )
     if len(reference_ids) != 3985 or len(set(reference_ids)) != 3985:
         raise ValueError("L1 expects 3,985 uniquely identified covered D5 reactions.")
     for seed in D5_SEEDS[1:]:
         if [int(row["reaction_id"]) for row in prediction_rows[seed]] != reference_ids:
             raise ValueError("D5 prediction reaction order differs across seeds.")
-        if [int(row["candidate_count"]) for row in prediction_rows[seed]] != candidate_counts.tolist():
+        if [
+            int(row["candidate_count"]) for row in prediction_rows[seed]
+        ] != candidate_counts.tolist():
             raise ValueError("D5 candidate counts differ across seeds.")
 
     from scipy import sparse
@@ -821,9 +804,7 @@ def l1(args: argparse.Namespace) -> dict:
         verify_pinned_repository,
     )
 
-    repository = verify_pinned_repository(
-        args.rxn_ebm_repo, RXN_EBM_COMMIT, UPSTREAM_CORE_FILES
-    )
+    repository = verify_pinned_repository(args.rxn_ebm_repo, RXN_EBM_COMMIT, UPSTREAM_CORE_FILES)
     matrix = sparse.load_npz(fingerprint_path).tocsr()
     if matrix.shape[0] != len(reference_ids):
         raise ValueError("D5 fingerprint rows do not match frozen predictions.")
@@ -844,9 +825,7 @@ def l1(args: argparse.Namespace) -> dict:
     for seed in D5_SEEDS:
         trial = trial_by_seed[seed]
         checkpoint_path = _resolve_d5_file(
-            d5_root,
-            f"fit/seed_{seed}/best_checkpoint.pt",
-            trial["checkpoint"],
+            d5_root, f"fit/seed_{seed}/best_checkpoint.pt", trial["checkpoint"]
         )
         model = ff_module.FeedforwardEBM(model_args()).to(device)
         checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
@@ -889,11 +868,13 @@ def l1(args: argparse.Namespace) -> dict:
 
     summary_rows = []
     for seed in (*D5_SEEDS, "pooled"):
-        selected = per_list_rows if seed == "pooled" else [row for row in per_list_rows if row["seed"] == seed]
+        selected = (
+            per_list_rows
+            if seed == "pooled"
+            else [row for row in per_list_rows if row["seed"] == seed]
+        )
         correlations = [
-            float(row["spearman_external_vs_prior"])
-            for row in selected
-            if row["spearman_defined"]
+            float(row["spearman_external_vs_prior"]) for row in selected if row["spearman_defined"]
         ]
         zero_tolerance = 1e-12
         summary_rows.append(
@@ -909,12 +890,10 @@ def l1(args: argparse.Namespace) -> dict:
                 "spearman_zero_count": sum(abs(value) <= zero_tolerance for value in correlations),
                 "spearman_negative_count": sum(value < -zero_tolerance for value in correlations),
                 **_prefixed_summary(
-                    "score_sd",
-                    (row["external_score_population_sd"] for row in selected),
+                    "score_sd", (row["external_score_population_sd"] for row in selected)
                 ),
                 **_prefixed_summary(
-                    "score_range",
-                    (row["external_score_range"] for row in selected),
+                    "score_range", (row["external_score_range"] for row in selected)
                 ),
                 **_prefixed_summary("spearman", correlations),
             }

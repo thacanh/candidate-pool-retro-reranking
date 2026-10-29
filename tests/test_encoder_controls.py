@@ -51,10 +51,7 @@ class FakeAtomEncoder:
         assert self.initialized
         self.calls.append(list(smiles))
         return [
-            np.asarray(
-                [[float(len(value)), 1.0], [1.0, float(len(value) + 1)]],
-                dtype=np.float32,
-            )
+            np.asarray([[float(len(value)), 1.0], [1.0, float(len(value) + 1)]], dtype=np.float32)
             for value in smiles
         ]
 
@@ -96,21 +93,14 @@ def test_query_features_stream_product_once_and_candidates_in_batches():
     )
 
     assert features.shape == (5, 3)
-    assert encoder.calls == [
-        ["product"],
-        ["a", "bb"],
-        ["ccc", "dddd"],
-        ["eeeee"],
-    ]
+    assert encoder.calls == [["product"], ["a", "bb"], ["ccc", "dddd"], ["eeeee"]]
 
 
 def test_full_rows_preserve_frozen_seven_column_order_and_formulas():
     encoder = FakeAtomEncoder()
     encoder.initialize()
     candidates = ["C.O", "CC"]
-    rows = compute_full_query_features(
-        encoder, "CCO", candidates, [0.8, 0.2], batch_size=2
-    )
+    rows = compute_full_query_features(encoder, "CCO", candidates, [0.8, 0.2], batch_size=2)
 
     assert FULL_FEATURE_NAMES == (
         "prior_or_log_prob",
@@ -174,15 +164,9 @@ class FakeGroverBackend:
             if self.invalid_mapping and count > 1:
                 indices = [0] * count
             states = np.asarray(
-                [[float(index + 1), float(count)] for index in indices],
-                dtype=np.float32,
+                [[float(index + 1), float(count)] for index in indices], dtype=np.float32
             )
-            outputs.append(
-                {
-                    "atom_representations": states,
-                    "rdkit_atom_indices": indices,
-                }
-            )
+            outputs.append({"atom_representations": states, "rdkit_atom_indices": indices})
         return outputs
 
 
@@ -224,8 +208,7 @@ def test_grover_adapter_pins_assets_and_reorders_explicit_rdkit_atom_map(tmp_pat
     states = encoder.encode_fragments_batch(["CO.N"])[0]
 
     np.testing.assert_array_equal(
-        states,
-        np.asarray([[1.0, 2.0], [2.0, 2.0], [1.0, 1.0]], dtype=np.float32),
+        states, np.asarray([[1.0, 2.0], [2.0, 2.0], [1.0, 1.0]], dtype=np.float32)
     )
     assert captures["device"] == "cpu"
     assert captures["atom_state_choice"] == "atom_from_atom"
@@ -273,16 +256,9 @@ def _install_fake_official_grover(monkeypatch):
         def grover(self, components):
             captures["grover_components"] = components
             return {
-                "atom_from_atom": torch.tensor(
-                    [[0.0, 0.0], [1.0, 10.0], [2.0, 20.0], [3.0, 30.0]]
-                ),
+                "atom_from_atom": torch.tensor([[0.0, 0.0], [1.0, 10.0], [2.0, 20.0], [3.0, 30.0]]),
                 "atom_from_bond": torch.tensor(
-                    [
-                        [0.0, 0.0],
-                        [100.0, 1000.0],
-                        [200.0, 2000.0],
-                        [300.0, 3000.0],
-                    ]
+                    [[0.0, 0.0], [100.0, 1000.0], [200.0, 2000.0], [300.0, 3000.0]]
                 ),
             }
 
@@ -343,10 +319,7 @@ def _install_fake_official_grover(monkeypatch):
     [
         ("atom_from_atom", [[1.0, 10.0], [2.0, 20.0]]),
         ("atom_from_bond", [[100.0, 1000.0], [200.0, 2000.0]]),
-        (
-            "concatenation",
-            [[1.0, 10.0, 100.0, 1000.0], [2.0, 20.0, 200.0, 2000.0]],
-        ),
+        ("concatenation", [[1.0, 10.0, 100.0, 1000.0], [2.0, 20.0, 200.0, 2000.0]]),
     ],
 )
 def test_official_grover_backend_uses_molgraph_a_scope_and_named_view(
@@ -374,14 +347,10 @@ def test_official_grover_backend_uses_molgraph_a_scope_and_named_view(
     assert args.dropout == 0.0
     assert captures["load_checkpoint"]["logger"] is not None
     assert backend.metadata()["atom_scope_component_index"] == 5
-    assert backend.metadata()["checkpoint_missing_parser_defaults"] == {
-        "dropout": 0.0
-    }
+    assert backend.metadata()["checkpoint_missing_parser_defaults"] == {"dropout": 0.0}
 
 
-def test_official_grover_backend_preserves_raw_cpu_scopes_for_cuda_contract(
-    monkeypatch, tmp_path
-):
+def test_official_grover_backend_preserves_raw_cpu_scopes_for_cuda_contract(monkeypatch, tmp_path):
     captures = _install_fake_official_grover(monkeypatch)
     backend = OfficialGroverAtomBackend(
         repo_path=tmp_path,
@@ -448,9 +417,7 @@ def test_candidate_queries_group_noncontiguous_canonical_products(tmp_path):
         {"product": "CCO", "reactant": "CO", "prior": 0.7},
         {"product": "CCO", "reactant": "C", "prior": 0.9},
     ]
-    input_path.write_text(
-        "\n".join(json.dumps(record) for record in records), encoding="utf-8"
-    )
+    input_path.write_text("\n".join(json.dumps(record) for record in records), encoding="utf-8")
 
     queries = list(iter_candidate_queries(input_path))
 
@@ -471,9 +438,7 @@ def test_scalar_shards_resume_without_writing_atom_representations(tmp_path):
         {"product": "CCC", "reactant": "O", "prior": 0.6},
         {"product": "CCC", "reactant": "CO", "prior": 0.5},
     ]
-    input_path.write_text(
-        "\n".join(json.dumps(record) for record in records), encoding="utf-8"
-    )
+    input_path.write_text("\n".join(json.dumps(record) for record in records), encoding="utf-8")
     output_dir = tmp_path / "features"
     first_encoder = FakeAtomEncoder()
 
@@ -524,30 +489,21 @@ def test_scalar_shards_resume_without_writing_atom_representations(tmp_path):
             assert payload["features"].shape[1] == 7
             assert tuple(payload["feature_names"].tolist()) == FULL_FEATURE_NAMES
 
-
     source = tmp_path / "source.csv"
     source.write_text(
-        "reactants_smiles,products_smiles,set\n"
-        "C,CCO,train\n"
-        "N,CCN,valid\n"
-        "O,CCC,test\n",
+        "reactants_smiles,products_smiles,set\n" "C,CCO,train\n" "N,CCN,valid\n" "O,CCC,test\n",
         encoding="utf-8",
     )
     metadata = tmp_path / "metadata.csv"
     metadata.write_text(
-        "reaction_id,reaction_class,source_split\n"
-        "0,1,train\n1,2,valid\n2,3,test\n",
+        "reaction_id,reaction_class,source_split\n" "0,1,train\n1,2,valid\n2,3,test\n",
         encoding="utf-8",
     )
     train_test_path = tmp_path / "train_test.pkl"
     validation_path = tmp_path / "validation.pkl"
     assert train_test_path != validation_path
     compiled = compile_encoder_control_caches(
-        output_dir / "manifest.json",
-        source,
-        metadata,
-        train_test_path,
-        validation_path,
+        output_dir / "manifest.json", source, metadata, train_test_path, validation_path
     )
 
     assert compiled["atom_embeddings_written"] is False
@@ -592,9 +548,7 @@ def test_independent_query_partitions_merge_to_exact_serial_features(tmp_path):
         {"product": "CCC", "reactant": "CO", "prior": 0.3},
         {"product": "CCCl", "reactant": "Cl", "prior": 0.6},
     ]
-    input_path.write_text(
-        "\n".join(json.dumps(record) for record in records), encoding="utf-8"
-    )
+    input_path.write_text("\n".join(json.dumps(record) for record in records), encoding="utf-8")
     serial_dir = tmp_path / "serial"
     serial = build_feature_shards(
         input_path,
@@ -658,16 +612,12 @@ def test_independent_query_partitions_merge_to_exact_serial_features(tmp_path):
 
     source = tmp_path / "partition-source.csv"
     source.write_text(
-        "reactants_smiles,products_smiles,set\n"
-        "C,CCO,train\n"
-        "N,CCN,valid\n"
-        "O,CCC,test\n",
+        "reactants_smiles,products_smiles,set\n" "C,CCO,train\n" "N,CCN,valid\n" "O,CCC,test\n",
         encoding="utf-8",
     )
     metadata = tmp_path / "partition-metadata.csv"
     metadata.write_text(
-        "reaction_id,reaction_class,source_split\n"
-        "0,1,train\n1,2,valid\n2,3,test\n",
+        "reaction_id,reaction_class,source_split\n" "0,1,train\n1,2,valid\n2,3,test\n",
         encoding="utf-8",
     )
     compiled = compile_encoder_control_caches(
@@ -695,9 +645,7 @@ def test_independent_query_partitions_merge_to_exact_serial_features(tmp_path):
 
 
 @pytest.mark.parametrize("existing_index", [0, 1])
-def test_cache_compiler_preflight_refuses_either_existing_target(
-    tmp_path, existing_index
-):
+def test_cache_compiler_preflight_refuses_either_existing_target(tmp_path, existing_index):
     targets = [tmp_path / "train_test.pkl", tmp_path / "validation.pkl"]
     targets[existing_index].write_bytes(b"preserve-me")
 

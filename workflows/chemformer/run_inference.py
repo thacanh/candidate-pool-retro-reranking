@@ -88,9 +88,7 @@ def run(args: argparse.Namespace) -> dict:
     shutil.copyfile(source, runtime_csv)
 
     pl.seed_everything(1, workers=True)
-    config = build_config(
-        runtime_csv, checkpoint, vocabulary, args.device, args.batch_size
-    )
+    config = build_config(runtime_csv, checkpoint, vocabulary, args.device, args.batch_size)
     model = Chemformer(config)
     model.datamodule._num_workers = args.workers
     predictions = model.predict()
@@ -133,10 +131,26 @@ def run(args: argparse.Namespace) -> dict:
             "workers": args.workers,
             "device": args.device,
         },
-        "input": {"path": str(source), "size_bytes": source.stat().st_size, "sha256": sha256(source)},
-        "checkpoint": {"path": str(checkpoint), "size_bytes": checkpoint.stat().st_size, "sha256": sha256(checkpoint)},
-        "vocabulary": {"path": str(vocabulary), "size_bytes": vocabulary.stat().st_size, "sha256": sha256(vocabulary)},
-        "output": {"path": str(output), "size_bytes": output.stat().st_size, "sha256": sha256(output)},
+        "input": {
+            "path": str(source),
+            "size_bytes": source.stat().st_size,
+            "sha256": sha256(source),
+        },
+        "checkpoint": {
+            "path": str(checkpoint),
+            "size_bytes": checkpoint.stat().st_size,
+            "sha256": sha256(checkpoint),
+        },
+        "vocabulary": {
+            "path": str(vocabulary),
+            "size_bytes": vocabulary.stat().st_size,
+            "sha256": sha256(vocabulary),
+        },
+        "output": {
+            "path": str(output),
+            "size_bytes": output.stat().st_size,
+            "sha256": sha256(output),
+        },
         "rows": EXPECTED_ROWS,
         "test_partition_used_for_training_or_selection": False,
         "torch": torch.__version__,

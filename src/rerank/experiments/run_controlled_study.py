@@ -37,10 +37,7 @@ from rerank.study_data import (
 )
 from rerank.trainer import RankerTrainer, TrainerConfig
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("controlled_study")
 
 
@@ -150,9 +147,7 @@ def _load_or_build_feature_cache(args, extractor: FeatureExtractor) -> tuple[dic
         feature_mode=args.feature_mode,
         train_split=FROZEN_CONFIG["train_split"],
         eval_split=FROZEN_CONFIG["eval_split"],
-        exclude_cross_split_train_products=FROZEN_CONFIG[
-            "exclude_cross_split_train_products"
-        ],
+        exclude_cross_split_train_products=FROZEN_CONFIG["exclude_cross_split_train_products"],
     )
     payload["candidate_audit"] = candidate_audit
     blob = {
@@ -168,10 +163,7 @@ def _load_or_build_feature_cache(args, extractor: FeatureExtractor) -> tuple[dic
 
 
 def _score_precomputed(
-    eval_pwc: list,
-    eval_features: list[np.ndarray],
-    normalizer,
-    model: RankerMLP,
+    eval_pwc: list, eval_features: list[np.ndarray], normalizer, model: RankerMLP
 ):
     results = []
     for (_, candidates), raw_features in zip(eval_pwc, eval_features):
@@ -179,9 +171,7 @@ def _score_precomputed(
         scores = model.score_numpy(normalized)
         # Stable descending order keeps the prior order for exact score ties.
         order = np.argsort(-scores, kind="stable")
-        results.append(
-            ([candidates[index] for index in order], scores[order])
-        )
+        results.append(([candidates[index] for index in order], scores[order]))
     return results
 
 
@@ -193,15 +183,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--candidate-jsonl", default="outputs/rerank_dataset.jsonl")
     parser.add_argument("--source-csv", default="data/uspto_smiles.csv")
-    parser.add_argument(
-        "--metadata-csv", default="data/uspto_reaction_metadata.csv"
-    )
+    parser.add_argument("--metadata-csv", default="data/uspto_reaction_metadata.csv")
     parser.add_argument("--atom-cache", default="outputs/atom_embeddings.pkl")
-    parser.add_argument(
-        "--feature-mode",
-        required=True,
-        choices=["2d+prior", "3d+prior"],
-    )
+    parser.add_argument("--feature-mode", required=True, choices=["2d+prior", "3d+prior"])
     parser.add_argument("--seeds", type=_parse_seeds, default=_parse_seeds("42,43,44,45,46"))
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--output-dir", required=True)
@@ -220,10 +204,7 @@ def main() -> None:
             else CachedUniMolEncoder
         )
         encoder = encoder_class(
-            args.atom_cache,
-            fallback_device=args.device,
-            log_misses=False,
-            strict=False,
+            args.atom_cache, fallback_device=args.device, log_misses=False, strict=False
         )
     else:
         encoder = _NoOpEncoder()
@@ -276,10 +257,7 @@ def main() -> None:
         model.to("cpu").eval()
 
         precomputed = _score_precomputed(
-            feature_cache["eval_pwc"],
-            feature_cache["eval_features"],
-            normalizer,
-            model,
+            feature_cache["eval_pwc"], feature_cache["eval_features"], normalizer, model
         )
         evaluation = evaluate_reranking(
             products_with_candidates=feature_cache["eval_pwc"],
@@ -319,9 +297,7 @@ def main() -> None:
         values = [all_metrics[str(seed)][metric] for seed in args.seeds]
         summary[f"{metric}_mean"] = float(np.mean(values))
         summary[f"{metric}_std"] = _sample_std(values)
-        summary[f"baseline_{metric}"] = all_metrics[str(args.seeds[0])][
-            f"baseline_{metric}"
-        ]
+        summary[f"baseline_{metric}"] = all_metrics[str(args.seeds[0])][f"baseline_{metric}"]
     pd.DataFrame([summary]).to_csv(output_dir / "experiment_summary.csv", index=False)
 
     feature_stats = {
@@ -351,9 +327,7 @@ def main() -> None:
         "per_seed_metrics": all_metrics,
         "seed_runtime_seconds": seed_timings,
         "encoder_coverage": (
-            encoder.get_coverage_metrics()
-            if args.feature_mode == "3d+prior"
-            else None
+            encoder.get_coverage_metrics() if args.feature_mode == "3d+prior" else None
         ),
     }
     with open(output_dir / "manifest.json", "w", encoding="utf-8") as handle:

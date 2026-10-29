@@ -65,11 +65,7 @@ def sha256_file(path: str | Path) -> str:
 def file_fingerprint(path: str | Path) -> dict[str, Any]:
     resolved = Path(path).resolve()
     stat = resolved.stat()
-    return {
-        "path": str(resolved),
-        "size_bytes": int(stat.st_size),
-        "sha256": sha256_file(resolved),
-    }
+    return {"path": str(resolved), "size_bytes": int(stat.st_size), "sha256": sha256_file(resolved)}
 
 
 def atomic_write_text(path: str | Path, text: str) -> None:
@@ -93,9 +89,7 @@ def _load_json(path: str | Path) -> dict[str, Any]:
 
 
 def read_source_products(
-    path: str | Path,
-    product_column: str = "products_smiles",
-    max_products: int | None = None,
+    path: str | Path, product_column: str = "products_smiles", max_products: int | None = None
 ) -> list[tuple[int, str]]:
     products: list[tuple[int, str]] = []
     with Path(path).open("r", encoding="utf-8", newline="") as handle:
@@ -141,9 +135,7 @@ def exact_string_deduplicate(
     return list(ordered.values())
 
 
-def flat_candidate_records(
-    product_record: Mapping[str, Any], cap: int
-) -> list[dict[str, Any]]:
+def flat_candidate_records(product_record: Mapping[str, Any], cap: int) -> list[dict[str, Any]]:
     candidates = exact_string_deduplicate(product_record.get("raw_outcomes", ()), cap)
     return [
         {
@@ -296,9 +288,7 @@ def validate_chunk(
                 raise ValueError(f"Non-object chunk line {line_number}: {path}")
             records.append(record)
     if len(records) != len(expected_tasks):
-        raise ValueError(
-            f"Chunk {path} has {len(records)} rows; expected {len(expected_tasks)}."
-        )
+        raise ValueError(f"Chunk {path} has {len(records)} rows; expected {len(expected_tasks)}.")
     for record, (expected_index, expected_product) in zip(records, expected_tasks):
         if int(record.get("source_row_index", -1)) != expected_index:
             raise ValueError(f"Chunk source index mismatch: {path}")
@@ -311,8 +301,7 @@ def validate_chunk(
 
 def write_chunk(path: str | Path, records: Sequence[Mapping[str, Any]]) -> None:
     content = "".join(
-        json.dumps(record, separators=(",", ":"), sort_keys=True) + "\n"
-        for record in records
+        json.dumps(record, separators=(",", ":"), sort_keys=True) + "\n" for record in records
     )
     atomic_write_text(path, content)
 
@@ -357,19 +346,11 @@ def merge_chunks(
     raw_count = _write_jsonl_atomic(raw_output, all_records)
     cap10_count = _write_jsonl_atomic(
         cap10_output,
-        (
-            candidate
-            for record in all_records
-            for candidate in flat_candidate_records(record, 10)
-        ),
+        (candidate for record in all_records for candidate in flat_candidate_records(record, 10)),
     )
     cap50_count = _write_jsonl_atomic(
         cap50_output,
-        (
-            candidate
-            for record in all_records
-            for candidate in flat_candidate_records(record, 50)
-        ),
+        (candidate for record in all_records for candidate in flat_candidate_records(record, 50)),
     )
     return {
         "raw_product_records": raw_count,
@@ -383,11 +364,7 @@ def merge_chunks(
         "policy_errors": sum(record["status"] == "policy_error" for record in all_records),
         "records_with_errors": sum(bool(record["errors"]) for record in all_records),
         "action_or_outcome_errors": sum(len(record["errors"]) for record in all_records),
-        "output_paths": {
-            "raw": raw_output,
-            "cap10": cap10_output,
-            "cap50": cap50_output,
-        },
+        "output_paths": {"raw": raw_output, "cap10": cap10_output, "cap50": cap50_output},
     }
 
 
@@ -457,10 +434,7 @@ def build_manifest(
 
 
 def _run_cap10_gate(
-    legacy_reference: Path,
-    regenerated: Path,
-    manifest_path: Path,
-    output_root: Path,
+    legacy_reference: Path, regenerated: Path, manifest_path: Path, output_root: Path
 ) -> bool:
     from rerank.analysis.compare_candidate_pools import (
         compare_candidate_pools,
@@ -522,7 +496,9 @@ def run_generation(args: argparse.Namespace) -> int:
             raise FileNotFoundError(path)
     legacy_reference = Path(args.legacy_reference).resolve() if args.legacy_reference else None
     if args.max_products is None and legacy_reference is None:
-        raise ValueError("A full scientific run requires --legacy-reference for the fail-closed gate.")
+        raise ValueError(
+            "A full scientific run requires --legacy-reference for the fail-closed gate."
+        )
     if legacy_reference is not None and not legacy_reference.is_file():
         raise FileNotFoundError(legacy_reference)
 
@@ -563,11 +539,11 @@ def run_generation(args: argparse.Namespace) -> int:
         atomic_write_json(identity_path, identity)
 
     state_path = output_root / "run_state.json"
-    state = _load_json(state_path) if state_path.exists() else {
-        "started_at_utc": utc_now(),
-        "active_runtime_seconds": 0.0,
-        "sessions": 0,
-    }
+    state = (
+        _load_json(state_path)
+        if state_path.exists()
+        else {"started_at_utc": utc_now(), "active_runtime_seconds": 0.0, "sessions": 0}
+    )
     session_start = time.perf_counter()
     state["sessions"] = int(state.get("sessions", 0)) + 1
 
@@ -625,7 +601,9 @@ def run_generation(args: argparse.Namespace) -> int:
                 completed_products += len(tasks)
                 if progress is not None:
                     progress.update(len(tasks))
-                    progress.set_postfix(workers=args.workers, chunks=f"{completed_products}/{len(products)}")
+                    progress.set_postfix(
+                        workers=args.workers, chunks=f"{completed_products}/{len(products)}"
+                    )
     if progress is not None:
         progress.close()
 
@@ -645,9 +623,7 @@ def run_generation(args: argparse.Namespace) -> int:
     atomic_write_json(state_path, state)
 
     output_paths = merged["output_paths"]
-    output_fingerprints = {
-        name: file_fingerprint(path) for name, path in output_paths.items()
-    }
+    output_fingerprints = {name: file_fingerprint(path) for name, path in output_paths.items()}
     runtime = {
         "started_at_utc": state["started_at_utc"],
         "completed_at_utc": utc_now(),
@@ -730,8 +706,12 @@ def run_generation(args: argparse.Namespace) -> int:
 def run_status(args: argparse.Namespace) -> int:
     root = Path(args.output_root).resolve()
     state = _load_json(root / "run_state.json") if (root / "run_state.json").exists() else {}
-    identity = _load_json(root / "run_identity.json") if (root / "run_identity.json").exists() else {}
-    chunk_files = sorted((root / "chunks").glob("chunk_*.jsonl")) if (root / "chunks").exists() else []
+    identity = (
+        _load_json(root / "run_identity.json") if (root / "run_identity.json").exists() else {}
+    )
+    chunk_files = (
+        sorted((root / "chunks").glob("chunk_*.jsonl")) if (root / "chunks").exists() else []
+    )
     payload = {
         "output_root": str(root),
         "status": state.get("status", "not-started"),
@@ -764,12 +744,13 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--config", default="modelchem/config.yml")
     generate.add_argument("--legacy-reference", default="outputs/rerank_dataset.jsonl")
     generate.add_argument(
-        "--asset", action="append", default=None,
+        "--asset",
+        action="append",
+        default=None,
         help="Fingerprint one generator asset; repeat as needed.",
     )
     generate.add_argument(
-        "--output-root",
-        default="outputs/jcheminform_revision/candidate_pools/aizynth_onepass",
+        "--output-root", default="outputs/jcheminform_revision/candidate_pools/aizynth_onepass"
     )
     generate.add_argument("--workers", type=int, default=4)
     generate.add_argument("--chunk-size", type=int, default=128)
@@ -777,13 +758,13 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--cap10", type=int, default=10)
     generate.add_argument("--cap50", type=int, default=50)
     generate.add_argument(
-        "--max-products", type=int,
+        "--max-products",
+        type=int,
         help="Timing pilot only. Supplying this disables the scientific comparison gate.",
     )
     status = subparsers.add_parser("status")
     status.add_argument(
-        "--output-root",
-        default="outputs/jcheminform_revision/candidate_pools/aizynth_onepass",
+        "--output-root", default="outputs/jcheminform_revision/candidate_pools/aizynth_onepass"
     )
     return parser
 

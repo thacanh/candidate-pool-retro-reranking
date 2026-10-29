@@ -39,13 +39,9 @@ def export_validation_features(
     output = Path(output)
     reactions = load_reactions(source_csv, metadata_csv)
     pools, candidate_audit = load_candidate_pools(candidate_jsonl)
-    encoder = SqliteCachedUniMolEncoder(
-        str(atom_cache), log_misses=False, strict=False
-    )
+    encoder = SqliteCachedUniMolEncoder(str(atom_cache), log_misses=False, strict=False)
     extractor = FeatureExtractor(encoder, feature_mode="3d+prior")
-    payload, audit = _extract_evaluation_feature_payload(
-        reactions, pools, extractor, "valid"
-    )
+    payload, audit = _extract_evaluation_feature_payload(reactions, pools, extractor, "valid")
     blob = {
         "schema_version": STUDY_CACHE_SCHEMA,
         "artifact_kind": "official_validation_conformer_features",

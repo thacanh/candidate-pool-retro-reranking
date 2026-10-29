@@ -85,9 +85,9 @@ def _worker_init() -> None:
 
     original = template_decoder.rdChemReactions.ReactionFromSmarts
     if not hasattr(original, "cache_info"):
-        template_decoder.rdChemReactions.ReactionFromSmarts = functools.lru_cache(
-            maxsize=None
-        )(original)
+        template_decoder.rdChemReactions.ReactionFromSmarts = functools.lru_cache(maxsize=None)(
+            original
+        )
     _TD = template_decoder
 
 
@@ -152,9 +152,7 @@ def _decode_fast(test_id: int) -> tuple[int, list[str]]:
     for encoded_prediction in predictions:
         if len(encoded_prediction) == 1:
             continue
-        edit_type, site_index, template_class, score = _parse_prediction(
-            encoded_prediction
-        )
+        edit_type, site_index, template_class, score = _parse_prediction(encoded_prediction)
         template_class = int(template_class)
         if edit_type == "a":
             prediction_site: int | tuple[int, int] = atom_sites[int(site_index)]
@@ -165,19 +163,11 @@ def _decode_fast(test_id: int) -> tuple[int, list[str]]:
             prediction_site = bond_sites[int(site_index)]
             template = _BOND_TEMPLATES[template_class]
             if len(template.split(">>")[0].split(".")) > 1:
-                prediction_site = (
-                    index_map[prediction_site[0]],
-                    index_map[prediction_site[1]],
-                )
-        local_template = ">>".join(
-            f"({smarts})" for smarts in template.split("_")[0].split(">>")
-        )
+                prediction_site = (index_map[prediction_site[0]], index_map[prediction_site[1]])
+        local_template = ">>".join(f"({smarts})" for smarts in template.split("_")[0].split(">>"))
         try:
             decoded = _TD.decode_localtemplate(
-                molecule,
-                prediction_site,
-                local_template,
-                _TEMPLATE_INFOS[template],
+                molecule, prediction_site, local_template, _TEMPLATE_INFOS[template]
             )
         except Exception:
             continue
@@ -199,9 +189,7 @@ def _load_context(workspace: Path) -> dict[str, Any]:
     _install_workspace_imports(workspace)
     dataset = workspace / "data" / DATASET_NAME
     raw = workspace / "outputs" / "raw_prediction" / f"LocalRetro_{DATASET_NAME}.txt"
-    decoded = (
-        workspace / "outputs" / "decoded_prediction" / f"LocalRetro_{DATASET_NAME}.txt"
-    )
+    decoded = workspace / "outputs" / "decoded_prediction" / f"LocalRetro_{DATASET_NAME}.txt"
     inventory = dataset / "inference_products.jsonl"
     paths = {
         "raw": raw,
@@ -263,9 +251,7 @@ def _load_context(workspace: Path) -> dict[str, Any]:
         "paths": paths,
         "product_count": len(raw_predictions),
         "fingerprints": {
-            name: fingerprint(path)
-            for name, path in paths.items()
-            if name != "decoded"
+            name: fingerprint(path) for name, path in paths.items() if name != "decoded"
         },
     }
 
@@ -303,12 +289,8 @@ def _audit_equivalence(
     official_function = functools.partial(get_k_predictions, args=official_args)
     with fork.Pool(processes=min(workers, len(sample_ids))) as pool:
         official_rows = dict(pool.imap_unordered(official_function, sample_ids))
-    official = {
-        test_id: official_rows[test_id][0] for test_id in sorted(official_rows)
-    }
-    with fork.Pool(
-        processes=min(workers, len(sample_ids)), initializer=_worker_init
-    ) as pool:
+    official = {test_id: official_rows[test_id][0] for test_id in sorted(official_rows)}
+    with fork.Pool(processes=min(workers, len(sample_ids)), initializer=_worker_init) as pool:
         fast = dict(pool.imap_unordered(_decode_fast, sample_ids))
     exact = official == fast
     audit = {
@@ -409,9 +391,7 @@ def run_decode(args: argparse.Namespace) -> dict[str, Any]:
         _set_metadata(connection, key, expected)
     connection.commit()
 
-    completed = {
-        int(row[0]) for row in connection.execute("SELECT test_id FROM decoded")
-    }
+    completed = {int(row[0]) for row in connection.execute("SELECT test_id FROM decoded")}
     pending = [test_id for test_id in sorted(_RAW) if test_id not in completed]
     print(
         f"FAST DECODE: {len(completed):,} cached, {len(pending):,} pending, "
@@ -544,10 +524,7 @@ def finalize(args: argparse.Namespace) -> dict[str, Any]:
         raise FileExistsError("Partial final LocalRetro result directory exists.")
     final_dir.mkdir(parents=True)
     counts = compile_decoded_predictions(
-        decoded_path=decoded,
-        inventory_path=inventory,
-        output_path=final_predictions,
-        cap=TOP_K,
+        decoded_path=decoded, inventory_path=inventory, output_path=final_predictions, cap=TOP_K
     )
     result = {
         "schema_version": SCHEMA_VERSION,

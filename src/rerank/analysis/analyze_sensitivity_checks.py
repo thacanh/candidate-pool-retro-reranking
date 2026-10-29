@@ -32,12 +32,7 @@ P1_PROTOCOL_ID = "dd-p1-corrected-headroom-v1"
 N5_PROTOCOL_ID = "dd-n5-crossed-transfer-inference-v1"
 N1_PROTOCOL_ID = "dd-n1-matched-list-joint-sensitivity-v2"
 SEEDS = tuple(range(42, 62))
-POOL_ORDER = (
-    "historical_cap10",
-    "aizynthfinder_only",
-    "localretro_only",
-    "merged",
-)
+POOL_ORDER = ("historical_cap10", "aizynthfinder_only", "localretro_only", "merged")
 
 
 def _load_json(path: str | Path) -> dict:
@@ -67,17 +62,10 @@ def _expanded_seed_metric(manifest: Mapping, arm: str, metric: str) -> float:
     expected = {str(seed) for seed in SEEDS}
     if set(per_seed) != expected:
         raise ValueError(f"Expected seeds 42--61 for {arm}; found {sorted(per_seed)}")
-    return float(
-        np.mean(
-            [float(per_seed[str(seed)]["within_pool"][metric]) for seed in SEEDS]
-        )
-    )
+    return float(np.mean([float(per_seed[str(seed)]["within_pool"][metric]) for seed in SEEDS]))
 
 
-def corrected_headroom_rows(
-    historical: Mapping,
-    expanded: Mapping[str, Mapping],
-) -> list[dict]:
+def corrected_headroom_rows(historical: Mapping, expanded: Mapping[str, Mapping]) -> list[dict]:
     """Return P1 rows using the matched prior+2D model as denominator."""
 
     if set(expanded) != set(POOL_ORDER[1:]):
@@ -108,12 +96,8 @@ def corrected_headroom_rows(
                 "coverage_count": covered,
                 "coverage_total": total,
                 "coverage": covered / total,
-                "prior_2d_top1_within_pool": _expanded_seed_metric(
-                    manifest, "baseline", "top1"
-                ),
-                "augmented_top1_within_pool": _expanded_seed_metric(
-                    manifest, "augmented", "top1"
-                ),
+                "prior_2d_top1_within_pool": _expanded_seed_metric(manifest, "baseline", "top1"),
+                "augmented_top1_within_pool": _expanded_seed_metric(manifest, "augmented", "top1"),
             }
         )
 
@@ -147,8 +131,7 @@ def run_p1(args: argparse.Namespace) -> dict:
         raise ValueError("P1 requires three expanded manifests in AiZ/LocalRetro/merged order.")
     historical = _load_json(historical_path)
     expanded = {
-        pool: _load_json(path)
-        for pool, path in zip(POOL_ORDER[1:], expanded_paths, strict=True)
+        pool: _load_json(path) for pool, path in zip(POOL_ORDER[1:], expanded_paths, strict=True)
     }
     rows = corrected_headroom_rows(historical, expanded)
 
@@ -168,10 +151,7 @@ def run_p1(args: argparse.Namespace) -> dict:
             "expanded_manifests": [file_fingerprint(path) for path in expanded_paths],
         },
         "outputs": {"corrected_headroom": file_fingerprint(table_path)},
-        "settings": {
-            "seeds": list(SEEDS),
-            "denominator": "1 - prior+2D within-pool Top-1",
-        },
+        "settings": {"seeds": list(SEEDS), "denominator": "1 - prior+2D within-pool Top-1"},
         "training_performed": False,
         "retuning_performed": False,
         "candidate_generation_performed": False,
@@ -190,8 +170,7 @@ def _rank_outcome(rank: int, metric: str) -> float:
 
 
 def _anchor_effect_matrices(
-    prediction_root: Path,
-    reaction_ids: Sequence[int],
+    prediction_root: Path, reaction_ids: Sequence[int]
 ) -> dict[str, np.ndarray]:
     position = {reaction_id: index for index, reaction_id in enumerate(reaction_ids)}
     matrices = {
@@ -229,16 +208,13 @@ def _prediction_file(manifest_path: Path, manifest: Mapping) -> Path:
 
 
 def _expanded_effect_matrices(
-    manifest_path: Path,
-    pool: str,
-    reaction_ids: Sequence[int],
+    manifest_path: Path, pool: str, reaction_ids: Sequence[int]
 ) -> tuple[dict[str, np.ndarray], dict]:
     manifest = _load_json(manifest_path)
     if (
         manifest.get("pool_name") != pool
         or int(manifest.get("candidate_cap", 0)) != 10
-        or manifest.get("source_pool_protocol_id")
-        != "ws-e-localretro-three-pools-filtered-v2"
+        or manifest.get("source_pool_protocol_id") != "ws-e-localretro-three-pools-filtered-v2"
     ):
         raise ValueError(f"N5 received the wrong frozen K1 manifest for {pool}.")
     rows = {
@@ -264,7 +240,7 @@ def _expanded_effect_matrices(
 
 
 def matched_list_cohorts(
-    descriptor_rows: Sequence[Mapping[str, str]],
+    descriptor_rows: Sequence[Mapping[str, str]]
 ) -> tuple[dict[str, list[int]], dict[int, str]]:
     """Freeze the N1 1,745/2,069 matched-list partition from M2 descriptors."""
 
@@ -282,8 +258,7 @@ def matched_list_cohorts(
         by_reaction.setdefault(reaction_id, {})[pool] = row
 
     if len(by_reaction) != 3814 or any(
-        set(rows) != {"historical_cap10", "aizynthfinder_only"}
-        for rows in by_reaction.values()
+        set(rows) != {"historical_cap10", "aizynthfinder_only"} for rows in by_reaction.values()
     ):
         raise ValueError("N1 requires paired historical/AiZ descriptors for 3,814 reactions.")
 
@@ -298,23 +273,13 @@ def matched_list_cohorts(
             historical_count == aizynth_count
             and int(aizynth["shared_candidate_count"]) == historical_count
             and np.isclose(float(aizynth["jaccard_vs_historical"]), 1.0)
-            and (
-                historical_count == 1
-                or (kendall != "" and np.isclose(float(kendall), 1.0))
-            )
+            and (historical_count == 1 or (kendall != "" and np.isclose(float(kendall), 1.0)))
         )
-        key = (
-            "matched_candidate_identity_and_order"
-            if matched
-            else "changed_candidate_list"
-        )
+        key = "matched_candidate_identity_and_order" if matched else "changed_candidate_list"
         cohorts[key].append(reaction_id)
 
     counts = {key: len(value) for key, value in cohorts.items()}
-    if counts != {
-        "matched_candidate_identity_and_order": 1745,
-        "changed_candidate_list": 2069,
-    }:
+    if counts != {"matched_candidate_identity_and_order": 1745, "changed_candidate_list": 2069}:
         raise ValueError(f"N1 cohort gate failed: {counts}")
     return cohorts, products
 
@@ -355,9 +320,7 @@ def _n1_prior_audit(
             raw_product = row["product"]
             if raw_product not in canonical_product_cache:
                 canonical_product_cache[raw_product] = canonicalize_smiles(raw_product)
-            reaction_id = product_to_reaction.get(
-                canonical_product_cache[raw_product]
-            )
+            reaction_id = product_to_reaction.get(canonical_product_cache[raw_product])
             if reaction_id is not None:
                 aizynth_priors[reaction_id].append(float(row["prior"]))
 
@@ -402,9 +365,7 @@ def n1_sensitivity_rows(
             }
             for pipeline_index, (pipeline, matrix) in enumerate(matrices.items()):
                 seed = rng_seed + cohort_index * 100 + metric_index * 10 + pipeline_index
-                product_ci = product_cluster_bootstrap(
-                    matrix, clusters, bootstrap_samples, seed
-                )
+                product_ci = product_cluster_bootstrap(matrix, clusters, bootstrap_samples, seed)
                 crossed_ci = crossed_product_seed_bootstrap(
                     matrix, clusters, bootstrap_samples, seed + 1000
                 )
@@ -458,22 +419,16 @@ def n1_sensitivity_rows(
     return effect_rows, contrast_rows
 
 
-def _assert_n1_numeric_equivalence(
-    new_rows: Sequence[Mapping], reference_path: Path
-) -> None:
+def _assert_n1_numeric_equivalence(new_rows: Sequence[Mapping], reference_path: Path) -> None:
     reference_rows = _read_csv(reference_path)
     if len(new_rows) != len(reference_rows):
         raise ValueError(f"N1 v2 row count differs from v1: {reference_path}")
-    for index, (new, previous) in enumerate(
-        zip(new_rows, reference_rows, strict=True)
-    ):
+    for index, (new, previous) in enumerate(zip(new_rows, reference_rows, strict=True)):
         if set(new) != set(previous):
             raise ValueError(f"N1 v2 columns differ from v1 at row {index}.")
         for key, old_value in previous.items():
             if key != "interpretation_scope" and str(new[key]) != old_value:
-                raise ValueError(
-                    f"N1 v2 numeric or cohort value differs at row {index}, {key}."
-                )
+                raise ValueError(f"N1 v2 numeric or cohort value differs at row {index}, {key}.")
 
 
 def crossed_transfer_intervals(
@@ -487,11 +442,7 @@ def crossed_transfer_intervals(
     pools = tuple(transfer_matrices)
     if not pools:
         raise ValueError("N5 transfer matrices are empty.")
-    shapes = {
-        matrix.shape
-        for pool in pools
-        for matrix in transfer_matrices[pool].values()
-    }
+    shapes = {matrix.shape for pool in pools for matrix in transfer_matrices[pool].values()}
     if len(shapes) != 1:
         raise ValueError(f"N5 transfer matrix shapes differ: {shapes}")
     n_seeds, n_products = next(iter(shapes))
@@ -509,35 +460,23 @@ def crossed_transfer_intervals(
     for start in range(0, draws, batch_size):
         stop = min(start + batch_size, draws)
         count = stop - start
-        sampled_products = rng.integers(
-            0, n_products, size=(count, n_products), dtype=np.int32
-        )
+        sampled_products = rng.integers(0, n_products, size=(count, n_products), dtype=np.int32)
         product_weights = np.zeros((count, n_products), dtype=np.float32)
         np.add.at(
             product_weights,
-            (
-                np.repeat(np.arange(count, dtype=np.int32), n_products),
-                sampled_products.ravel(),
-            ),
+            (np.repeat(np.arange(count, dtype=np.int32), n_products), sampled_products.ravel()),
             scale_products,
         )
         for pool in pools:
-            sampled_seeds = rng.integers(
-                0, n_seeds, size=(count, n_seeds), dtype=np.int16
-            )
+            sampled_seeds = rng.integers(0, n_seeds, size=(count, n_seeds), dtype=np.int16)
             seed_weights = np.zeros((count, n_seeds), dtype=np.float32)
             np.add.at(
                 seed_weights,
-                (
-                    np.repeat(np.arange(count, dtype=np.int32), n_seeds),
-                    sampled_seeds.ravel(),
-                ),
+                (np.repeat(np.arange(count, dtype=np.int32), n_seeds), sampled_seeds.ravel()),
                 scale_seeds,
             )
             for metric in ("top1", "mrr"):
-                sampled_product_means = (
-                    product_weights @ transfer_matrices[pool][metric].T
-                )
+                sampled_product_means = product_weights @ transfer_matrices[pool][metric].T
                 boot[(pool, metric)][start:stop] = np.sum(
                     sampled_product_means * seed_weights, axis=1
                 )
@@ -560,14 +499,10 @@ def _approval_record(path: Path, plan_path: Path, protocol_id: str) -> dict:
         or protocol_id not in approval.get("approved_protocol_ids", [])
         or not approval.get("approval_quote")
     ):
-        raise PermissionError(
-            f"{protocol_id} final-round approval is absent or incomplete."
-        )
+        raise PermissionError(f"{protocol_id} final-round approval is absent or incomplete.")
     plan = file_fingerprint(plan_path)
     if plan["sha256"] != approval.get("analysis_plan_sha256"):
-        raise PermissionError(
-            f"{protocol_id} approval is bound to a different analysis plan."
-        )
+        raise PermissionError(f"{protocol_id} approval is bound to a different analysis plan.")
     return {**approval, "analysis_plan": plan}
 
 
@@ -577,16 +512,12 @@ def run_n1(args: argparse.Namespace) -> dict:
     if output.exists() and any(output.iterdir()):
         raise FileExistsError(f"Refusing to overwrite N1 output: {output}")
     plan_path = Path(args.analysis_plan)
-    approval = _approval_record(
-        Path(args.approval_record), plan_path, N1_PROTOCOL_ID
-    )
+    approval = _approval_record(Path(args.approval_record), plan_path, N1_PROTOCOL_ID)
 
     descriptor_path = Path(args.m2_descriptor_csv)
     cohorts, products = matched_list_cohorts(_read_csv(descriptor_path))
     reaction_ids = sorted(products)
-    historical = _anchor_effect_matrices(
-        Path(args.anchor_prediction_root), reaction_ids
-    )
+    historical = _anchor_effect_matrices(Path(args.anchor_prediction_root), reaction_ids)
     k1_manifest_path = Path(args.k1_aiz_manifest)
     aizynth, k1_manifest = _expanded_effect_matrices(
         k1_manifest_path, "aizynthfinder_only", reaction_ids
@@ -641,9 +572,7 @@ def run_n1(args: argparse.Namespace) -> dict:
         "schema_version": 1,
         "record_kind": "dd_secondary_matched_list_joint_pipeline_sensitivity",
         "protocol_id": N1_PROTOCOL_ID,
-        "comparator": (
-            "frozen historical-cap10 and final-K1 AiZynthFinder 20-seed pipelines"
-        ),
+        "comparator": ("frozen historical-cap10 and final-K1 AiZynthFinder 20-seed pipelines"),
         "single_intended_change": (
             "stratify frozen pipeline contrasts by canonical candidate-list identity/order match"
         ),
@@ -670,21 +599,13 @@ def run_n1(args: argparse.Namespace) -> dict:
             "analysis_plan": file_fingerprint(plan_path),
             "approval_record": file_fingerprint(args.approval_record),
             "m2_descriptor_csv": file_fingerprint(descriptor_path),
-            "historical_feature_cache": file_fingerprint(
-                args.historical_feature_cache
-            ),
+            "historical_feature_cache": file_fingerprint(args.historical_feature_cache),
             "aizynth_pool_jsonl": file_fingerprint(args.aizynth_pool_jsonl),
-            "anchor_prediction_files": [
-                file_fingerprint(path) for path in anchor_files
-            ],
+            "anchor_prediction_files": [file_fingerprint(path) for path in anchor_files],
             "k1_aiz_manifest": file_fingerprint(k1_manifest_path),
             "k1_aiz_predictions": file_fingerprint(prediction_file),
-            "v1_effects_for_numeric_equivalence": file_fingerprint(
-                reference_effect_path
-            ),
-            "v1_contrasts_for_numeric_equivalence": file_fingerprint(
-                reference_contrast_path
-            ),
+            "v1_effects_for_numeric_equivalence": file_fingerprint(reference_effect_path),
+            "v1_contrasts_for_numeric_equivalence": file_fingerprint(reference_contrast_path),
         },
         "outputs": {
             "cohorts": file_fingerprint(cohort_path),
@@ -727,9 +648,7 @@ def run_n5(args: argparse.Namespace) -> dict:
     if output.exists() and any(output.iterdir()):
         raise FileExistsError(f"Refusing to overwrite N5 output: {output}")
     plan_path = Path(args.analysis_plan)
-    approval = _approval_record(
-        Path(args.approval_record), plan_path, N5_PROTOCOL_ID
-    )
+    approval = _approval_record(Path(args.approval_record), plan_path, N5_PROTOCOL_ID)
 
     m2_path = Path(args.m2_transfer_csv)
     m2_rows = _read_csv(m2_path)
@@ -758,12 +677,9 @@ def run_n5(args: argparse.Namespace) -> dict:
     transfer_matrices = {}
     manifests = {}
     for pool, manifest_path in zip(POOL_ORDER[1:], manifest_paths, strict=True):
-        expanded, manifest = _expanded_effect_matrices(
-            manifest_path, pool, reaction_ids
-        )
+        expanded, manifest = _expanded_effect_matrices(manifest_path, pool, reaction_ids)
         transfer_matrices[pool] = {
-            metric: expanded[metric] - historical[metric]
-            for metric in ("top1", "mrr")
+            metric: expanded[metric] - historical[metric] for metric in ("top1", "mrr")
         }
         manifests[pool] = manifest
 
@@ -874,11 +790,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    result = {
-        "p1-headroom": run_p1,
-        "n1-matched-list": run_n1,
-        "n5-crossed-transfer": run_n5,
-    }[args.command](args)
+    result = {"p1-headroom": run_p1, "n1-matched-list": run_n1, "n5-crossed-transfer": run_n5}[
+        args.command
+    ](args)
     print(json.dumps(result, indent=2, sort_keys=True), flush=True)
 
 

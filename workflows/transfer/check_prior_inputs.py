@@ -23,8 +23,11 @@ def read(path):
 def local_record(record, directory):
     # Deliberately never fall back to the original workstation's absolute path.
     path = Path(directory) / PureWindowsPath(record["path"]).name
-    if (not path.is_file() or path.stat().st_size != int(record["size_bytes"])
-            or sha256(path) != record["sha256"].removeprefix("sha256:")):
+    if (
+        not path.is_file()
+        or path.stat().st_size != int(record["size_bytes"])
+        or sha256(path) != record["sha256"].removeprefix("sha256:")
+    ):
         raise ValueError(f"Missing or changed relocated artifact: {path}")
     return path
 
@@ -33,23 +36,33 @@ def check(root=Path(".")):
     root = Path(root).resolve()
     approval = root / "docs/dd_remote_approval.json"
     plan = root / "docs/analysis_plan.md"
-    for runner in ("run_prior_diagnostics.py", "run_prior_sensitivity.py",
-                   "select_prior_transform.py", "run_prior_selection.py"):
+    for runner in (
+        "run_prior_diagnostics.py",
+        "run_prior_sensitivity.py",
+        "select_prior_transform.py",
+        "run_prior_selection.py",
+    ):
         folder = "scripts" if runner == "run_prior_selection.py" else "src/rerank/experiments"
         require_approval(approval, plan, root / folder / runner, PROTOCOL_ID)
-    args = SimpleNamespace(pool_root=root / POOLS, index_root=root / INDEX,
-                           products_jsonl=root / POOLS / "products.jsonl",
-                           source_csv=root / "data/uspto_smiles.csv",
-                           metadata_csv=root / "data/uspto_reaction_metadata.csv")
+    args = SimpleNamespace(
+        pool_root=root / POOLS,
+        index_root=root / INDEX,
+        products_jsonl=root / POOLS / "products.jsonl",
+        source_csv=root / "data/uspto_smiles.csv",
+        metadata_csv=root / "data/uspto_reaction_metadata.csv",
+    )
     checks = {}
     for pool in POOL_NAMES:
         inputs = _pool_inputs(args, pool)
-        load_pool_index(inputs["pool_index_npz"], inputs["pool_index_manifest"],
-                        inputs["products_jsonl"], inputs["pool_jsonl"])
+        load_pool_index(
+            inputs["pool_index_npz"],
+            inputs["pool_index_manifest"],
+            inputs["products_jsonl"],
+            inputs["pool_jsonl"],
+        )
         folder = root / FEATURES / pool
         feature = read(folder / "manifest.json")
-        if (not feature["complete"] or feature["pool_name"] != pool
-                or feature["shard_count"] != 64):
+        if not feature["complete"] or feature["pool_name"] != pool or feature["shard_count"] != 64:
             raise ValueError(f"Wrong feature freeze: {pool}")
         rows, stop = 0, 0
         for i, record in enumerate(feature["shard_manifests"]):
@@ -60,9 +73,11 @@ def check(root=Path(".")):
             stop = shard["product_rank_stop"]
             with np.load(local_record(shard["output"], shard_path.parent)) as arrays:
                 n = len(arrays["product_rank"])
-                if (arrays["features"].shape != (n, 9)
-                        or arrays["candidate_sha256"].shape != (n, 32)
-                        or not np.isfinite(arrays["features"]).all()):
+                if (
+                    arrays["features"].shape != (n, 9)
+                    or arrays["candidate_sha256"].shape != (n, 32)
+                    or not np.isfinite(arrays["features"]).all()
+                ):
                     raise ValueError(f"Invalid shard array: {shard_path}")
                 rows += n
         if rows != feature["candidate_rows"] or stop != feature["product_count"]:
@@ -80,8 +95,12 @@ def check(root=Path(".")):
             for seed in range(42, 62):
                 directory = models / "validation" / arm / f"seed_{seed}"
                 trial = read(local_record(freeze["trials"][arm][str(seed)], directory))
-                if (trial["pool_name"] != pool or trial["arm"] != arm
-                        or trial["seed"] != seed or trial["test_partition_loaded"]):
+                if (
+                    trial["pool_name"] != pool
+                    or trial["arm"] != arm
+                    or trial["seed"] != seed
+                    or trial["test_partition_loaded"]
+                ):
                     raise ValueError(f"Trial identity mismatch: {directory}")
                 for key in ("checkpoint", "normalizer"):
                     local_record(trial[key], directory)
@@ -89,19 +108,28 @@ def check(root=Path(".")):
         local_record(test["feature_freeze"], folder)
         local_record(test["model_freeze"], models)
         local_record(test["predictions"], root / K1 / pool / "test_results")
-        checks[pool] = {"shards": 64, "candidate_rows": rows, "models": 40,
-                        "pool_file": Path(inputs["pool_jsonl"]).name}
+        checks[pool] = {
+            "shards": 64,
+            "candidate_rows": rows,
+            "models": 40,
+            "pool_file": Path(inputs["pool_jsonl"]).name,
+        }
         print(f"N3 PREFLIGHT: {pool} inputs and 40 frozen models verified", flush=True)
     historical = root / PRIMARY / "g1_20seed"
     freeze = read(historical / "freeze.json")
-    cache = root / "outputs/jcheminform_revision/conformers/seed_42/features/official_3d_prior_schema1.pkl"
+    cache = (
+        root
+        / "outputs/jcheminform_revision/conformers/seed_42/features/official_3d_prior_schema1.pkl"
+    )
     if sha256(cache) != freeze["retained_train_test_cache_sha256"]:
         raise ValueError("Historical cache differs")
     for arm in ("baseline", "augmented"):
         for seed in range(42, 62):
             trial = freeze[f"selected_{arm}"]["trials"][str(seed)]
             for key in ("checkpoint", "normalizer"):
-                if sha256(historical / trial[f"{key}_relpath"]) != trial[f"{key}_sha256"].removeprefix("sha256:"):
+                if sha256(historical / trial[f"{key}_relpath"]) != trial[
+                    f"{key}_sha256"
+                ].removeprefix("sha256:"):
                     raise ValueError(f"Historical {key} differs: {arm}/{seed}")
             if not (historical / f"test_results/predictions/{arm}_seed_{seed}.csv").is_file():
                 raise FileNotFoundError(f"Historical predictions: {arm}/{seed}")
@@ -109,9 +137,14 @@ def check(root=Path(".")):
     historical_g1_ranks(historical / "test_results/predictions", ids)
     for pool in POOL_NAMES:
         k1_ranks(root / K1 / pool / "test_results/reaction_ranks.jsonl", ids)
-    return {"status": "pass", "read_only": True, "training_performed": False,
-            "common_reactions": len(ids),
-            "pool_checks": checks, "historical_models": 40}
+    return {
+        "status": "pass",
+        "read_only": True,
+        "training_performed": False,
+        "common_reactions": len(ids),
+        "pool_checks": checks,
+        "historical_models": 40,
+    }
 
 
 if __name__ == "__main__":

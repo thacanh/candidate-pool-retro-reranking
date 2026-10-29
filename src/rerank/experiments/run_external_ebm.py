@@ -96,12 +96,8 @@ def _unwrap(blob: dict) -> dict:
 
 def run_audit(args) -> None:
     output = immutable_target(args.output, "D5 feasibility audit")
-    rxn_repo = verify_pinned_repository(
-        args.rxn_ebm_repo, RXN_EBM_COMMIT, UPSTREAM_CORE_FILES
-    )
-    retro_repo = verify_pinned_repository(
-        args.retroranker_repo, RETRORANKER_COMMIT
-    )
+    rxn_repo = verify_pinned_repository(args.rxn_ebm_repo, RXN_EBM_COMMIT, UPSTREAM_CORE_FILES)
+    retro_repo = verify_pinned_repository(args.retroranker_repo, RETRORANKER_COMMIT)
     bundle = load_selection_bundle(args.selection_bundle)
     train_rows = training_query_rows(bundle["train_products"])
     valid_rows = evaluation_query_rows(bundle["validation_payload"])
@@ -220,12 +216,12 @@ def _load_prepare(root: Path, selection_bundle: str | Path) -> dict:
     ):
         raise PermissionError("Prepared fingerprints belong to another selection bundle.")
     for name in ("train_fingerprints", "valid_fingerprints"):
-        path = root / ("train_fingerprints.npz" if name.startswith("train") else "valid_fingerprints.npz")
+        path = root / (
+            "train_fingerprints.npz" if name.startswith("train") else "valid_fingerprints.npz"
+        )
         record = manifest["outputs"][name]
         current = file_fingerprint(path)
-        if (current["size_bytes"], current["sha256"]) != (
-            record["size_bytes"], record["sha256"]
-        ):
+        if (current["size_bytes"], current["sha256"]) != (record["size_bytes"], record["sha256"]):
             raise RuntimeError(f"Prepared {name} fingerprint differs from its manifest.")
     return manifest
 
@@ -250,9 +246,7 @@ def _validation_metrics(model, loader, true_indices, device):
                 true_indices[offset : offset + len(batch)], device=device, dtype=torch.long
             )
             rows = torch.arange(len(batch), device=device)
-            total_loss += (
-                energies[rows, truth] + torch.logsumexp(-energies, dim=1)
-            ).sum().item()
+            total_loss += (energies[rows, truth] + torch.logsumexp(-energies, dim=1)).sum().item()
             correct += (torch.argmin(energies, dim=1) == truth).sum().item()
             total += len(batch)
             offset += len(batch)
@@ -268,7 +262,9 @@ def run_fit(args) -> None:
     result_dir = Path(args.output_root).resolve() / f"seed_{args.seed}"
     trial_path = result_dir / "trial.json"
     if trial_path.exists() or trial_path.with_suffix(".json.tmp").exists():
-        raise FileExistsError(f"D5 seed {args.seed} already has a complete or partial trial record.")
+        raise FileExistsError(
+            f"D5 seed {args.seed} already has a complete or partial trial record."
+        )
     checkpoint_path = result_dir / "best_checkpoint.pt"
     resume_path = result_dir / "resume_state.pt"
     resume_temporary = resume_path.with_suffix(".pt.tmp")
@@ -466,7 +462,8 @@ def run_freeze(args) -> None:
             raise RuntimeError("D5 trial has the wrong protocol ID.")
         expected = trial.get("selection_bundle", {})
         if (expected.get("size_bytes"), expected.get("sha256")) != (
-            bundle_fp["size_bytes"], bundle_fp["sha256"]
+            bundle_fp["size_bytes"],
+            bundle_fp["sha256"],
         ):
             raise RuntimeError("D5 trial belongs to another selection bundle.")
         checkpoint = Path(trial["checkpoint"]["path"])
@@ -518,7 +515,10 @@ def run_evaluate(args) -> None:
         raise FileExistsError(f"D5 result directory is not empty: {result_dir}")
     with open(args.selection_freeze, "r", encoding="utf-8") as handle:
         freeze = json.load(handle)
-    if freeze.get("protocol_id") != PROTOCOL_ID or freeze.get("record_kind") != "external_ebm_model_selection_freeze":
+    if (
+        freeze.get("protocol_id") != PROTOCOL_ID
+        or freeze.get("record_kind") != "external_ebm_model_selection_freeze"
+    ):
         raise PermissionError("Official test requires the immutable D5 selection freeze.")
     with open(args.train_test_cache, "rb") as handle:
         payload = _unwrap(pickle.load(handle))
@@ -585,9 +585,7 @@ def run_evaluate(args) -> None:
                         "external_top1_candidate": row.candidate_smiles[top_index],
                     }
                 )
-        per_seed[str(seed)] = {
-            key: metrics[key] for key in ("top1", "top3", "top5", "mrr")
-        }
+        per_seed[str(seed)] = {key: metrics[key] for key in ("top1", "top3", "top5", "mrr")}
         prediction_files[str(seed)] = file_fingerprint(prediction_path)
     mean_metrics = {
         key: float(np.mean([per_seed[str(seed)][key] for seed in PUBLISHED_EBM_SEEDS]))
@@ -605,9 +603,7 @@ def run_evaluate(args) -> None:
         "train_test_cache": file_fingerprint(args.train_test_cache),
         "test_fingerprints": file_fingerprint(test_fp_path),
         "test_reactions": len(rows),
-        "baseline_prior_metrics": {
-            key: baseline[key] for key in ("top1", "top3", "top5", "mrr")
-        },
+        "baseline_prior_metrics": {key: baseline[key] for key in ("top1", "top3", "top5", "mrr")},
         "external_per_seed_metrics": per_seed,
         "external_mean_metrics": mean_metrics,
         "prediction_files": prediction_files,

@@ -104,7 +104,12 @@ def _selection_arm_view(features: np.ndarray, selection: Mapping, arm: str) -> n
     key = f"{arm}_columns"
     default = BASELINE_COLUMNS if arm == "baseline" else AUGMENTED_COLUMNS
     columns = tuple(int(value) for value in selection.get(key, default))
-    if not columns or len(set(columns)) != len(columns) or min(columns) < 0 or max(columns) >= matrix.shape[1]:
+    if (
+        not columns
+        or len(set(columns)) != len(columns)
+        or min(columns) < 0
+        or max(columns) >= matrix.shape[1]
+    ):
         raise ValueError(f"Invalid frozen {key} for {matrix.shape[1]} columns.")
     return matrix[:, columns].copy()
 
@@ -162,10 +167,7 @@ def _scalar_manifest_paths(freeze: Mapping, freeze_path: str | Path) -> list[Pat
     if len(records) != int(freeze.get("shard_count", -1)):
         raise ValueError("WS-E scalar freeze has incomplete shard manifests.")
     local_root = Path(freeze_path).resolve().parent
-    return [
-        _resolve_frozen_path(record, local_root / "shards", local_root)
-        for record in records
-    ]
+    return [_resolve_frozen_path(record, local_root / "shards", local_root) for record in records]
 
 
 @lru_cache(maxsize=8)
@@ -189,13 +191,10 @@ def _load_pool_index_once(
     pool_jsonl: str | Path,
 ):
     paths = tuple(
-        Path(value).resolve()
-        for value in (index_npz, index_manifest, products_jsonl, pool_jsonl)
+        Path(value).resolve() for value in (index_npz, index_manifest, products_jsonl, pool_jsonl)
     )
     state = tuple((path.stat().st_size, path.stat().st_mtime_ns) for path in paths)
-    return _load_pool_index_verified_cached(
-        *(str(path) for path in paths), file_state=state
-    )
+    return _load_pool_index_verified_cached(*(str(path) for path in paths), file_state=state)
 
 
 def join_shard(args: argparse.Namespace) -> dict:
@@ -212,16 +211,10 @@ def join_shard(args: argparse.Namespace) -> dict:
     scalar = np.load(scalar_path, allow_pickle=False)
 
     pool_index = _load_pool_index_once(
-        args.pool_index_npz,
-        args.pool_index_manifest,
-        args.products_jsonl,
-        args.pool_jsonl,
+        args.pool_index_npz, args.pool_index_manifest, args.products_jsonl, args.pool_jsonl
     )
     merged_index = _load_pool_index_once(
-        args.merged_index_npz,
-        args.merged_index_manifest,
-        args.products_jsonl,
-        args.merged_jsonl,
+        args.merged_index_npz, args.merged_index_manifest, args.products_jsonl, args.merged_jsonl
     )
     start_rank, stop_rank = shard_bounds(
         pool_index.product_count, args.shard_index, args.shard_count
@@ -251,21 +244,14 @@ def join_shard(args: argparse.Namespace) -> dict:
     # then key the join by the prespecified fragment-order-invariant identity.
     product_rows: dict[int, dict[bytes, np.ndarray]] = defaultdict(dict)
     for product_rank in range(start_rank, stop_rank):
-        merged_records = read_product_records(
-            args.merged_jsonl, merged_index, product_rank
-        )
+        merged_records = read_product_records(args.merged_jsonl, merged_index, product_rank)
         rows = stored_rows.get(product_rank, [])
         if len(merged_records) != len(rows):
-            raise ValueError(
-                f"Merged pool/scalar row count mismatch at product {product_rank}."
-            )
+            raise ValueError(f"Merged pool/scalar row count mismatch at product {product_rank}.")
         for record, (stored_digest, features) in zip(merged_records, rows):
             candidate = str(record["reactant"])
             canonical_digest = identity_digest(candidate)
-            if stored_digest not in {
-                raw_identity_digest(candidate),
-                canonical_digest,
-            }:
+            if stored_digest not in {raw_identity_digest(candidate), canonical_digest}:
                 raise ValueError(
                     f"Merged pool order differs from scalar archive at product {product_rank}."
                 )
@@ -515,7 +501,9 @@ def _pool_candidate_digests(
 
 def prepare_selection(args: argparse.Namespace) -> dict:
     feature_freeze = _load_json(args.feature_freeze)
-    if feature_freeze.get("protocol_id") != RANKING_PROTOCOL_ID or not feature_freeze.get("complete"):
+    if feature_freeze.get("protocol_id") != RANKING_PROTOCOL_ID or not feature_freeze.get(
+        "complete"
+    ):
         raise ValueError("A complete frozen WS-E pool-feature manifest is required.")
     if (
         feature_freeze["pool_index_manifest"]["sha256"]
@@ -523,10 +511,7 @@ def prepare_selection(args: argparse.Namespace) -> dict:
     ):
         raise ValueError("WS-E feature freeze belongs to a different pool index.")
     pool_index = _load_pool_index_once(
-        args.pool_index_npz,
-        args.pool_index_manifest,
-        args.products_jsonl,
-        args.pool_jsonl,
+        args.pool_index_npz, args.pool_index_manifest, args.products_jsonl, args.pool_jsonl
     )
     reactions, non_train_products, selection_load_audit = _load_selection_reactions(
         args.source_csv, args.metadata_csv
@@ -549,9 +534,7 @@ def prepare_selection(args: argparse.Namespace) -> dict:
     candidate_cap = getattr(args, "candidate_cap", None)
     if candidate_cap is not None and int(candidate_cap) <= 0:
         raise ValueError("candidate_cap must be positive")
-    output_protocol_id = str(
-        getattr(args, "output_protocol_id", None) or RANKING_PROTOCOL_ID
-    )
+    output_protocol_id = str(getattr(args, "output_protocol_id", None) or RANKING_PROTOCOL_ID)
     feature_lookup = _truncate_feature_lookup(
         _product_feature_lookup(feature_freeze, args.feature_freeze), candidate_cap
     )
@@ -666,7 +649,9 @@ def prepare_selection(args: argparse.Namespace) -> dict:
         "feature_names": list(feature_freeze.get("feature_names", FULL_FEATURE_NAMES)),
         "baseline_columns": list(feature_freeze.get("baseline_columns", BASELINE_COLUMNS)),
         "augmented_columns": list(feature_freeze.get("augmented_columns", AUGMENTED_COLUMNS)),
-        "source_indicators_in_both_arms": bool(feature_freeze.get("source_indicators_in_both_arms", True)),
+        "source_indicators_in_both_arms": bool(
+            feature_freeze.get("source_indicators_in_both_arms", True)
+        ),
         "negative_sampling": "seeded random, at most five negatives per positive",
         "train_overlap_reactions_excluded": train_overlap_excluded,
         "train_audit": train_audits,
@@ -704,13 +689,17 @@ def _fit_config(primary: Mapping, selection: Mapping, arm: str) -> dict:
     if primary.get("protocol_id") == "cap10-tuned-v1":
         return _config_for_arm(primary, arm)
     protocol = "dd-n3-s4-validation-grid-v1"
-    if (primary.get("protocol_id") != protocol or selection.get("protocol_id") != protocol
-            or primary.get("record_kind") != "validation_grid_candidate"
-            or primary.get("test_partition_loaded") is not False
-            or selection.get("test_partition_loaded") is not False):
+    if (
+        primary.get("protocol_id") != protocol
+        or selection.get("protocol_id") != protocol
+        or primary.get("record_kind") != "validation_grid_candidate"
+        or primary.get("test_partition_loaded") is not False
+        or selection.get("test_partition_loaded") is not False
+    ):
         raise ValueError("Unapproved configuration protocol for validation fitting.")
     from dataclasses import asdict
     from rerank.tuning import enumerate_d1_grid
+
     config = _config_for_arm(primary, arm)
     if config not in [asdict(item) for item in enumerate_d1_grid()]:
         raise ValueError("S4 configuration is outside the frozen 81-point grid.")
@@ -784,7 +773,9 @@ def fit_validation(args: argparse.Namespace) -> dict:
     if sha256_file(valid_path) != selection["validation"]["sha256"]:
         raise ValueError("WS-E validation checksum mismatch.")
     valid = np.load(valid_path, allow_pickle=False)
-    valid_features = normalizer.transform(_selection_arm_view(valid["features"], selection, args.arm))
+    valid_features = normalizer.transform(
+        _selection_arm_view(valid["features"], selection, args.arm)
+    )
     offsets = valid["offsets"]
     masks = valid["match_mask"]
 
@@ -801,9 +792,7 @@ def fit_validation(args: argparse.Namespace) -> dict:
         model.parameters(), lr=float(config["learning_rate"]), weight_decay=1e-3
     )
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer,
-        T_max=max(MAX_EPOCHS - 5, 1),
-        eta_min=float(config["learning_rate"]) * 0.01,
+        optimizer, T_max=max(MAX_EPOCHS - 5, 1), eta_min=float(config["learning_rate"]) * 0.01
     )
     generator = torch.Generator(device="cpu")
     generator.manual_seed(args.seed)
@@ -867,7 +856,9 @@ def fit_validation(args: argparse.Namespace) -> dict:
         "pool_name": selection["pool_name"],
         "arm": args.arm,
         "seed": args.seed,
-        "comparator": selection.get("comparator", "same pool and seed; source indicators retained in both arms"),
+        "comparator": selection.get(
+            "comparator", "same pool and seed; source indicators retained in both arms"
+        ),
         "single_intended_change": selection.get(
             "single_intended_arm_change", "add three Uni-Mol-derived pair-level scalars"
         ),
@@ -875,10 +866,15 @@ def fit_validation(args: argparse.Namespace) -> dict:
         "config": config,
         "model_parameters": model_parameters,
         "candidate_cap": _candidate_cap(selection),
-        "feature_columns": list(selection.get(
-            f"{args.arm}_columns", BASELINE_COLUMNS if args.arm == "baseline" else AUGMENTED_COLUMNS
-        )),
-        "source_indicators_in_both_arms": bool(selection.get("source_indicators_in_both_arms", True)),
+        "feature_columns": list(
+            selection.get(
+                f"{args.arm}_columns",
+                BASELINE_COLUMNS if args.arm == "baseline" else AUGMENTED_COLUMNS,
+            )
+        ),
+        "source_indicators_in_both_arms": bool(
+            selection.get("source_indicators_in_both_arms", True)
+        ),
         "best_validation_mrr": best_mrr,
         "best_epoch": best_epoch,
         "epochs_completed": len(history),
@@ -930,7 +926,9 @@ def freeze(args: argparse.Namespace) -> dict:
         "selected_prior_transform": selection.get("prior_transform", "raw"),
         "selection_metric": "official-validation conditional MRR for checkpoint epoch only",
         "config_selection_performed_for_ws_e": False,
-        "source_indicators_in_both_arms": bool(selection.get("source_indicators_in_both_arms", True)),
+        "source_indicators_in_both_arms": bool(
+            selection.get("source_indicators_in_both_arms", True)
+        ),
         "single_intended_arm_change": selection.get(
             "single_intended_arm_change", "add three Uni-Mol-derived pair-level scalars"
         ),
@@ -951,7 +949,10 @@ def _rank_metrics(ranks: Sequence[int], denominator: int | None = None) -> dict:
     denom = len(values) if denominator is None else int(denominator)
     if denom < len(values):
         raise ValueError("Metric denominator cannot be smaller than covered ranks.")
-    result = {f"top{k}": float(np.sum((values > 0) & (values <= k)) / denom) for k in (1, 3, 5, 10, 20, 50)}
+    result = {
+        f"top{k}": float(np.sum((values > 0) & (values <= k)) / denom)
+        for k in (1, 3, 5, 10, 20, 50)
+    }
     result["mrr"] = float(np.sum(np.where(values > 0, 1.0 / values, 0.0)) / denom)
     result["denominator"] = denom
     result["covered"] = int(np.sum(values > 0))
@@ -968,26 +969,31 @@ def evaluate_test(args: argparse.Namespace) -> dict:
         raise PermissionError("Official test requires a complete immutable model freeze.")
     selection = _load_json(Path(args.selection_root) / "manifest.json")
     selection_protocol = selection.get("protocol_id", RANKING_PROTOCOL_ID)
-    if (
-        model_freeze.get("protocol_id") != selection_protocol
-    ):
+    if model_freeze.get("protocol_id") != selection_protocol:
         raise PermissionError("Official test requires a matching complete immutable model freeze.")
     seeds = tuple(int(seed) for seed in model_freeze.get("seeds", ()))
     if seeds != _selection_seeds(selection):
         raise PermissionError("Model-freeze and selection seed sets differ.")
     if _candidate_cap(model_freeze) != _candidate_cap(selection):
         raise PermissionError("Model-freeze and selection candidate caps differ.")
-    if model_freeze.get("selected_prior_transform", "raw") != selection.get("prior_transform", "raw"):
+    if model_freeze.get("selected_prior_transform", "raw") != selection.get(
+        "prior_transform", "raw"
+    ):
         raise PermissionError("Model-freeze and selection prior transforms differ.")
     freeze_hash_before = sha256_file(args.model_freeze)
     feature_freeze = _load_json(args.feature_freeze)
     recorded_feature = selection.get("inputs", {}).get("feature_freeze")
-    if recorded_feature and recorded_feature.get("sha256") != fingerprint(args.feature_freeze)["sha256"]:
+    if (
+        recorded_feature
+        and recorded_feature.get("sha256") != fingerprint(args.feature_freeze)["sha256"]
+    ):
         raise PermissionError("Test feature freeze differs from the validation selection input.")
     selected_manifest = model_freeze.get("selection_manifest")
-    if selected_manifest and selected_manifest.get("sha256") != fingerprint(
-        Path(args.selection_root) / "manifest.json"
-    )["sha256"]:
+    if (
+        selected_manifest
+        and selected_manifest.get("sha256")
+        != fingerprint(Path(args.selection_root) / "manifest.json")["sha256"]
+    ):
         raise PermissionError("Model freeze differs from the validation selection manifest.")
     if (
         feature_freeze["pool_index_manifest"]["sha256"]
@@ -995,10 +1001,7 @@ def evaluate_test(args: argparse.Namespace) -> dict:
     ):
         raise ValueError("WS-E feature freeze belongs to a different pool index.")
     pool_index = _load_pool_index_once(
-        args.pool_index_npz,
-        args.pool_index_manifest,
-        args.products_jsonl,
-        args.pool_jsonl,
+        args.pool_index_npz, args.pool_index_manifest, args.products_jsonl, args.pool_jsonl
     )
     reactions, _, rank_by_canonical = _reaction_maps(
         args.source_csv, args.metadata_csv, args.products_jsonl
@@ -1020,12 +1023,7 @@ def evaluate_test(args: argparse.Namespace) -> dict:
         if not positions:
             continue
         covered.append(
-            (
-                reaction,
-                product_rank,
-                features,
-                np.asarray([value == target for value in digests]),
-            )
+            (reaction, product_rank, features, np.asarray([value == target for value in digests]))
         )
         prior_ranks.append(positions[0] + 1)
 
@@ -1049,9 +1047,12 @@ def evaluate_test(args: argparse.Namespace) -> dict:
             trial_path = Path(args.output_root) / "validation" / arm / f"seed_{seed}" / "trial.json"
             trial = _load_json(trial_path)
             normalizer = FeatureNormalizer.load(trial["normalizer"]["path"])
-            columns = tuple(int(value) for value in selection.get(
-                f"{arm}_columns", BASELINE_COLUMNS if arm == "baseline" else AUGMENTED_COLUMNS
-            ))
+            columns = tuple(
+                int(value)
+                for value in selection.get(
+                    f"{arm}_columns", BASELINE_COLUMNS if arm == "baseline" else AUGMENTED_COLUMNS
+                )
+            )
             model = RankerMLP(
                 input_dim=len(columns),
                 hidden_dims=[int(config["hidden_width"])],
@@ -1065,9 +1066,14 @@ def evaluate_test(args: argparse.Namespace) -> dict:
             with torch.no_grad():
                 for reaction, _, features, mask in covered:
                     normalized = normalizer.transform(_selection_arm_view(features, selection, arm))
-                    scores = model.score(
-                        torch.as_tensor(normalized, dtype=torch.float32, device=args.device)
-                    ).detach().cpu().numpy()
+                    scores = (
+                        model.score(
+                            torch.as_tensor(normalized, dtype=torch.float32, device=args.device)
+                        )
+                        .detach()
+                        .cpu()
+                        .numpy()
+                    )
                     order = np.argsort(-scores, kind="stable")
                     positions = np.flatnonzero(mask[order])
                     rank = int(positions[0]) + 1

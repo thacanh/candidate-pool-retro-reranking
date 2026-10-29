@@ -131,7 +131,9 @@ def main() -> None:
         "packages": resolved_packages,
         "linux_lock": {
             "path": "workflows/aizynthfinder/requirements-aizynth-linux-py310.lock",
-            "sha256": sha256_file(root / "workflows/aizynthfinder/requirements-aizynth-linux-py310.lock"),
+            "sha256": sha256_file(
+                root / "workflows/aizynthfinder/requirements-aizynth-linux-py310.lock"
+            ),
         },
         "host_ram_bytes": ram_bytes,
         "free_disk_bytes": free_bytes,

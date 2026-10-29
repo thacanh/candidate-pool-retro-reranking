@@ -10,7 +10,8 @@ def fixture(root):
     data = b'original data\n'
     (root / 'data.txt').write_bytes(data)
     (root / 'checksums.sha256').write_text(
-        f'{hashlib.sha256(data).hexdigest()}  data.txt\n', encoding='utf-8')
+        f'{hashlib.sha256(data).hexdigest()}  data.txt\n', encoding='utf-8'
+    )
 
 
 def test_tampered_payload_is_rejected(tmp_path):
@@ -22,7 +23,7 @@ def test_tampered_payload_is_rejected(tmp_path):
 
 
 def test_outside_path_is_rejected(tmp_path):
-    (tmp_path / 'checksums.sha256').write_text('0'*64 + '  ../outside.txt\n')
+    (tmp_path / 'checksums.sha256').write_text('0' * 64 + '  ../outside.txt\n')
     with pytest.raises(ValueError, match='Unsafe'):
         verify(tmp_path)
 

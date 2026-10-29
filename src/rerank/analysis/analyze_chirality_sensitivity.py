@@ -29,7 +29,9 @@ PERMUTATION_REPLICATES = 100_000
 PERMUTATION_SEED = 2027
 
 
-def canonical_fragment_set(smiles: str, *, preserve_stereochemistry: bool) -> tuple[str, ...] | None:
+def canonical_fragment_set(
+    smiles: str, *, preserve_stereochemistry: bool
+) -> tuple[str, ...] | None:
     """Return a fragment-order-invariant identity, or None for invalid input."""
     fragments: list[str] = []
     for fragment in str(smiles).split("."):
@@ -37,23 +39,15 @@ def canonical_fragment_set(smiles: str, *, preserve_stereochemistry: bool) -> tu
         if molecule is None:
             return None
         fragments.append(
-            Chem.MolToSmiles(
-                molecule,
-                canonical=True,
-                isomericSmiles=preserve_stereochemistry,
-            )
+            Chem.MolToSmiles(molecule, canonical=True, isomericSmiles=preserve_stereochemistry)
         )
     return tuple(sorted(fragments))
 
 
 def is_stereo_only_reference_difference(prediction: str, reference: str) -> bool:
-    predicted_stereo = canonical_fragment_set(
-        prediction, preserve_stereochemistry=True
-    )
+    predicted_stereo = canonical_fragment_set(prediction, preserve_stereochemistry=True)
     reference_stereo = canonical_fragment_set(reference, preserve_stereochemistry=True)
-    predicted_flat = canonical_fragment_set(
-        prediction, preserve_stereochemistry=False
-    )
+    predicted_flat = canonical_fragment_set(prediction, preserve_stereochemistry=False)
     reference_flat = canonical_fragment_set(reference, preserve_stereochemistry=False)
     return bool(
         predicted_stereo is not None
@@ -79,9 +73,7 @@ def _load_prediction(path: Path) -> pd.DataFrame:
     if missing:
         raise ValueError(f"{path} is missing columns: {sorted(missing)}")
     if len(frame) != EXPECTED_COVERED_REACTIONS:
-        raise ValueError(
-            f"{path} has {len(frame)} rows; expected {EXPECTED_COVERED_REACTIONS}."
-        )
+        raise ValueError(f"{path} has {len(frame)} rows; expected {EXPECTED_COVERED_REACTIONS}.")
     if frame["reaction_id"].duplicated().any():
         raise ValueError(f"{path} has duplicate reaction IDs.")
     return frame
@@ -140,10 +132,7 @@ def _paired_statistics(
     mrr_matrix = np.stack(mrr_differences)
     first = aligned_by_seed[SEEDS[0]]
     clusters = np.asarray(
-        [
-            canonicalize_smiles(value) or str(value)
-            for value in first["product_smiles_false"]
-        ],
+        [canonicalize_smiles(value) or str(value) for value in first["product_smiles_false"]],
         dtype=object,
     )
     rng = np.random.default_rng(BOOTSTRAP_SEED)
@@ -191,9 +180,8 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
 
     test_manifest_path = Path(args.f2_test_manifest).resolve()
     test_manifest = json.loads(test_manifest_path.read_text(encoding="utf-8"))
-    if (
-        test_manifest.get("protocol_id") != F2_PROTOCOL_ID
-        or not test_manifest.get("test_partition_loaded_only_after_f2_freeze")
+    if test_manifest.get("protocol_id") != F2_PROTOCOL_ID or not test_manifest.get(
+        "test_partition_loaded_only_after_f2_freeze"
     ):
         raise PermissionError("F2 analysis requires a valid post-freeze test manifest.")
 
@@ -230,8 +218,7 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
                         "seed": seed,
                         "official_test_reactions": EXPECTED_TEST_REACTIONS,
                         "covered_reactions": EXPECTED_COVERED_REACTIONS,
-                        "uncovered_reactions": EXPECTED_TEST_REACTIONS
-                        - EXPECTED_COVERED_REACTIONS,
+                        "uncovered_reactions": EXPECTED_TEST_REACTIONS - EXPECTED_COVERED_REACTIONS,
                         "stereo_only_reference_differences": count,
                     }
                 )
@@ -260,8 +247,7 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
         "denominators": {
             "official_test_reactions": EXPECTED_TEST_REACTIONS,
             "covered_reactions": EXPECTED_COVERED_REACTIONS,
-            "uncovered_reactions": EXPECTED_TEST_REACTIONS
-            - EXPECTED_COVERED_REACTIONS,
+            "uncovered_reactions": EXPECTED_TEST_REACTIONS - EXPECTED_COVERED_REACTIONS,
         },
         "stereo_only_definition": (
             "stereochemistry-stripped canonical reactant fragment sets match, "

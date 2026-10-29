@@ -91,10 +91,7 @@ def test_merge_is_source_ordered_and_builds_both_caps(tmp_path: Path):
             _record(1, "P1", [("B", 0.5), ("B", 0.4)]),
         ],
     )
-    write_chunk(
-        chunks / "chunk_000002_000003.jsonl",
-        [_record(2, "P2", [])],
-    )
+    write_chunk(chunks / "chunk_000002_000003.jsonl", [_record(2, "P2", [])])
     result = merge_chunks(products, chunks, 2, tmp_path / "out")
     assert result["raw_product_records"] == 3
     assert result["cap10_candidate_records"] == 11

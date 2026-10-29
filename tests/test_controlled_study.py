@@ -17,7 +17,10 @@ from rerank.study_data import (
 )
 from rerank.data.convert_embedding_cache import convert
 from rerank.experiments.run_feature_controls import transform_feature_cache
-from rerank.analysis.analyze_controlled_study import clustered_bootstrap, paired_cluster_permutation_test
+from rerank.analysis.analyze_controlled_study import (
+    clustered_bootstrap,
+    paired_cluster_permutation_test,
+)
 
 
 class BombEncoder:
@@ -28,7 +31,10 @@ class BombEncoder:
 class FakeExtractor:
     def extract_features_batch(self, product_smiles, candidates, priors, ranks):
         return np.asarray(
-            [[prior, rank, len(candidate)] for candidate, prior, rank in zip(candidates, priors, ranks)],
+            [
+                [prior, rank, len(candidate)]
+                for candidate, prior, rank in zip(candidates, priors, ranks)
+            ],
             dtype=np.float32,
         )
 
@@ -40,10 +46,7 @@ def test_fragment_order_is_ignored():
 def test_2d_features_never_touch_unimol_encoder():
     extractor = FeatureExtractor(BombEncoder(), feature_mode="2d+prior")
     matrix = extractor.extract_features_batch(
-        product_smiles="CCO",
-        candidates=["CC.O", "CCN"],
-        priors=[0.8, 0.2],
-        ranks=[0, 1],
+        product_smiles="CCO", candidates=["CC.O", "CCN"], priors=[0.8, 0.2], ranks=[0, 1]
     )
     assert matrix.shape == (2, 4)
     assert np.isfinite(matrix).all()
@@ -62,11 +65,7 @@ def test_official_split_cache_and_coverage(tmp_path):
     source_path = tmp_path / "source.csv"
     source.to_csv(source_path, index=False)
     metadata = pd.DataFrame(
-        {
-            "reaction_id": range(5),
-            "source_split": source["set"],
-            "reaction_class": [1, 2, 3, 2, 4],
-        }
+        {"reaction_id": range(5), "source_split": source["set"], "reaction_class": [1, 2, 3, 2, 4]}
     )
     metadata_path = tmp_path / "metadata.csv"
     metadata.to_csv(metadata_path, index=False)
@@ -84,9 +83,7 @@ def test_official_split_cache_and_coverage(tmp_path):
     with open(candidate_path, "w", encoding="utf-8") as handle:
         for product, reactant, prior in records:
             handle.write(
-                json.dumps(
-                    {"product": product, "reactant": reactant, "prior": prior, "label": 0}
-                )
+                json.dumps({"product": product, "reactant": reactant, "prior": prior, "label": 0})
                 + "\n"
             )
 
@@ -117,20 +114,9 @@ def test_official_split_cache_and_coverage(tmp_path):
 
 
 def test_evaluation_exports_reaction_metadata_and_ranks(tmp_path):
-    products = [
-        (
-            "CCO",
-            [
-                {"smiles": "CC.O", "prior": 0.7},
-                {"smiles": "C.CO", "prior": 0.3},
-            ],
-        )
-    ]
+    products = [("CCO", [{"smiles": "CC.O", "prior": 0.7}, {"smiles": "C.CO", "prior": 0.3}])]
     precomputed = [
-        (
-            [products[0][1][1], products[0][1][0]],
-            np.asarray([1.0, 0.0], dtype=np.float32),
-        )
+        ([products[0][1][1], products[0][1][0]], np.asarray([1.0, 0.0], dtype=np.float32))
     ]
     output = tmp_path / "eval.csv"
     evaluate_reranking(
@@ -189,7 +175,9 @@ def test_feature_control_views_preserve_base_and_match_capacity():
     assert full["train_products"][0]["features"].shape == (3, 7)
     assert control["train_products"][0]["features"].shape == (3, 7)
     np.testing.assert_array_equal(payload["train_products"][0]["features"], base_matrix)
-    np.testing.assert_array_equal(control["train_products"][0]["features"][:, [0, 1, 5, 6]], base_matrix[:, [0, 1, 5, 6]])
+    np.testing.assert_array_equal(
+        control["train_products"][0]["features"][:, [0, 1, 5, 6]], base_matrix[:, [0, 1, 5, 6]]
+    )
     for column in (2, 3, 4):
         np.testing.assert_array_equal(
             np.sort(control["train_products"][0]["features"][:, column]),
@@ -198,19 +186,11 @@ def test_feature_control_views_preserve_base_and_match_capacity():
 
 
 def test_product_clustered_inference_is_paired_and_deterministic():
-    differences = np.asarray(
-        [[1.0, 0.0, -0.5], [0.5, 0.0, -0.5]], dtype=np.float64
-    )
+    differences = np.asarray([[1.0, 0.0, -0.5], [0.5, 0.0, -0.5]], dtype=np.float64)
     clusters = np.asarray(["A", "A", "B"], dtype=object)
-    first = clustered_bootstrap(
-        differences, clusters, 200, np.random.default_rng(11)
-    )
-    second = clustered_bootstrap(
-        differences, clusters, 200, np.random.default_rng(11)
-    )
+    first = clustered_bootstrap(differences, clusters, 200, np.random.default_rng(11))
+    second = clustered_bootstrap(differences, clusters, 200, np.random.default_rng(11))
     assert first == second
     assert first[0] == differences.mean()
-    p_value = paired_cluster_permutation_test(
-        differences, clusters, 500, np.random.default_rng(12)
-    )
+    p_value = paired_cluster_permutation_test(differences, clusters, 500, np.random.default_rng(12))
     assert 0.0 < p_value <= 1.0

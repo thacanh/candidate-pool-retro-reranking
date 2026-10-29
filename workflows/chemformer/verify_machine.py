@@ -82,7 +82,17 @@ def verify_repository(root: Path, relative: str, expected_commit: str) -> dict:
         text=True,
     ).stdout.strip()
     dirty = subprocess.run(
-        ["git", "-c", "core.autocrlf=true", "-c", "core.filemode=false", "-C", str(repository), "status", "--porcelain"],
+        [
+            "git",
+            "-c",
+            "core.autocrlf=true",
+            "-c",
+            "core.filemode=false",
+            "-C",
+            str(repository),
+            "status",
+            "--porcelain",
+        ],
         check=True,
         capture_output=True,
         text=True,
@@ -130,7 +140,9 @@ def main() -> None:
         for relative, commit in EXPECTED_REPOSITORIES.items()
     }
 
-    prepared_manifest_path = root / "outputs/jcheminform_revision/f1_roundtrip/prepared/prepare_manifest.json"
+    prepared_manifest_path = (
+        root / "outputs/jcheminform_revision/f1_roundtrip/prepared/prepare_manifest.json"
+    )
     prepared = json.loads(prepared_manifest_path.read_text(encoding="utf-8"))
     if (
         prepared.get("protocol_id") != PROTOCOL_ID
@@ -141,12 +153,15 @@ def main() -> None:
         raise RuntimeError("Prepared F1 manifest is not the frozen approved input.")
     prepared_files = {}
     for key, fingerprint in prepared["outputs"].items():
-        name = {"usage": "frozen_top1_usages.csv", "inference_map": "inference_map.csv", "chemformer_input": "chemformer_input.tsv"}[key]
+        name = {
+            "usage": "frozen_top1_usages.csv",
+            "inference_map": "inference_map.csv",
+            "chemformer_input": "chemformer_input.tsv",
+        }[key]
         path = prepared_manifest_path.parent / name
         actual = {"size_bytes": path.stat().st_size, "sha256": sha256(path)}
-        if (
-            actual["size_bytes"] != int(fingerprint["size_bytes"])
-            or actual["sha256"] != str(fingerprint["sha256"])
+        if actual["size_bytes"] != int(fingerprint["size_bytes"]) or actual["sha256"] != str(
+            fingerprint["sha256"]
         ):
             raise RuntimeError(f"Prepared F1 artifact differs: {key}")
         prepared_files[key] = actual
@@ -156,6 +171,7 @@ def main() -> None:
         raise RuntimeError(f"Chemformer environment version mismatch: {installed!r}")
     import psutil
     import torch
+
     if torch.__version__ != "2.2.2+cu121":
         raise RuntimeError(f"Expected torch 2.2.2+cu121, found {torch.__version__}.")
     if args.require_cuda and not torch.cuda.is_available():
@@ -172,8 +188,16 @@ def main() -> None:
             "torch_cuda": torch.version.cuda,
         }
 
-    legacy_tokens = [line.strip() for line in (root / "assets/chemformer_checkpoint_source/bart_vocab_downstream.txt").read_text().splitlines() if line.strip()]
-    modern_tokens = json.loads((root / "assets/chemformer_official/bart_vocab_downstream.json").read_text())["vocabulary"]
+    legacy_tokens = [
+        line.strip()
+        for line in (root / "assets/chemformer_checkpoint_source/bart_vocab_downstream.txt")
+        .read_text()
+        .splitlines()
+        if line.strip()
+    ]
+    modern_tokens = json.loads(
+        (root / "assets/chemformer_official/bart_vocab_downstream.json").read_text()
+    )["vocabulary"]
     if legacy_tokens != modern_tokens or len(modern_tokens) != 523:
         raise RuntimeError("Legacy and AiZynthModels vocabularies are not index-equivalent.")
 
@@ -188,7 +212,9 @@ def main() -> None:
         "environment": {"python": sys.version, "torch": torch.__version__, "packages": installed},
         "environment_lock": {
             "path": "workflows/chemformer/linux/requirements-chemformer-linux-py310.lock",
-            "sha256": sha256(root / "workflows/chemformer/linux/requirements-chemformer-linux-py310.lock"),
+            "sha256": sha256(
+                root / "workflows/chemformer/linux/requirements-chemformer-linux-py310.lock"
+            ),
             "artifact_hashes_required": True,
         },
         "gpu": gpu,

@@ -34,9 +34,7 @@ def test_multi_conformer_selection_provenance_is_explicit():
             "encoder_control_has_conformer": True,
             "conformer_seed": None,
             "conformer_seeds": list(range(42, 52)),
-            "aggregation": (
-                "arithmetic mean of each pair-level scalar after fragment handling"
-            ),
+            "aggregation": ("arithmetic mean of each pair-level scalar after fragment handling"),
             "atom_embeddings_averaged": False,
         },
         "train_products": [
@@ -78,17 +76,11 @@ def test_metric_summary_reports_b3_deltas():
     primary = {
         "per_seed_metrics": {
             "augmented": {
-                str(seed): {
-                    metric: 0.7
-                    for metric in ("top1", "top3", "top5", "top10", "mrr")
-                }
+                str(seed): {metric: 0.7 for metric in ("top1", "top3", "top5", "top10", "mrr")}
                 for seed in SEEDS
             },
             "baseline": {
-                str(seed): {
-                    metric: 0.6
-                    for metric in ("top1", "top3", "top5", "top10", "mrr")
-                }
+                str(seed): {metric: 0.6 for metric in ("top1", "top3", "top5", "top10", "mrr")}
                 for seed in SEEDS
             },
         }

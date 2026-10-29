@@ -1,23 +1,8 @@
+"""Configurable MLP that maps feature vectors to scalar ranking scores.
+
+Experiment runners set the input width and hidden layers explicitly. The legacy
+for_2d() and for_3d() helpers retain their original five- and ten-column widths.
 """
-MODULE 5 — Reranker Model
-==========================
-Lightweight MLP that maps a feature vector to a scalar ranking score.
-
-Architecture:
-    Input dim  = FEATURE_DIM_2D (5) for 2D-only model
-                 FEATURE_DIM_3D (10) for full 3D model
-    Hidden     = [64, 32]
-    Output     = scalar score (unbounded)
-    Activation = ReLU (with BatchNorm for training stability)
-
-Forward:
-    score = model(x)  # higher → more likely correct
-
-Factory methods:
-    model_2d = RankerMLP.for_2d()  # 5 input features
-    model_3d = RankerMLP.for_3d()  # 10 input features
-"""
-
 from __future__ import annotations
 
 import logging
@@ -30,6 +15,7 @@ logger = logging.getLogger(__name__)
 try:
     import torch
     import torch.nn as nn
+
     _TORCH_AVAILABLE = True
 except ImportError:
     _TORCH_AVAILABLE = False
@@ -40,7 +26,7 @@ class RankerMLP(nn.Module if _TORCH_AVAILABLE else object):
     MLP scoring function for learning-to-rank.
 
     Args:
-        input_dim:    Dimensionality of the input feature vector (default: 9).
+        input_dim:    Dimensionality of the input feature vector (default: 10).
         hidden_dims:  Sizes of hidden layers (default: [64, 32]).
         dropout:      Dropout probability applied between hidden layers.
         use_batch_norm: Whether to apply BatchNorm after each hidden layer.
@@ -48,7 +34,7 @@ class RankerMLP(nn.Module if _TORCH_AVAILABLE else object):
 
     def __init__(
         self,
-        input_dim: int = 10,     # default = FEATURE_DIM_3D
+        input_dim: int = 10,
         hidden_dims: Optional[List[int]] = None,
         dropout: float = 0.1,
         use_batch_norm: bool = True,
@@ -87,10 +73,6 @@ class RankerMLP(nn.Module if _TORCH_AVAILABLE else object):
         # Weight initialisation: Kaiming uniform for ReLU networks
         self._init_weights()
 
-
-    # Weight initialisation
-
-
     def _init_weights(self) -> None:
         for i, module in enumerate(self.modules()):
             if isinstance(module, nn.Linear):
@@ -101,10 +83,6 @@ class RankerMLP(nn.Module if _TORCH_AVAILABLE else object):
                     nn.init.kaiming_uniform_(module.weight, nonlinearity="relu")
                 if module.bias is not None:
                     nn.init.zeros_(module.bias)
-
-
-    # Forward pass
-
 
     def forward(self, x: "torch.Tensor") -> "torch.Tensor":
         """
@@ -134,9 +112,7 @@ class RankerMLP(nn.Module if _TORCH_AVAILABLE else object):
         """
         return self.forward(x).squeeze(-1)
 
-
     # NumPy interface (inference without gradients)
-
 
     @torch.no_grad()
     def score_numpy(self, x: np.ndarray) -> np.ndarray:
@@ -154,10 +130,6 @@ class RankerMLP(nn.Module if _TORCH_AVAILABLE else object):
         scores = self.score(x_tensor)
         return scores.cpu().numpy()
 
-
-    # Persistence helpers
-
-
     def save(self, path: str) -> None:
         """Save model weights to a .pt file."""
         torch.save(self.state_dict(), path)
@@ -165,11 +137,7 @@ class RankerMLP(nn.Module if _TORCH_AVAILABLE else object):
 
     @classmethod
     def load(
-        cls,
-        path: str,
-        input_dim: int = 9,
-        hidden_dims: Optional[List[int]] = None,
-        **kwargs,
+        cls, path: str, input_dim: int = 9, hidden_dims: Optional[List[int]] = None, **kwargs
     ) -> "RankerMLP":
         """Load model weights from a .pt file."""
         model = cls(input_dim=input_dim, hidden_dims=hidden_dims, **kwargs)
@@ -185,26 +153,16 @@ class RankerMLP(nn.Module if _TORCH_AVAILABLE else object):
             f"dropout={self.dropout})"
         )
 
-
-    # Factory methods
-
-
     @classmethod
     def for_2d(
-        cls,
-        hidden_dims: Optional[List[int]] = None,
-        dropout: float = 0.1,
-        **kwargs,
+        cls, hidden_dims: Optional[List[int]] = None, dropout: float = 0.1, **kwargs
     ) -> "RankerMLP":
         """Create a model for 2D-only features (input_dim=5)."""
         return cls(input_dim=5, hidden_dims=hidden_dims, dropout=dropout, **kwargs)
 
     @classmethod
     def for_3d(
-        cls,
-        hidden_dims: Optional[List[int]] = None,
-        dropout: float = 0.1,
-        **kwargs,
+        cls, hidden_dims: Optional[List[int]] = None, dropout: float = 0.1, **kwargs
     ) -> "RankerMLP":
         """Create a model for full 3D features (input_dim=10)."""
         return cls(input_dim=10, hidden_dims=hidden_dims, dropout=dropout, **kwargs)

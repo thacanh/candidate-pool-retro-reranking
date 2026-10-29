@@ -60,39 +60,61 @@ def stage_commands(args: argparse.Namespace, paths: WorkflowPaths) -> list[list[
     feature_root = seed_root / "features"
     base = _base_command()
     common_search = [
-        "--selection-bundle", str(paths.selection_bundle),
-        "--output-root", str(paths.search_root),
-        "--shard-index", str(args.shard_index),
-        "--shard-count", str(args.shard_count),
-        "--device", args.device,
+        "--selection-bundle",
+        str(paths.selection_bundle),
+        "--output-root",
+        str(paths.search_root),
+        "--shard-index",
+        str(args.shard_index),
+        "--shard-count",
+        str(args.shard_count),
+        "--device",
+        args.device,
         "--compact-progress",
     ]
     stop_after_epoch = getattr(args, "stop_after_epoch", None)
     if stop_after_epoch is not None:
-        common_search.extend([
-            "--stop-after-epoch", str(stop_after_epoch),
-            "--stop-margin-seconds", str(args.stop_margin_seconds),
-        ])
+        common_search.extend(
+            [
+                "--stop-after-epoch",
+                str(stop_after_epoch),
+                "--stop-margin-seconds",
+                str(args.stop_margin_seconds),
+            ]
+        )
     if args.stage == "prepare":
-        return [[
-            *base, "prepare",
-            "--train-test-cache", str(feature_root / FEATURE_CACHE_NAME),
-            "--validation-cache", str(feature_root / VALIDATION_FEATURE_CACHE_NAME),
-            "--conformer-seed", str(args.conformer_seed),
-            "--output", str(paths.selection_bundle),
-        ]]
+        return [
+            [
+                *base,
+                "prepare",
+                "--train-test-cache",
+                str(feature_root / FEATURE_CACHE_NAME),
+                "--validation-cache",
+                str(feature_root / VALIDATION_FEATURE_CACHE_NAME),
+                "--conformer-seed",
+                str(args.conformer_seed),
+                "--output",
+                str(paths.selection_bundle),
+            ]
+        ]
     if args.stage == "baseline-shard":
         return [
             [*base, "search", *common_search, "--arm", "baseline", "--prior-transform", transform]
             for transform in PRIOR_TRANSFORMS
         ]
     if args.stage == "freeze-prior":
-        return [[
-            *base, "select-prior",
-            "--selection-bundle", str(paths.selection_bundle),
-            "--output-root", str(paths.search_root),
-            "--output", str(paths.prior_freeze),
-        ]]
+        return [
+            [
+                *base,
+                "select-prior",
+                "--selection-bundle",
+                str(paths.selection_bundle),
+                "--output-root",
+                str(paths.search_root),
+                "--output",
+                str(paths.prior_freeze),
+            ]
+        ]
     if args.stage == "augmented-shard":
         if not paths.prior_freeze.is_file():
             raise FileNotFoundError("Augmented shards require the frozen prior-transform record.")
@@ -100,72 +122,128 @@ def stage_commands(args: argparse.Namespace, paths: WorkflowPaths) -> list[list[
         selected_transform = prior.get("selected_prior_transform")
         if selected_transform not in PRIOR_TRANSFORMS:
             raise ValueError("Prior-freeze record has no supported selected transform.")
-        return [[
-            *base, "search", *common_search,
-            "--arm", "augmented", "--prior-transform", selected_transform,
-            "--prior-freeze", str(paths.prior_freeze),
-        ]]
+        return [
+            [
+                *base,
+                "search",
+                *common_search,
+                "--arm",
+                "augmented",
+                "--prior-transform",
+                selected_transform,
+                "--prior-freeze",
+                str(paths.prior_freeze),
+            ]
+        ]
     if args.stage == "freeze-selection":
-        return [[
-            *base, "freeze-selection",
-            "--selection-bundle", str(paths.selection_bundle),
-            "--prior-freeze", str(paths.prior_freeze),
-            "--output-root", str(paths.search_root),
-            "--output", str(paths.selection_freeze),
-        ]]
+        return [
+            [
+                *base,
+                "freeze-selection",
+                "--selection-bundle",
+                str(paths.selection_bundle),
+                "--prior-freeze",
+                str(paths.prior_freeze),
+                "--output-root",
+                str(paths.search_root),
+                "--output",
+                str(paths.selection_freeze),
+            ]
+        ]
     if args.stage == "evaluate-test":
-        return [[
-            *base, "evaluate-test",
-            "--selection-freeze", str(paths.selection_freeze),
-            "--train-test-cache", str(feature_root / FEATURE_CACHE_NAME),
-            "--output-root", str(paths.search_root),
-            "--result-dir", str(paths.test_results),
-            "--device", args.device,
-        ]]
+        return [
+            [
+                *base,
+                "evaluate-test",
+                "--selection-freeze",
+                str(paths.selection_freeze),
+                "--train-test-cache",
+                str(feature_root / FEATURE_CACHE_NAME),
+                "--output-root",
+                str(paths.search_root),
+                "--result-dir",
+                str(paths.test_results),
+                "--device",
+                args.device,
+            ]
+        ]
     if args.stage == "prepare-capacity":
-        required = (
-            args.capacity_dropout, args.capacity_learning_rate, args.capacity_margin,
-        )
-        if any(value is None for value in required) or not str(args.capacity_decision_note or "").strip():
+        required = (args.capacity_dropout, args.capacity_learning_rate, args.capacity_margin)
+        if (
+            any(value is None for value in required)
+            or not str(args.capacity_decision_note or "").strip()
+        ):
             raise ValueError("prepare-capacity requires all three settings and a decision note.")
-        return [[
-            *base, "prepare-capacity",
-            "--selection-bundle", str(paths.selection_bundle),
-            "--prior-freeze", str(paths.prior_freeze),
-            "--dropout", str(args.capacity_dropout),
-            "--learning-rate", str(args.capacity_learning_rate),
-            "--margin", str(args.capacity_margin),
-            "--decision-note", str(args.capacity_decision_note),
-            "--output", str(paths.capacity_plan),
-        ]]
+        return [
+            [
+                *base,
+                "prepare-capacity",
+                "--selection-bundle",
+                str(paths.selection_bundle),
+                "--prior-freeze",
+                str(paths.prior_freeze),
+                "--dropout",
+                str(args.capacity_dropout),
+                "--learning-rate",
+                str(args.capacity_learning_rate),
+                "--margin",
+                str(args.capacity_margin),
+                "--decision-note",
+                str(args.capacity_decision_note),
+                "--output",
+                str(paths.capacity_plan),
+            ]
+        ]
     if args.stage == "capacity-fit":
         return [
             [
-                *base, "run-capacity",
-                "--selection-bundle", str(paths.selection_bundle),
-                "--capacity-plan", str(paths.capacity_plan),
-                "--output-root", str(paths.search_root),
-                "--arm", arm, "--device", args.device,
+                *base,
+                "run-capacity",
+                "--selection-bundle",
+                str(paths.selection_bundle),
+                "--capacity-plan",
+                str(paths.capacity_plan),
+                "--output-root",
+                str(paths.search_root),
+                "--arm",
+                arm,
+                "--device",
+                args.device,
             ]
             for arm in ("baseline", "augmented")
         ]
     if args.stage == "freeze-capacity":
-        return [[
-            *base, "freeze-capacity",
-            "--selection-bundle", str(paths.selection_bundle),
-            "--capacity-plan", str(paths.capacity_plan),
-            "--output-root", str(paths.search_root),
-            "--output", str(paths.capacity_freeze),
-        ]]
+        return [
+            [
+                *base,
+                "freeze-capacity",
+                "--selection-bundle",
+                str(paths.selection_bundle),
+                "--capacity-plan",
+                str(paths.capacity_plan),
+                "--output-root",
+                str(paths.search_root),
+                "--output",
+                str(paths.capacity_freeze),
+            ]
+        ]
     if args.stage == "evaluate-capacity-test":
-        return [[
-            *base, "evaluate-capacity-test",
-            "--capacity-freeze", str(paths.capacity_freeze),
-            "--train-test-cache", str(feature_root / FEATURE_CACHE_NAME),
-            "--output-root", str(paths.search_root),
-            "--result-dir", str(paths.capacity_results),
-            "--device", args.device,
-        ]]
+        return [
+            [
+                *base,
+                "evaluate-capacity-test",
+                "--capacity-freeze",
+                str(paths.capacity_freeze),
+                "--train-test-cache",
+                str(feature_root / FEATURE_CACHE_NAME),
+                "--output-root",
+                str(paths.search_root),
+                "--result-dir",
+                str(paths.capacity_results),
+                "--device",
+                args.device,
+            ]
+        ]
     raise ValueError(f"Unsupported executable stage: {args.stage}")
 
 
@@ -194,9 +272,16 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "stage",
         choices=(
-            "prepare", "baseline-shard", "freeze-prior", "augmented-shard",
-            "freeze-selection", "evaluate-test", "status",
-            "prepare-capacity", "capacity-fit", "freeze-capacity",
+            "prepare",
+            "baseline-shard",
+            "freeze-prior",
+            "augmented-shard",
+            "freeze-selection",
+            "evaluate-test",
+            "status",
+            "prepare-capacity",
+            "capacity-fit",
+            "freeze-capacity",
             "evaluate-capacity-test",
         ),
     )
@@ -232,10 +317,7 @@ def main() -> None:
         print(json.dumps(status(paths, args.shard_count), indent=2))
         return
     # This hashes every retained seed artifact before any stage can consume it.
-    verify_seed_run(
-        Path(args.conformer_root) / f"seed_{args.conformer_seed}",
-        args.conformer_seed,
-    )
+    verify_seed_run(Path(args.conformer_root) / f"seed_{args.conformer_seed}", args.conformer_seed)
     commands = stage_commands(args, paths)
     if args.print_only:
         print(json.dumps(commands, indent=2))

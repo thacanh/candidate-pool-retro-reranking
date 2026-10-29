@@ -36,12 +36,8 @@ def _expanded(pool: str, baseline: float, augmented: float) -> dict:
         "test_reactions_covered": 4000,
         "test_reactions_total": 5004,
         "per_seed_metrics": {
-            "baseline": {
-                str(seed): {"within_pool": {"top1": baseline}} for seed in SEEDS
-            },
-            "augmented": {
-                str(seed): {"within_pool": {"top1": augmented}} for seed in SEEDS
-            },
+            "baseline": {str(seed): {"within_pool": {"top1": baseline}} for seed in SEEDS},
+            "augmented": {str(seed): {"within_pool": {"top1": augmented}} for seed in SEEDS},
         },
     }
 
@@ -106,13 +102,9 @@ def test_matched_list_cohort_gate_reproduces_frozen_partition() -> None:
                 "reaction_id": str(reaction_id),
                 "canonical_product": product,
                 "pool": "aizynthfinder_only",
-                "candidate_count": (
-                    "1" if reaction_id == 0 else "10" if matched else "9"
-                ),
+                "candidate_count": ("1" if reaction_id == 0 else "10" if matched else "9"),
                 "jaccard_vs_historical": "1" if matched else "0.9",
-                "shared_candidate_count": (
-                    "1" if reaction_id == 0 else "10" if matched else "9"
-                ),
+                "shared_candidate_count": ("1" if reaction_id == 0 else "10" if matched else "9"),
                 "kendall_order_vs_historical": "" if reaction_id == 0 else "1",
             }
         )
@@ -129,10 +121,7 @@ def test_n1_sensitivity_reports_joint_pipeline_contrast() -> None:
     aizynth_top1 = np.full((20, 4), -0.1, dtype=np.float64)
     historical = {"top1": historical_top1, "mrr": historical_top1 / 2}
     aizynth = {"top1": aizynth_top1, "mrr": aizynth_top1 / 2}
-    cohorts = {
-        "matched_candidate_identity_and_order": [1, 2],
-        "changed_candidate_list": [3, 4],
-    }
+    cohorts = {"matched_candidate_identity_and_order": [1, 2], "changed_candidate_list": [3, 4]}
     effects, contrasts = n1_sensitivity_rows(
         historical,
         aizynth,
@@ -162,9 +151,7 @@ def test_n1_sensitivity_reports_joint_pipeline_contrast() -> None:
     )
 
 
-def test_n1_prior_audit_canonicalizes_products_and_uses_first_ten(
-    tmp_path: Path,
-) -> None:
+def test_n1_prior_audit_canonicalizes_products_and_uses_first_ten(tmp_path: Path) -> None:
     historical_path = tmp_path / "historical.pkl"
     pool_path = tmp_path / "pool.jsonl"
     payload = {
@@ -176,13 +163,7 @@ def test_n1_prior_audit_canonicalizes_products_and_uses_first_ten(
     historical_path.write_bytes(pickle.dumps(payload))
     pool_path.write_text(
         "\n".join(
-            json.dumps(
-                {
-                    "product": "OCC",
-                    "candidate_rank": rank,
-                    "prior": 1.0 - rank / 20,
-                }
-            )
+            json.dumps({"product": "OCC", "candidate_rank": rank, "prior": 1.0 - rank / 20})
             for rank in range(1, 12)
         )
         + "\n",
@@ -196,15 +177,12 @@ def test_n1_prior_audit_canonicalizes_products_and_uses_first_ten(
 def test_n1_v2_allows_only_interpretation_label_change(tmp_path: Path) -> None:
     reference = tmp_path / "v1.csv"
     reference.write_text(
-        "cohort,effect,interpretation_scope\nmatched,0.125,old label\n",
-        encoding="utf-8",
+        "cohort,effect,interpretation_scope\nmatched,0.125,old label\n", encoding="utf-8"
     )
     _assert_n1_numeric_equivalence(
-        [{"cohort": "matched", "effect": 0.125, "interpretation_scope": "new label"}],
-        reference,
+        [{"cohort": "matched", "effect": 0.125, "interpretation_scope": "new label"}], reference
     )
     with pytest.raises(ValueError, match="numeric or cohort value differs"):
         _assert_n1_numeric_equivalence(
-            [{"cohort": "matched", "effect": 0.126, "interpretation_scope": "new label"}],
-            reference,
+            [{"cohort": "matched", "effect": 0.126, "interpretation_scope": "new label"}], reference
         )

@@ -36,11 +36,7 @@ from rerank.study_data import STUDY_CACHE_SCHEMA
 ALL_CONFORMER_SEEDS = tuple(range(42, 52))
 CONFIRMATORY_CONFORMER_SEEDS = tuple(range(42, 47))
 TRAINING_SEEDS = tuple(range(42, 47))
-SCALAR_NAMES = (
-    "atom_set_similarity",
-    "reaction_distance",
-    "cosine_reaction_vec",
-)
+SCALAR_NAMES = ("atom_set_similarity", "reaction_distance", "cosine_reaction_vec")
 SCALAR_COLUMNS = (2, 3, 4)
 NON_SCALAR_COLUMNS = (0, 1, 5, 6)
 FEATURE_DIMENSION = 7
@@ -49,9 +45,7 @@ BOOTSTRAP_SAMPLES = 10_000
 CV_MEAN_EPSILON = 1e-8
 QUANTILE_PROBABILITIES = (0.0, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99, 1.0)
 FEATURE_CACHE_NAME = f"official_3d_prior_schema{STUDY_CACHE_SCHEMA}.pkl"
-VALIDATION_FEATURE_CACHE_NAME = (
-    f"official_valid_3d_prior_schema{STUDY_CACHE_SCHEMA}.pkl"
-)
+VALIDATION_FEATURE_CACHE_NAME = f"official_valid_3d_prior_schema{STUDY_CACHE_SCHEMA}.pkl"
 
 
 def _sha256(path: str | Path, chunk_size: int = 1024 * 1024) -> str:
@@ -123,9 +117,7 @@ def verify_seed_run(seed_root: str | Path, expected_seed: int) -> dict:
         name for name in required_top_level if not (seed_root / name).is_file()
     )
     if missing_top_level:
-        raise RuntimeError(
-            f"Seed {expected_seed} is incomplete; missing {missing_top_level}."
-        )
+        raise RuntimeError(f"Seed {expected_seed} is incomplete; missing {missing_top_level}.")
 
     checksum_entries: dict[str, str] = {}
     for line_number, line in enumerate(
@@ -149,9 +141,7 @@ def verify_seed_run(seed_root: str | Path, expected_seed: int) -> dict:
             raise RuntimeError(f"Missing checksummed artifact: {target}.")
         observed = _sha256(target)
         if observed != digest:
-            raise RuntimeError(
-                f"Checksum mismatch for {target}: {observed} != {digest}."
-            )
+            raise RuntimeError(f"Checksum mismatch for {target}: {observed} != {digest}.")
         checksum_entries[relative] = digest
 
     critical = {
@@ -163,10 +153,7 @@ def verify_seed_run(seed_root: str | Path, expected_seed: int) -> dict:
         f"features/{VALIDATION_FEATURE_CACHE_NAME}",
         "ranking_legacy_fixed50/manifest.json",
         "ranking_legacy_fixed50/per_seed_metrics.json",
-        *{
-            f"ranking_legacy_fixed50/eval_seed{seed}.csv"
-            for seed in TRAINING_SEEDS
-        },
+        *{f"ranking_legacy_fixed50/eval_seed{seed}.csv" for seed in TRAINING_SEEDS},
     }
     omitted = sorted(critical.difference(checksum_entries))
     if omitted:
@@ -201,12 +188,8 @@ def verify_seed_run(seed_root: str | Path, expected_seed: int) -> dict:
         raise RuntimeError(f"Seed {expected_seed} inner ranking seeds are not 42--46.")
     if completed.get("manifest_sha256") != _sha256(seed_root / "manifest.json"):
         raise RuntimeError(f"COMPLETED.json manifest hash mismatch for seed {expected_seed}.")
-    if completed.get("result_summary_sha256") != _sha256(
-        seed_root / "result_summary.json"
-    ):
-        raise RuntimeError(
-            f"COMPLETED.json result-summary hash mismatch for seed {expected_seed}."
-        )
+    if completed.get("result_summary_sha256") != _sha256(seed_root / "result_summary.json"):
+        raise RuntimeError(f"COMPLETED.json result-summary hash mismatch for seed {expected_seed}.")
     return {
         "seed": expected_seed,
         "seed_root": seed_root,
@@ -214,9 +197,7 @@ def verify_seed_run(seed_root: str | Path, expected_seed: int) -> dict:
         "result_summary": result_summary,
         "checksums": checksum_entries,
         "feature_cache": seed_root / "features" / FEATURE_CACHE_NAME,
-        "validation_features": seed_root
-        / "features"
-        / VALIDATION_FEATURE_CACHE_NAME,
+        "validation_features": seed_root / "features" / VALIDATION_FEATURE_CACHE_NAME,
         "metrics": seed_root / "ranking_legacy_fixed50" / "per_seed_metrics.json",
         "ranking": seed_root / "ranking_legacy_fixed50",
         "embedding_summary": seed_root / "embedding_summary.json",
@@ -236,9 +217,7 @@ def verify_cross_seed_inputs(records: Sequence[dict]) -> dict:
         current: dict[str, tuple[int, str]] = {}
         for name, value in fingerprints.items():
             if not isinstance(value, dict) or "sha256" not in value:
-                raise RuntimeError(
-                    f"Seed {record['seed']} fingerprint {name!r} has no SHA-256."
-                )
+                raise RuntimeError(f"Seed {record['seed']} fingerprint {name!r} has no SHA-256.")
             current[name] = (int(value.get("size_bytes", -1)), str(value["sha256"]))
         if not reference:
             reference = current
@@ -247,8 +226,7 @@ def verify_cross_seed_inputs(records: Sequence[dict]) -> dict:
                 f"Scientific input fingerprints differ for conformer seed {record['seed']}."
             )
     return {
-        name: {"size_bytes": size, "sha256": digest}
-        for name, (size, digest) in reference.items()
+        name: {"size_bytes": size, "sha256": digest} for name, (size, digest) in reference.items()
     }
 
 
@@ -272,16 +250,15 @@ def audit_embedding_fallbacks(records: Sequence[dict]) -> dict:
         elif required != reference_required:
             raise RuntimeError(f"Required molecule inventory differs for seed {seed}.")
         status_counts = {
-            str(name): int(count)
-            for name, count in summary.get("status_counts", {}).items()
+            str(name): int(count) for name, count in summary.get("status_counts", {}).items()
         }
         if sum(status_counts.values()) != int(summary.get("stored_items", -1)):
-            raise RuntimeError(f"Embedding status counts do not sum to stored items for seed {seed}.")
+            raise RuntimeError(
+                f"Embedding status counts do not sum to stored items for seed {seed}."
+            )
         with open(record["embedding_non_ok"], encoding="utf-8", newline="") as handle:
             non_ok_rows = list(csv.DictReader(handle))
-        expected_non_ok = sum(
-            count for status, count in status_counts.items() if status != "ok"
-        )
+        expected_non_ok = sum(count for status, count in status_counts.items() if status != "ok")
         if len(non_ok_rows) != expected_non_ok:
             raise RuntimeError(
                 f"Non-OK embedding row count mismatch for seed {seed}: "
@@ -307,10 +284,7 @@ def audit_embedding_fallbacks(records: Sequence[dict]) -> dict:
 def _load_feature_blob(path: Path, expected_seed: int, validation: bool = False) -> dict:
     with open(path, "rb") as handle:
         blob = pickle.load(handle)
-    if (
-        not isinstance(blob, dict)
-        or int(blob.get("schema_version", -1)) != STUDY_CACHE_SCHEMA
-    ):
+    if not isinstance(blob, dict) or int(blob.get("schema_version", -1)) != STUDY_CACHE_SCHEMA:
         raise RuntimeError(f"Unsupported feature-cache schema in {path}.")
     if blob.get("feature_mode", "3d+prior") != "3d+prior":
         raise RuntimeError(f"Feature cache is not 3d+prior: {path}.")
@@ -350,8 +324,7 @@ def _strict_rotatable_bonds(smiles: str) -> int:
 
 def _stratum(product_smiles: str, candidate_smiles: str) -> tuple[str, int]:
     maximum = max(
-        _strict_rotatable_bonds(product_smiles),
-        _strict_rotatable_bonds(candidate_smiles),
+        _strict_rotatable_bonds(product_smiles), _strict_rotatable_bonds(candidate_smiles)
     )
     if maximum == 0:
         return "rigid_zero", maximum
@@ -444,14 +417,10 @@ def feature_structure_digest(main_blob: dict, validation_blob: dict) -> str:
         digest.update(json.dumps(header, sort_keys=True, default=str).encode("utf-8"))
         array = segment["array"]
         digest.update(np.asarray(array.shape, dtype="<i8").tobytes())
-        digest.update(
-            np.ascontiguousarray(array[:, NON_SCALAR_COLUMNS], dtype="<f4").tobytes()
-        )
+        digest.update(np.ascontiguousarray(array[:, NON_SCALAR_COLUMNS], dtype="<f4").tobytes())
         for candidate in segment["candidates"]:
             digest.update(
-                json.dumps(_candidate_record(candidate), separators=(",", ":")).encode(
-                    "utf-8"
-                )
+                json.dumps(_candidate_record(candidate), separators=(",", ":")).encode("utf-8")
             )
     return digest.hexdigest()
 
@@ -460,7 +429,9 @@ def _feature_array_refs(main_blob: dict, validation_blob: dict) -> list[np.ndarr
     return [segment["array"] for segment in _iter_segments(main_blob, validation_blob)]
 
 
-def build_unique_pair_index(main_blob: dict, validation_blob: dict) -> tuple[np.ndarray, np.ndarray]:
+def build_unique_pair_index(
+    main_blob: dict, validation_blob: dict
+) -> tuple[np.ndarray, np.ndarray]:
     """Return flattened first-occurrence indices and prespecified strata metadata."""
     seen: set[tuple[str, str, str]] = set()
     indices: list[int] = []
@@ -473,16 +444,11 @@ def build_unique_pair_index(main_blob: dict, validation_blob: dict) -> tuple[np.
             key = (segment["split"], product_identity, candidate_identity)
             if key not in seen:
                 seen.add(key)
-                label, _ = _stratum(
-                    segment["product_smiles"], candidate_smiles
-                )
+                label, _ = _stratum(segment["product_smiles"], candidate_smiles)
                 indices.append(offset + row_index)
                 strata.append(label)
         offset += len(segment["array"])
-    return (
-        np.asarray(indices, dtype=np.int64),
-        np.asarray(strata, dtype=object),
-    )
+    return (np.asarray(indices, dtype=np.int64), np.asarray(strata, dtype=object))
 
 
 def flatten_scalar_features(
@@ -503,10 +469,7 @@ def flatten_scalar_features(
 def _stratum_masks(strata: np.ndarray) -> list[tuple[str, np.ndarray]]:
     return [
         ("all", np.ones(len(strata), dtype=bool)),
-        (
-            "rigid_0_4",
-            np.isin(strata, ("rigid_zero", "intermediate_1_4")),
-        ),
+        ("rigid_0_4", np.isin(strata, ("rigid_zero", "intermediate_1_4"))),
         ("rigid_zero", strata == "rigid_zero"),
         ("intermediate_1_4", strata == "intermediate_1_4"),
         ("flexible_ge5", strata == "flexible_ge5"),
@@ -584,7 +547,10 @@ def analyze_b1(
                             "conformer_b": f"C{right_seed - 41}",
                             "scalar": scalar,
                             "stratum": stratum,
-                            **{f"abs_diff_{key}": value for key, value in _distribution(absolute).items()},
+                            **{
+                                f"abs_diff_{key}": value
+                                for key, value in _distribution(absolute).items()
+                            },
                             "pearson": _correlation(left_values, right_values),
                             "spearman": _correlation(left_values, right_values, spearman=True),
                         }
@@ -603,9 +569,7 @@ def analyze_b1(
                                 }
                             )
 
-    stacked = np.stack(
-        [features_by_seed[seed] for seed in CONFIRMATORY_CONFORMER_SEEDS], axis=0
-    )
+    stacked = np.stack([features_by_seed[seed] for seed in CONFIRMATORY_CONFORMER_SEEDS], axis=0)
     means = np.mean(stacked, axis=0)
     sample_sd = np.std(stacked, axis=0, ddof=1)
     defined = np.abs(means) > CV_MEAN_EPSILON
@@ -663,8 +627,7 @@ def average_feature_blobs(
     base_validation = copy.deepcopy(base_validation)
     base_arrays = _feature_array_refs(base_main, base_validation)
     accumulators = [
-        np.asarray(array[:, SCALAR_COLUMNS], dtype=np.float64).copy()
-        for array in base_arrays
+        np.asarray(array[:, SCALAR_COLUMNS], dtype=np.float64).copy() for array in base_arrays
     ]
     observed_seeds = [int(conformer_seeds[0])]
     reference_digest = feature_structure_digest(base_main, base_validation)
@@ -680,9 +643,7 @@ def average_feature_blobs(
             if base.shape != current.shape:
                 raise RuntimeError(f"Feature shape mismatch for seed {seed}, block {index}.")
             if not np.array_equal(base[:, NON_SCALAR_COLUMNS], current[:, NON_SCALAR_COLUMNS]):
-                raise RuntimeError(
-                    f"Non-scalar feature changed for seed {seed}, block {index}."
-                )
+                raise RuntimeError(f"Non-scalar feature changed for seed {seed}, block {index}.")
             accumulator += np.asarray(current[:, SCALAR_COLUMNS], dtype=np.float64)
         observed_seeds.append(int(seed))
     if tuple(observed_seeds) != tuple(conformer_seeds):
@@ -781,9 +742,7 @@ def _load_prediction_arm(path: Path) -> dict:
     }
 
 
-def load_paired_prediction_differences(
-    baseline_2d_path: Path, augmented_path: Path
-) -> dict:
+def load_paired_prediction_differences(baseline_2d_path: Path, augmented_path: Path) -> dict:
     """Pair two trained arms; the CSV ``baseline_*`` columns are prior-only."""
     baseline = _load_prediction_arm(baseline_2d_path)
     augmented = _load_prediction_arm(augmented_path)
@@ -835,7 +794,9 @@ def load_b2_grid(
             raise RuntimeError(f"Shared 2D checksum failed: {relative}")
         checksum_entries[Path(relative).as_posix()] = digest
     required_shared = {
-        "manifest.json", "ranking/manifest.json", "ranking/per_seed_metrics.json",
+        "manifest.json",
+        "ranking/manifest.json",
+        "ranking/per_seed_metrics.json",
         *{f"ranking/eval_seed{seed}.csv" for seed in TRAINING_SEEDS},
     }
     if not required_shared.issubset(checksum_entries):
@@ -845,7 +806,9 @@ def load_b2_grid(
     if shared_inner.get("feature_mode") != "2d+prior":
         raise RuntimeError("Shared comparator is not the trained 2d+prior arm.")
     expected_seed_keys = {str(seed) for seed in TRAINING_SEEDS}
-    if set(shared_metrics) != expected_seed_keys or shared_inner.get("seeds") != list(TRAINING_SEEDS):
+    if set(shared_metrics) != expected_seed_keys or shared_inner.get("seeds") != list(
+        TRAINING_SEEDS
+    ):
         raise RuntimeError("Shared 2D arm does not contain exactly training seeds 42--46.")
     by_seed = {int(record["seed"]): record for record in records}
     rows: list[dict] = []
@@ -885,11 +848,13 @@ def load_b2_grid(
                 if metric_name not in cell or metric_name not in baseline_cell:
                     raise RuntimeError(f"Missing trained-arm {metric_name} in B2 metric cell.")
                 _assert_close(
-                    prediction[f"{metric_name}_value"], float(cell[metric_name]),
+                    prediction[f"{metric_name}_value"],
+                    float(cell[metric_name]),
                     f"augmented {metric_name} conformer={conformer_seed} training_seed={training_seed}",
                 )
                 _assert_close(
-                    prediction[f"baseline_{metric_name}"], float(baseline_cell[metric_name]),
+                    prediction[f"baseline_{metric_name}"],
+                    float(baseline_cell[metric_name]),
                     f"2D {metric_name} training_seed={training_seed}",
                 )
             top1_cells.append(prediction["top1"])
@@ -911,10 +876,7 @@ def load_b2_grid(
     assert reference_clusters is not None
     return (
         rows,
-        {
-            "top1": np.stack(top1_cells, axis=0),
-            "mrr": np.stack(mrr_cells, axis=0),
-        },
+        {"top1": np.stack(top1_cells, axis=0), "mrr": np.stack(mrr_cells, axis=0)},
         reference_clusters,
     )
 
@@ -953,12 +915,7 @@ def fit_crossed_reml(values: np.ndarray) -> dict:
         residual = y - x @ beta
         quadratic = float(residual @ np.linalg.solve(covariance, residual))
         _, logdet_fixed = np.linalg.slogdet(xt_vinv_x)
-        return 0.5 * (
-            (n - 1) * math.log(2.0 * math.pi)
-            + logdet
-            + float(logdet_fixed)
-            + quadratic
-        )
+        return 0.5 * ((n - 1) * math.log(2.0 * math.pi) + logdet + float(logdet_fixed) + quadratic)
 
     scale = max(float(np.var(y, ddof=1)), 1e-10)
     starts = (
@@ -989,8 +946,7 @@ def fit_crossed_reml(values: np.ndarray) -> dict:
         "mean_gain": float(np.mean(y)),
         "variance_components": components,
         "variance_fractions": {
-            name: (value / total if total > 0 else None)
-            for name, value in components.items()
+            name: (value / total if total > 0 else None) for name, value in components.items()
         },
         "restricted_negative_log_likelihood": float(fit.fun),
         "optimizer_success": bool(fit.success),
@@ -1038,15 +994,9 @@ def crossed_bootstrap(
         )
         sampled_seed = rng.integers(0, 5, size=(size, 5))
         sampled_conformer = rng.integers(0, 5, size=(size, 5))
-        seed_weights = np.stack(
-            [np.bincount(row, minlength=5) for row in sampled_seed]
-        )
-        conformer_weights = np.stack(
-            [np.bincount(row, minlength=5) for row in sampled_conformer]
-        )
-        cell_weights = (
-            conformer_weights[:, :, None] * seed_weights[:, None, :]
-        ).reshape(size, 25)
+        seed_weights = np.stack([np.bincount(row, minlength=5) for row in sampled_seed])
+        conformer_weights = np.stack([np.bincount(row, minlength=5) for row in sampled_conformer])
+        cell_weights = (conformer_weights[:, :, None] * seed_weights[:, None, :]).reshape(size, 25)
         selected_cell_cluster_sums = cluster_weights @ cluster_sums.T
         numerator = np.sum(cell_weights * selected_cell_cluster_sums, axis=1)
         sampled_reactions = cluster_weights @ cluster_sizes
@@ -1084,10 +1034,7 @@ def analyze_b2(
         values = np.asarray([row[f"{metric}_gain"] for row in grid_rows]).reshape(5, 5)
         reml = fit_crossed_reml(values)
         bootstrap, estimates = crossed_bootstrap(
-            differences[metric],
-            cluster_ids,
-            n_samples=n_bootstrap,
-            seed=bootstrap_seed,
+            differences[metric], cluster_ids, n_samples=n_bootstrap, seed=bootstrap_seed
         )
         positive_cells = int(np.sum(values > 0.0))
         results[metric] = {
@@ -1108,11 +1055,7 @@ def analyze_b2(
             )
         for index, estimate in enumerate(estimates):
             bootstrap_rows.append(
-                {
-                    "metric": metric,
-                    "bootstrap_index": index,
-                    "gain": float(estimate),
-                }
+                {"metric": metric, "bootstrap_index": index, "gain": float(estimate)}
             )
     top1_ci = results["top1"]["crossed_bootstrap"]["ci95"]
     robust = results["top1"]["positive_cells"] >= 20 and top1_ci[0] > 0.0
@@ -1190,8 +1133,7 @@ def run_aggregate(
     started_clock = time.perf_counter()
 
     records = [
-        verify_seed_run(conformer_root / f"seed_{seed}", seed)
-        for seed in ALL_CONFORMER_SEEDS
+        verify_seed_run(conformer_root / f"seed_{seed}", seed) for seed in ALL_CONFORMER_SEEDS
     ]
     scientific_inputs = verify_cross_seed_inputs(records)
     fallback_audit = audit_embedding_fallbacks(records)
@@ -1217,9 +1159,7 @@ def run_aggregate(
             raise RuntimeError(f"Feature pairing/non-scalar structure differs for seed {seed}.")
         assert unique_indices is not None
         if seed in CONFIRMATORY_CONFORMER_SEEDS:
-            features_by_seed[seed] = flatten_scalar_features(
-                main_blob, valid_blob, unique_indices
-            )
+            features_by_seed[seed] = flatten_scalar_features(main_blob, valid_blob, unique_indices)
         input_feature_hashes[str(seed)] = {
             "feature_cache_sha256": record["checksums"][
                 record["feature_cache"].relative_to(record["seed_root"]).as_posix()
@@ -1249,21 +1189,14 @@ def run_aggregate(
             )
 
     averaged_main, averaged_validation = average_feature_blobs(
-        first_main,
-        first_validation,
-        remaining_for_average(),
-        conformer_seeds=ALL_CONFORMER_SEEDS,
+        first_main, first_validation, remaining_for_average(), conformer_seeds=ALL_CONFORMER_SEEDS
     )
     _atomic_pickle(paths["b3_main"], averaged_main)
     _atomic_pickle(paths["b3_validation"], averaged_validation)
 
     grid_rows, differences, clusters = load_b2_grid(records, shared_2d_root)
     b2, variance_rows, bootstrap_rows = analyze_b2(
-        grid_rows,
-        differences,
-        clusters,
-        n_bootstrap=n_bootstrap,
-        bootstrap_seed=bootstrap_seed,
+        grid_rows, differences, clusters, n_bootstrap=n_bootstrap, bootstrap_seed=bootstrap_seed
     )
     _write_csv(paths["b2_grid"], grid_rows)
     _write_csv(paths["b2_variance"], variance_rows)
@@ -1301,8 +1234,7 @@ def run_aggregate(
         "seed_feature_artifacts": input_feature_hashes,
         "shared_2d_manifest_sha256": _sha256(Path(shared_2d_root) / "manifest.json"),
         "input_seed_manifest_sha256": {
-            str(record["seed"]): record["checksums"]["manifest.json"]
-            for record in records
+            str(record["seed"]): record["checksums"]["manifest.json"] for record in records
         },
         "pairing_gate": {
             "feature_structure_digest": reference_structure,
@@ -1326,17 +1258,10 @@ def run_aggregate(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--conformer-root", default="outputs/jcheminform_revision/conformers")
+    parser.add_argument("--output-dir", default="outputs/jcheminform_revision/conformer_aggregate")
     parser.add_argument(
-        "--conformer-root",
-        default="outputs/jcheminform_revision/conformers",
-    )
-    parser.add_argument(
-        "--output-dir",
-        default="outputs/jcheminform_revision/conformer_aggregate",
-    )
-    parser.add_argument(
-        "--shared-2d-root",
-        default="outputs/jcheminform_revision/shared_2d_legacy_fixed50",
+        "--shared-2d-root", default="outputs/jcheminform_revision/shared_2d_legacy_fixed50"
     )
     parser.add_argument("--bootstrap-samples", type=int, default=BOOTSTRAP_SAMPLES)
     parser.add_argument("--bootstrap-seed", type=int, default=BOOTSTRAP_SEED)

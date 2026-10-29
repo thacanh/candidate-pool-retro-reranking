@@ -66,7 +66,4 @@ def test_pool_analysis_reproduces_paired_rank_metrics(tmp_path: Path) -> None:
     assert statistics["scopes"]["within_pool"]["mrr"]["delta"] == pytest.approx(1 / 6)
     assert statistics["scopes"]["end_to_end"]["top1"]["delta"] == pytest.approx(1 / 4)
     assert statistics["scopes"]["within_pool"]["top1"]["n_product_clusters"] == 2
-    assert classify_top1(statistics) in {
-        "positive_effect_supported",
-        "no_clear_difference",
-    }
+    assert classify_top1(statistics) in {"positive_effect_supported", "no_clear_difference"}

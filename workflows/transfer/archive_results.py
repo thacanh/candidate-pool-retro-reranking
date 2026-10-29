@@ -116,8 +116,10 @@ def archive_stage(args: argparse.Namespace) -> dict:
     if archive.exists() or receipt.exists():
         raise FileExistsError("Stage archive/receipt already exists; refusing overwrite.")
 
-    sources = {f"{args.stage}/results/{path.relative_to(result_dir).as_posix()}": path
-               for path in _files(result_dir)}
+    sources = {
+        f"{args.stage}/results/{path.relative_to(result_dir).as_posix()}": path
+        for path in _files(result_dir)
+    }
     sources[f"{args.stage}/provenance/approval_record.json"] = approval_path
     if args.log_file:
         log = Path(args.log_file).resolve(strict=True)
@@ -137,8 +139,9 @@ def archive_stage(args: argparse.Namespace) -> dict:
     os.close(descriptor)
     temporary = Path(temporary_name)
     try:
-        with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED,
-                             allowZip64=True, compresslevel=6) as bundle:
+        with zipfile.ZipFile(
+            temporary, "w", compression=zipfile.ZIP_DEFLATED, allowZip64=True, compresslevel=6
+        ) as bundle:
             for name, path in sources.items():
                 bundle.write(path, name)
         _verify_members(temporary, member_hashes)
@@ -175,9 +178,13 @@ def verify_stage(args: argparse.Namespace) -> dict:
     if _sha256(archive) != receipt["archive_sha256"]:
         raise ValueError("ZIP SHA-256 differs from receipt.")
     _verify_members(archive, receipt["members"])
-    return {"status": "verified", "stage": receipt["stage"],
-            "archive": str(archive), "sha256": receipt["archive_sha256"],
-            "member_count": len(receipt["members"])}
+    return {
+        "status": "verified",
+        "stage": receipt["stage"],
+        "archive": str(archive),
+        "sha256": receipt["archive_sha256"],
+        "member_count": len(receipt["members"]),
+    }
 
 
 def main() -> None:
@@ -196,9 +203,13 @@ def main() -> None:
     args = parser.parse_args()
     result = archive_stage(args) if args.command == "archive" else verify_stage(args)
     if args.command == "archive":
-        result = {"status": result["status"], "stage": result["stage"],
-                  "archive": result["archive"], "sha256": result["archive_sha256"],
-                  "member_count": len(result["members"])}
+        result = {
+            "status": result["status"],
+            "stage": result["stage"],
+            "archive": result["archive"],
+            "sha256": result["archive_sha256"],
+            "member_count": len(result["members"]),
+        }
     print(json.dumps(result, indent=2, sort_keys=True))
 
 

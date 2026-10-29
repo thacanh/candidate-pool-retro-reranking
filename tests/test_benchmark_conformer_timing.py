@@ -48,12 +48,12 @@ class FakeBackend:
         self.clock.advance(len(smiles) * 1.0)
         self.preprocessed.extend(smiles)
         statuses = [
-            "fallback_2d" if value == "s41-a" else
-            "failure" if value == "s31-a" else
-            "ok"
+            "fallback_2d" if value == "s41-a" else "failure" if value == "s31-a" else "ok"
             for value in smiles
         ]
-        payloads = [None if status == "failure" else value for value, status in zip(smiles, statuses)]
+        payloads = [
+            None if status == "failure" else value for value, status in zip(smiles, statuses)
+        ]
         return PreparedBatch(payloads=payloads, statuses=statuses)
 
     def infer(self, prepared):
@@ -76,11 +76,7 @@ def _fake_serializer(clock):
     def serialize(representations):
         clock.advance(len(representations) * 0.5)
         arrays = sum(item is not None for item in representations)
-        return {
-            "arrays": arrays,
-            "serialized_bytes": arrays * 32,
-            "nonfinite_values": 0,
-        }
+        return {"arrays": arrays, "serialized_bytes": arrays * 32, "nonfinite_values": 0}
 
     return serialize
 
@@ -146,9 +142,7 @@ def test_official_workload_uses_feature_cache_eligibility_rules(tmp_path):
         {"product": "CCN", "reactant": "N", "prior": 0.9},
         {"product": "CCN", "reactant": "C", "prior": 0.4},
     ]
-    candidates.write_text(
-        "\n".join(json.dumps(record) for record in records), encoding="utf-8"
-    )
+    candidates.write_text("\n".join(json.dumps(record) for record in records), encoding="utf-8")
 
     inventory = collect_official_feature_workload(source, metadata, candidates)
 
@@ -164,20 +158,30 @@ def test_official_workload_uses_feature_cache_eligibility_rules(tmp_path):
 
 def test_fake_backend_pilot_is_stratified_and_excludes_warmup(tmp_path):
     sizes = {
-        "s01-a": 5, "s01-b": 8,
-        "s11-a": 11, "s11-b": 14, "s11-c": 17, "s11-d": 20,
-        "s21-a": 21, "s21-b": 24, "s21-c": 27, "s21-d": 30,
-        "s31-a": 31, "s31-b": 40,
-        "s41-a": 41, "s41-b": 50,
-        "s51-a": 51, "s51-b": 60,
-        "s61-a": 61, "s61-b": 80,
-        "s81-a": 81, "s81-b": 100, "s81-c": 128,
+        "s01-a": 5,
+        "s01-b": 8,
+        "s11-a": 11,
+        "s11-b": 14,
+        "s11-c": 17,
+        "s11-d": 20,
+        "s21-a": 21,
+        "s21-b": 24,
+        "s21-c": 27,
+        "s21-d": 30,
+        "s31-a": 31,
+        "s31-b": 40,
+        "s41-a": 41,
+        "s41-b": 50,
+        "s51-a": 51,
+        "s51-b": 60,
+        "s61-a": 61,
+        "s61-b": 80,
+        "s81-a": 81,
+        "s81-b": 100,
+        "s81-c": 128,
     }
     required = list(sizes)
-    audit = {
-        "required_key_count": len(required),
-        "required_keys_sha256": "sha256:synthetic",
-    }
+    audit = {"required_key_count": len(required), "required_keys_sha256": "sha256:synthetic"}
     clock = FakeClock()
     backend = FakeBackend(clock)
     rss = FakeRss()
@@ -257,10 +261,7 @@ def test_default_sampling_plan_is_489_timed_16_disjoint_and_62_batches():
 
     assert report["sample"]["count"] == 489
     assert report["warmup"]["count"] == 16
-    assert report["warmup"]["stratum_counts"] == {
-        "02_11_20": 8,
-        "03_21_30": 8,
-    }
+    assert report["warmup"]["stratum_counts"] == {"02_11_20": 8, "03_21_30": 8}
     assert report["warmup"]["disjoint_from_timed_sample"] is True
     schedule = report["sample"]["batch_schedule"]
     assert schedule["batch_count"] == 62
@@ -278,11 +279,7 @@ def test_default_sampling_plan_is_489_timed_16_disjoint_and_62_batches():
 
 def test_unimol_backend_is_lazy_and_c1_only():
     assert "unimol_tools" not in sys.modules
-    backend = UniMolCpuTimingBackend(
-        checkpoint_path="not-loaded.pt",
-        batch_size=2,
-        threads=1,
-    )
+    backend = UniMolCpuTimingBackend(checkpoint_path="not-loaded.pt", batch_size=2, threads=1)
     assert "unimol_tools" not in sys.modules
     with pytest.raises(ValueError, match="restricted to C1"):
         run_timing_pilot(
@@ -335,9 +332,7 @@ def _fake_unimol_backend(monkeypatch, tmp_path, inference_error=None):
                 "use_ddp": use_ddp,
                 "use_gpu": use_gpu,
             }
-            captures["weight_dir_at_repr_init"] = os.environ.get(
-                "UNIMOL_WEIGHT_DIR"
-            )
+            captures["weight_dir_at_repr_init"] = os.environ.get("UNIMOL_WEIGHT_DIR")
             self.model = object()
             self.params = dict(captures["repr_kwargs"])
 
@@ -347,11 +342,7 @@ def _fake_unimol_backend(monkeypatch, tmp_path, inference_error=None):
 
         def single_process(self, smiles):
             captures.setdefault("preprocessed", []).append(smiles)
-            return {
-                "src_coord": np.asarray(
-                    [[0.0, 0.0, 0.0], [1.0, 0.0, 1.0]], dtype=np.float32
-                )
-            }
+            return {"src_coord": np.asarray([[0.0, 0.0, 0.0], [1.0, 0.0, 1.0]], dtype=np.float32)}
 
     class FakeMolDataset:
         def __init__(self, data, label=None):
@@ -366,12 +357,7 @@ def _fake_unimol_backend(monkeypatch, tmp_path, inference_error=None):
             captures["trainer_kwargs"] = dict(params)
 
         def inference(
-            self,
-            model,
-            dataset,
-            return_repr=False,
-            return_atomic_reprs=False,
-            feature_name=None,
+            self, model, dataset, return_repr=False, return_atomic_reprs=False, feature_name=None
         ):
             captures["inference_call"] = {
                 "model": model,
@@ -382,19 +368,13 @@ def _fake_unimol_backend(monkeypatch, tmp_path, inference_error=None):
             }
             if inference_error is not None:
                 raise inference_error
-            return {
-                "atomic_reprs": [
-                    np.ones((2, 4), dtype=np.float32) for _ in dataset.data
-                ]
-            }
+            return {"atomic_reprs": [np.ones((2, 4), dtype=np.float32) for _ in dataset.data]}
 
     torch_module = types.ModuleType("torch")
     torch_module.__version__ = "fake-torch"
     torch_state = {"threads": 0, "interop_threads": 0}
     torch_module.set_num_threads = lambda value: torch_state.update(threads=value)
-    torch_module.set_num_interop_threads = lambda value: torch_state.update(
-        interop_threads=value
-    )
+    torch_module.set_num_interop_threads = lambda value: torch_state.update(interop_threads=value)
     torch_module.get_num_threads = lambda: torch_state["threads"]
     torch_module.get_num_interop_threads = lambda: torch_state["interop_threads"]
     torch_module.manual_seed = lambda value: captures.update(torch_seed=value)
@@ -443,8 +423,7 @@ def _fake_unimol_backend(monkeypatch, tmp_path, inference_error=None):
             return "synthetic,record\n"
 
     monkeypatch.setattr(
-        "rerank.benchmarks.benchmark_conformer_timing.importlib.metadata.version",
-        fake_version,
+        "rerank.benchmarks.benchmark_conformer_timing.importlib.metadata.version", fake_version
     )
     monkeypatch.setattr(
         "rerank.benchmarks.benchmark_conformer_timing.importlib.metadata.distribution",
@@ -492,18 +471,14 @@ def test_unimol_013_api_contract_and_normalized_rdkit_version(monkeypatch, tmp_p
     assert metadata["dictionary"]["path"].endswith(REQUIRED_DICTIONARY_BASENAME)
 
 
-def test_unimol_inference_exception_is_not_silently_converted_to_failures(
-    monkeypatch, tmp_path
-):
+def test_unimol_inference_exception_is_not_silently_converted_to_failures(monkeypatch, tmp_path):
     backend, _, _ = _fake_unimol_backend(
         monkeypatch, tmp_path, inference_error=ValueError("sentinel batch failure")
     )
     backend.initialize()
     prepared = backend.preprocess(["CC"], conformer_seed=C1_CONFORMER_SEED)
 
-    with pytest.raises(
-        RuntimeError, match="ValueError: sentinel batch failure"
-    ) as error:
+    with pytest.raises(RuntimeError, match="ValueError: sentinel batch failure") as error:
         backend.infer(prepared)
     assert isinstance(error.value.__cause__, ValueError)
 

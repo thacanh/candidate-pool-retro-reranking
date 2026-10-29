@@ -13,10 +13,7 @@ import rerank.analysis.analyze_conformer_aggregate as aggregate
 def test_aggregate_uses_current_seed_runner_cache_schema():
     assert aggregate.STUDY_CACHE_SCHEMA == 1
     assert aggregate.FEATURE_CACHE_NAME == "official_3d_prior_schema1.pkl"
-    assert (
-        aggregate.VALIDATION_FEATURE_CACHE_NAME
-        == "official_valid_3d_prior_schema1.pkl"
-    )
+    assert aggregate.VALIDATION_FEATURE_CACHE_NAME == "official_valid_3d_prior_schema1.pkl"
 
 
 def _feature_array(seed: int) -> np.ndarray:
@@ -52,9 +49,7 @@ def _feature_blobs(seed: int) -> tuple[dict, dict]:
             ],
             "eval_pwc": [("CCO", candidates)],
             "eval_ground_truths": ["CC"],
-            "eval_metadata": [
-                {"reaction_id": 10, "source_split": "test", "reaction_class": 1}
-            ],
+            "eval_metadata": [{"reaction_id": 10, "source_split": "test", "reaction_class": 1}],
             "eval_features": [array.copy()],
             "audit": {},
         },
@@ -68,9 +63,7 @@ def _feature_blobs(seed: int) -> tuple[dict, dict]:
         "payload": {
             "eval_pwc": [("CCN", candidates)],
             "eval_ground_truths": ["CC"],
-            "eval_metadata": [
-                {"reaction_id": 11, "source_split": "valid", "reaction_class": 1}
-            ],
+            "eval_metadata": [{"reaction_id": 11, "source_split": "valid", "reaction_class": 1}],
             "eval_features": [array.copy()],
         },
         "audit": {},
@@ -116,10 +109,7 @@ def _write_seed(root: Path, conformer_seed: int) -> None:
             "baseline_mrr": 0.25,
         }
         with open(
-            ranking / f"eval_seed{training_seed}.csv",
-            "w",
-            encoding="utf-8",
-            newline="",
+            ranking / f"eval_seed{training_seed}.csv", "w", encoding="utf-8", newline=""
         ) as handle:
             fields = [
                 "reaction_id",
@@ -150,16 +140,9 @@ def _write_seed(root: Path, conformer_seed: int) -> None:
                         "baseline_candidates_json": '["C","CC"]',
                     }
                 )
-    (ranking / "per_seed_metrics.json").write_text(
-        json.dumps(metrics), encoding="utf-8"
-    )
+    (ranking / "per_seed_metrics.json").write_text(json.dumps(metrics), encoding="utf-8")
     (ranking / "manifest.json").write_text(
-        json.dumps(
-            {
-                "feature_mode": "3d+prior",
-                "seeds": list(aggregate.TRAINING_SEEDS),
-            }
-        ),
+        json.dumps({"feature_mode": "3d+prior", "seeds": list(aggregate.TRAINING_SEEDS)}),
         encoding="utf-8",
     )
     (seed_root / "embedding_summary.json").write_text(
@@ -176,16 +159,12 @@ def _write_seed(root: Path, conformer_seed: int) -> None:
         ),
         encoding="utf-8",
     )
-    (seed_root / "embedding_non_ok.csv").write_text(
-        "smiles,status,error\n", encoding="utf-8"
-    )
+    (seed_root / "embedding_non_ok.csv").write_text("smiles,status,error\n", encoding="utf-8")
     result_summary = {
         "conformer_seed": conformer_seed,
         "conformer_label": f"C{conformer_seed - 41}",
     }
-    (seed_root / "result_summary.json").write_text(
-        json.dumps(result_summary), encoding="utf-8"
-    )
+    (seed_root / "result_summary.json").write_text(json.dumps(result_summary), encoding="utf-8")
     manifest = {
         "schema_version": 1,
         "protocol_id": "legacy-cap10-fixed50-v1",
@@ -216,9 +195,7 @@ def _write_seed(root: Path, conformer_seed: int) -> None:
         "manifest_sha256": _sha256(seed_root / "manifest.json"),
         "result_summary_sha256": _sha256(seed_root / "result_summary.json"),
     }
-    (seed_root / "COMPLETED.json").write_text(
-        json.dumps(completed), encoding="utf-8"
-    )
+    (seed_root / "COMPLETED.json").write_text(json.dumps(completed), encoding="utf-8")
 
 
 def _write_shared_2d(root: Path, conformer_root: Path) -> None:
@@ -226,7 +203,9 @@ def _write_shared_2d(root: Path, conformer_root: Path) -> None:
     ranking.mkdir(parents=True)
     metrics = {}
     for training_seed in aggregate.TRAINING_SEEDS:
-        source = conformer_root / "seed_42" / "ranking_legacy_fixed50" / f"eval_seed{training_seed}.csv"
+        source = (
+            conformer_root / "seed_42" / "ranking_legacy_fixed50" / f"eval_seed{training_seed}.csv"
+        )
         with open(source, encoding="utf-8", newline="") as handle:
             rows = list(csv.DictReader(handle))
             fields = list(rows[0])
@@ -248,10 +227,7 @@ def _write_shared_2d(root: Path, conformer_root: Path) -> None:
     )
     retained = sorted(path for path in root.rglob("*") if path.is_file())
     (root / "checksums.sha256").write_text(
-        "".join(
-            f"{_sha256(path)}  {path.relative_to(root).as_posix()}\n"
-            for path in retained
-        ),
+        "".join(f"{_sha256(path)}  {path.relative_to(root).as_posix()}\n" for path in retained),
         encoding="utf-8",
     )
     (root / "COMPLETED.json").write_text(
@@ -296,9 +272,7 @@ def test_b1_reports_pairwise_correlations_cv_and_strata():
         "flexible_ge5",
     }
     counts = {row["stratum"]: row["n_unique_pairs"] for row in result["strata"]}
-    assert counts["rigid_0_4"] == (
-        counts["rigid_zero"] + counts["intermediate_1_4"]
-    )
+    assert counts["rigid_0_4"] == (counts["rigid_zero"] + counts["intermediate_1_4"])
 
 
 def test_b3_averages_only_pair_level_scalar_columns():
@@ -351,11 +325,7 @@ def test_full_synthetic_aggregate_and_checksum_failure(tmp_path):
     _write_shared_2d(shared_2d, conformer_root)
     output = tmp_path / "aggregate"
     result = aggregate.run_aggregate(
-        conformer_root,
-        output,
-        shared_2d_root=shared_2d,
-        n_bootstrap=100,
-        bootstrap_seed=2026,
+        conformer_root, output, shared_2d_root=shared_2d, n_bootstrap=100, bootstrap_seed=2026
     )
     assert result["pairing_gate"]["ranking_reaction_and_2d_alignment"] == "passed"
     with open(output / "b2_5x5_gain_grid.csv", encoding="utf-8", newline="") as handle:

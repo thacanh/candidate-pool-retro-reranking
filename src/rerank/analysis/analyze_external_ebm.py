@@ -32,10 +32,7 @@ PERMUTATION_SEED = 2027
 
 def _verify_record(record: Mapping[str, Any], path: Path) -> None:
     actual = file_fingerprint(path)
-    if (actual["size_bytes"], actual["sha256"]) != (
-        int(record["size_bytes"]),
-        record["sha256"],
-    ):
+    if (actual["size_bytes"], actual["sha256"]) != (int(record["size_bytes"]), record["sha256"]):
         raise RuntimeError(f"Frozen fingerprint differs after relocation: {path}")
 
 
@@ -105,15 +102,14 @@ def align_predictions(reference: pd.DataFrame, external: pd.DataFrame) -> pd.Dat
     ):
         raise ValueError("D5 changed candidate counts.")
     if not np.array_equal(
-        aligned["baseline_rank"].to_numpy(dtype=int),
-        aligned["prior_true_rank"].to_numpy(dtype=int),
+        aligned["baseline_rank"].to_numpy(dtype=int), aligned["prior_true_rank"].to_numpy(dtype=int)
     ):
         raise ValueError("D5 candidate-prior ranks differ from the frozen primary reference.")
     return aligned
 
 
 def build_paired_matrices(
-    aligned_by_seed: Mapping[int, pd.DataFrame],
+    aligned_by_seed: Mapping[int, pd.DataFrame]
 ) -> tuple[dict[str, np.ndarray], pd.DataFrame]:
     top1_rows: list[np.ndarray] = []
     mrr_rows: list[np.ndarray] = []
@@ -152,10 +148,7 @@ def build_paired_matrices(
                 "rank_unchanged": int(np.sum(rank_delta == 0)),
             }
         )
-    return {
-        "top1": np.stack(top1_rows),
-        "mrr": np.stack(mrr_rows),
-    }, pd.DataFrame(summaries)
+    return {"top1": np.stack(top1_rows), "mrr": np.stack(mrr_rows)}, pd.DataFrame(summaries)
 
 
 def _aggregate_metric(
@@ -167,10 +160,7 @@ def _aggregate_metric(
     permutation_rng: np.random.Generator,
 ) -> dict[str, Any]:
     point, low, high = clustered_bootstrap(
-        differences,
-        clusters,
-        BOOTSTRAP_REPLICATES,
-        bootstrap_rng,
+        differences, clusters, BOOTSTRAP_REPLICATES, bootstrap_rng
     )
     per_seed = differences.mean(axis=1)
     coverage = EXPECTED_COVERED_REACTIONS / EXPECTED_OFFICIAL_TEST_REACTIONS
@@ -180,14 +170,10 @@ def _aggregate_metric(
         "delta_external_minus_prior": point,
         "ci95": [low, high],
         "paired_cluster_sign_flip_p": paired_cluster_permutation_test(
-            differences,
-            clusters,
-            PERMUTATION_REPLICATES,
-            permutation_rng,
+            differences, clusters, PERMUTATION_REPLICATES, permutation_rng
         ),
         "per_seed_deltas": {
-            str(seed): float(value)
-            for seed, value in zip(PUBLISHED_EBM_SEEDS, per_seed)
+            str(seed): float(value) for seed, value in zip(PUBLISHED_EBM_SEEDS, per_seed)
         },
         "positive_seed_count": int(np.sum(per_seed > 0)),
         "negative_seed_count": int(np.sum(per_seed < 0)),
@@ -230,8 +216,7 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
         raise PermissionError("D5 analysis requires a valid post-freeze test manifest.")
     if (
         primary_manifest.get("protocol_id") != "cap10-tuned-v1"
-        or primary_manifest.get("test_partition_loaded_only_after_selection_freeze")
-        is not True
+        or primary_manifest.get("test_partition_loaded_only_after_selection_freeze") is not True
     ):
         raise PermissionError("D5 analysis requires the frozen primary test manifest.")
     d5_cache = d5_manifest["train_test_cache"]
@@ -246,15 +231,9 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
     reference = _load_reference(primary_prediction)
     primary_seed_metrics = primary_manifest["per_seed_metrics"]["baseline"]["42"]
     if not np.isclose(
-        reference["reranked_hit@1"].mean(),
-        primary_seed_metrics["top1"],
-        rtol=0.0,
-        atol=1e-12,
+        reference["reranked_hit@1"].mean(), primary_seed_metrics["top1"], rtol=0.0, atol=1e-12
     ) or not np.isclose(
-        reference["reranked_rr"].mean(),
-        primary_seed_metrics["mrr"],
-        rtol=0.0,
-        atol=1e-12,
+        reference["reranked_rr"].mean(), primary_seed_metrics["mrr"], rtol=0.0, atol=1e-12
     ):
         raise RuntimeError("Primary prediction is not the frozen seed-42 baseline file.")
 
@@ -309,9 +288,7 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
         "rank_degraded",
         "rank_unchanged",
     ]
-    rank_shift_totals = {
-        column: int(per_seed[column].sum()) for column in shift_columns
-    }
+    rank_shift_totals = {column: int(per_seed[column].sum()) for column in shift_columns}
     rank_shift_totals["top1_net_promotions"] = (
         rank_shift_totals["top1_promoted"] - rank_shift_totals["top1_degraded"]
     )

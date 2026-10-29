@@ -24,13 +24,11 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory(prefix="chemformer_f1_smoke_") as directory:
         path = Path(directory) / "smoke.csv"
-        pd.DataFrame({"reactants": ["C"], "products": ["C"], "set": ["test"]}).to_csv(path, sep="\t", index=False)
+        pd.DataFrame({"reactants": ["C"], "products": ["C"], "set": ["test"]}).to_csv(
+            path, sep="\t", index=False
+        )
         config = build_config(
-            path,
-            Path(args.checkpoint).resolve(),
-            Path(args.vocabulary).resolve(),
-            args.device,
-            1,
+            path, Path(args.checkpoint).resolve(), Path(args.vocabulary).resolve(), args.device, 1
         )
         model = Chemformer(config)
         model.datamodule._num_workers = 0

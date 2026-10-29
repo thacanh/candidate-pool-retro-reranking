@@ -128,9 +128,7 @@ def resolve_runtime(
         "embedding_threads": threads,
         "embedding_batch_size": batch_size,
         "embedding_threads_source": "explicit" if embedding_threads else "auto",
-        "embedding_batch_size_source": (
-            "explicit" if embedding_batch_size else "auto"
-        ),
+        "embedding_batch_size_source": ("explicit" if embedding_batch_size else "auto"),
         "ranking_device": resolved_device,
         "gpu": gpu,
         "cuda_oom_policy": "recursively halve only the failing inference batch",
@@ -154,9 +152,7 @@ def build_layout(output_root: str | Path, seed: int) -> dict[str, Path]:
         "scratch": root / "scratch",
         "atom_cache": root / "scratch" / f"atom_embeddings_seed_{seed}.sqlite",
         "features": root / "features",
-        "feature_cache": root
-        / "features"
-        / f"official_3d_prior_schema{STUDY_CACHE_SCHEMA}.pkl",
+        "feature_cache": root / "features" / f"official_3d_prior_schema{STUDY_CACHE_SCHEMA}.pkl",
         "validation_features": root
         / "features"
         / f"official_valid_3d_prior_schema{STUDY_CACHE_SCHEMA}.pkl",
@@ -192,10 +188,7 @@ def _sha256(path: str | Path, chunk_size: int = 1024 * 1024) -> str:
 def _git_commit(repo_root: Path) -> str:
     try:
         return subprocess.check_output(
-            ["git", "rev-parse", "HEAD"],
-            cwd=repo_root,
-            text=True,
-            stderr=subprocess.DEVNULL,
+            ["git", "rev-parse", "HEAD"], cwd=repo_root, text=True, stderr=subprocess.DEVNULL
         ).strip()
     except Exception:
         return "unknown"
@@ -239,20 +232,14 @@ def _capture_environment(runtime: Optional[dict] = None) -> dict:
         "logical_cpu_count": os.cpu_count(),
         "package_versions": versions,
         "distribution_record_sha256": records,
-        "installed_snapshot_sha256": hashlib.sha256(
-            "\n".join(freeze).encode("utf-8")
-        ).hexdigest(),
+        "installed_snapshot_sha256": hashlib.sha256("\n".join(freeze).encode("utf-8")).hexdigest(),
         "installed_snapshot": freeze,
         "runtime_selection": runtime,
     }
 
 
 def validate_inputs(
-    source_csv: Path,
-    metadata_csv: Path,
-    candidate_jsonl: Path,
-    checkpoint: Path,
-    dictionary: Path,
+    source_csv: Path, metadata_csv: Path, candidate_jsonl: Path, checkpoint: Path, dictionary: Path
 ) -> dict:
     assets = validate_weight_paths(checkpoint, dictionary)
     inputs = {}
@@ -266,9 +253,7 @@ def validate_inputs(
         fingerprint = file_fingerprint(path)
         expected = EXPECTED_INPUT_HASHES[key]
         if fingerprint["sha256"] != expected:
-            raise RuntimeError(
-                f"{key} SHA-256 mismatch: {fingerprint['sha256']} != {expected}."
-            )
+            raise RuntimeError(f"{key} SHA-256 mismatch: {fingerprint['sha256']} != {expected}.")
         inputs[key] = fingerprint
     return {**inputs, **assets}
 
@@ -293,9 +278,7 @@ def acquire_seed_lock(lock_path: Path, seed: int) -> None:
         if same_host and not _is_process_alive(int(previous.get("pid", -1))):
             lock_path.unlink()
         else:
-            raise RuntimeError(
-                f"Seed {seed} already has a live or unverified lock: {lock_path}."
-            )
+            raise RuntimeError(f"Seed {seed} already has a live or unverified lock: {lock_path}.")
     descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
     try:
         payload = json.dumps(
@@ -317,9 +300,7 @@ def _run_logged(command: list[str], log_path: Path, repo_root: Path) -> None:
     env = os.environ.copy()
     source_path = str((repo_root / "src").resolve())
     env["PYTHONPATH"] = (
-        source_path
-        if not env.get("PYTHONPATH")
-        else source_path + os.pathsep + env["PYTHONPATH"]
+        source_path if not env.get("PYTHONPATH") else source_path + os.pathsep + env["PYTHONPATH"]
     )
     with open(log_path, "a", encoding="utf-8", errors="replace") as log_handle:
         log_handle.write("\n$ " + subprocess.list2cmdline(command) + "\n")
@@ -341,9 +322,7 @@ def _run_logged(command: list[str], log_path: Path, repo_root: Path) -> None:
             log_handle.write(line)
         return_code = process.wait()
     if return_code:
-        raise RuntimeError(
-            f"Command failed with exit code {return_code}; see {log_path}."
-        )
+        raise RuntimeError(f"Command failed with exit code {return_code}; see {log_path}.")
 
 
 def _iter_feature_arrays(payload: dict) -> Iterable[np.ndarray]:
@@ -360,9 +339,7 @@ def retained_results_exist(layout: dict[str, Path]) -> bool:
         layout["ranking"] / "per_seed_metrics.json",
         layout["ranking"] / "manifest.json",
     ]
-    required.extend(
-        layout["ranking"] / f"eval_seed{seed}.csv" for seed in TRAINING_SEEDS
-    )
+    required.extend(layout["ranking"] / f"eval_seed{seed}.csv" for seed in TRAINING_SEEDS)
     return all(path.is_file() for path in required)
 
 
@@ -388,9 +365,7 @@ def validate_retained_results(layout: dict[str, Path]) -> dict:
     }
     for key, expected in expected_audit.items():
         if int(audit.get(key, -1)) != expected:
-            raise RuntimeError(
-                f"Feature-cache audit {key}={audit.get(key)}; expected {expected}."
-            )
+            raise RuntimeError(f"Feature-cache audit {key}={audit.get(key)}; expected {expected}.")
     feature_rows = 0
     for array in _iter_feature_arrays(payload):
         if array.ndim != 2 or array.shape[1] != EXPECTED_FEATURE_DIM:
@@ -437,9 +412,7 @@ def validate_retained_results(layout: dict[str, Path]) -> dict:
         for name in metric_names:
             value = float(row[name])
             if not math.isfinite(value) or not 0.0 <= value <= 1.0:
-                raise RuntimeError(
-                    f"Invalid {name}={value} for training seed {training_seed}."
-                )
+                raise RuntimeError(f"Invalid {name}={value} for training seed {training_seed}.")
         eval_path = layout["ranking"] / f"eval_seed{training_seed}.csv"
         if not eval_path.is_file():
             raise RuntimeError(f"Missing reaction predictions: {eval_path}")
@@ -515,10 +488,7 @@ def _write_checksums(layout: dict[str, Path]) -> dict[str, str]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seed", type=int, required=True)
-    parser.add_argument(
-        "--output-root",
-        default="outputs/jcheminform_revision/conformers",
-    )
+    parser.add_argument("--output-root", default="outputs/jcheminform_revision/conformers")
     parser.add_argument("--source-csv", default="data/uspto_smiles.csv")
     parser.add_argument("--metadata-csv", default="data/uspto_reaction_metadata.csv")
     parser.add_argument("--candidate-jsonl", default="outputs/rerank_dataset.jsonl")
@@ -537,10 +507,7 @@ def parse_args() -> argparse.Namespace:
         help="Zero selects a conservative batch from device VRAM.",
     )
     parser.add_argument(
-        "--embedding-threads",
-        type=int,
-        default=0,
-        help="Zero selects up to 16 physical CPU cores.",
+        "--embedding-threads", type=int, default=0, help="Zero selects up to 16 physical CPU cores."
     )
     parser.add_argument("--min-free-gib", type=float, default=20.0)
     parser.add_argument(
@@ -567,12 +534,8 @@ def main() -> None:
     source_csv = Path(args.source_csv).resolve()
     metadata_csv = Path(args.metadata_csv).resolve()
     candidate_jsonl = Path(args.candidate_jsonl).resolve()
-    inputs = validate_inputs(
-        source_csv, metadata_csv, candidate_jsonl, checkpoint, dictionary
-    )
-    runtime = resolve_runtime(
-        args.device, args.embedding_batch_size, args.embedding_threads
-    )
+    inputs = validate_inputs(source_csv, metadata_csv, candidate_jsonl, checkpoint, dictionary)
+    runtime = resolve_runtime(args.device, args.embedding_batch_size, args.embedding_threads)
     if layout["completed"].is_file():
         validation = validate_retained_results(layout)
         completed = json.loads(layout["completed"].read_text(encoding="utf-8"))
@@ -698,26 +661,15 @@ def main() -> None:
     _write_json(layout["run_status"], status)
     try:
         if not retained_ready and (
-            not layout["embedding_summary"].exists()
-            or not layout["atom_cache"].exists()
+            not layout["embedding_summary"].exists() or not layout["atom_cache"].exists()
         ):
-            _run_logged(
-                builder_command,
-                layout["logs"] / "01_embedding.log",
-                repo_root,
-            )
+            _run_logged(builder_command, layout["logs"] / "01_embedding.log", repo_root)
         status["stage"] = "feature_and_ranking"
         _write_json(layout["run_status"], status)
         if not retained_ready:
+            _run_logged(ranking_command, layout["logs"] / "02_feature_and_ranking.log", repo_root)
             _run_logged(
-                ranking_command,
-                layout["logs"] / "02_feature_and_ranking.log",
-                repo_root,
-            )
-            _run_logged(
-                validation_command,
-                layout["logs"] / "03_validation_features.log",
-                repo_root,
+                validation_command, layout["logs"] / "03_validation_features.log", repo_root
             )
         status["stage"] = "validation"
         _write_json(layout["run_status"], status)
@@ -735,9 +687,13 @@ def main() -> None:
             ),
             "training_seeds": list(TRAINING_SEEDS),
             "top1_mean": float(np.mean([metrics[str(value)]["top1"] for value in TRAINING_SEEDS])),
-            "top1_std": float(np.std([metrics[str(value)]["top1"] for value in TRAINING_SEEDS], ddof=1)),
+            "top1_std": float(
+                np.std([metrics[str(value)]["top1"] for value in TRAINING_SEEDS], ddof=1)
+            ),
             "mrr_mean": float(np.mean([metrics[str(value)]["mrr"] for value in TRAINING_SEEDS])),
-            "mrr_std": float(np.std([metrics[str(value)]["mrr"] for value in TRAINING_SEEDS], ddof=1)),
+            "mrr_std": float(
+                np.std([metrics[str(value)]["mrr"] for value in TRAINING_SEEDS], ddof=1)
+            ),
             "per_seed_metrics": metrics,
             "reaction_prediction_rows_per_seed": EXPECTED_TEST_COVERED,
         }

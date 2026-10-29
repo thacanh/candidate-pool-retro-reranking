@@ -1,18 +1,4 @@
-"""
-MODULE 6 — Pairwise Ranking Loss
-==================================
-Implements the BPR (Bayesian Personalised Ranking) pairwise loss:
-
-    L = -log(sigmoid(S_pos - S_neg))
-
-Where:
-    S_pos = score(correct candidate)
-    S_neg = score(incorrect candidate)
-
-FIX: Replaced any BCE/MSE objective with proper pairwise ranking loss.
-     This is the ROOT CAUSE fix — without it Top-1 degrades from 0.79 → 0.14.
-"""
-
+"""Pairwise logistic ranking losses for positive and negative candidates."""
 from __future__ import annotations
 
 import torch
@@ -21,10 +7,7 @@ import torch.nn.functional as F
 
 
 def pairwise_ranking_loss(
-    score_pos: torch.Tensor,
-    score_neg: torch.Tensor,
-    margin: float = 0.0,
-    reduction: str = "mean",
+    score_pos: torch.Tensor, score_neg: torch.Tensor, margin: float = 0.0, reduction: str = "mean"
 ) -> torch.Tensor:
     """
     Pairwise BPR ranking loss.
@@ -72,9 +55,5 @@ class PairwiseRankingLoss(nn.Module):
         self.margin = margin
         self.reduction = reduction
 
-    def forward(
-        self,
-        score_pos: torch.Tensor,
-        score_neg: torch.Tensor,
-    ) -> torch.Tensor:
+    def forward(self, score_pos: torch.Tensor, score_neg: torch.Tensor) -> torch.Tensor:
         return pairwise_ranking_loss(score_pos, score_neg, self.margin, self.reduction)

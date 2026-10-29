@@ -11,25 +11,42 @@ def test_all_four_schema_cells_and_arms() -> None:
     historical = np.arange(14, dtype=np.float32).reshape(2, 7)
     aiz = np.column_stack((historical, np.ones(2), np.zeros(2))).astype(np.float32)
     for arm, historical_dim, aiz_dim in (("baseline", 4, 6), ("augmented", 7, 9)):
-        assert training_arm_features(historical, training_pool="historical_cap10",
-                                     evaluation_pool="historical_cap10", arm=arm).shape == (2, historical_dim)
-        assert training_arm_features(aiz, training_pool="historical_cap10",
-                                     evaluation_pool="aizynthfinder_only", arm=arm).shape == (2, historical_dim)
-        assert training_arm_features(historical, training_pool="aizynthfinder_only",
-                                     evaluation_pool="historical_cap10", arm=arm).shape == (2, aiz_dim)
-        assert training_arm_features(aiz, training_pool="aizynthfinder_only",
-                                     evaluation_pool="aizynthfinder_only", arm=arm).shape == (2, aiz_dim)
+        assert training_arm_features(
+            historical,
+            training_pool="historical_cap10",
+            evaluation_pool="historical_cap10",
+            arm=arm,
+        ).shape == (2, historical_dim)
+        assert training_arm_features(
+            aiz, training_pool="historical_cap10", evaluation_pool="aizynthfinder_only", arm=arm
+        ).shape == (2, historical_dim)
+        assert training_arm_features(
+            historical,
+            training_pool="aizynthfinder_only",
+            evaluation_pool="historical_cap10",
+            arm=arm,
+        ).shape == (2, aiz_dim)
+        assert training_arm_features(
+            aiz, training_pool="aizynthfinder_only", evaluation_pool="aizynthfinder_only", arm=arm
+        ).shape == (2, aiz_dim)
 
 
 def test_source_indicator_and_shape_gates() -> None:
     bad = np.zeros((2, 9), dtype=np.float32)
     with pytest.raises(ValueError, match="source indicators"):
-        training_arm_features(bad, training_pool="historical_cap10",
-                              evaluation_pool="aizynthfinder_only", arm="baseline")
+        training_arm_features(
+            bad,
+            training_pool="historical_cap10",
+            evaluation_pool="aizynthfinder_only",
+            arm="baseline",
+        )
     with pytest.raises(ValueError, match="finite"):
-        training_arm_features(np.full((2, 7), np.nan, dtype=np.float32),
-                              training_pool="aizynthfinder_only",
-                              evaluation_pool="historical_cap10", arm="augmented")
+        training_arm_features(
+            np.full((2, 7), np.nan, dtype=np.float32),
+            training_pool="aizynthfinder_only",
+            evaluation_pool="historical_cap10",
+            arm="augmented",
+        )
 
 
 def test_clipping_audit_is_read_only_and_flags_prior_boundary() -> None:
@@ -59,8 +76,12 @@ def test_diagonal_tie_exception_is_exact_input_only() -> None:
 
     mixed = np.vstack((np.array([[-1, 0, 0, 0]], dtype=np.float32), same))
     rank, audit = _checked_diagonal_rank(
-        3, 2, mixed, np.array([False, False, True]),
-        np.array([1.0, 0.2, 0.2]), np.array([1.0, 0.2000004, 0.2])
+        3,
+        2,
+        mixed,
+        np.array([False, False, True]),
+        np.array([1.0, 0.2, 0.2]),
+        np.array([1.0, 0.2000004, 0.2]),
     )
     assert rank == 2 and audit["indistinguishable_candidate_count"] == 2
 

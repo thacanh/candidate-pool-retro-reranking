@@ -33,7 +33,10 @@ def main() -> None:
     plan = root / "docs" / "analysis_plan.md"
     commit = subprocess.run(
         ["git", "log", "-1", "--format=%H", "--", "docs/analysis_plan.md"],
-        cwd=root, check=True, capture_output=True, text=True,
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
     ).stdout.strip()
     record = {
         "schema_version": 1,

@@ -36,9 +36,13 @@ def historical_g1_ranks(path: str | Path, ids: list[int]) -> tuple[np.ndarray, n
     for arm in ("baseline", "augmented"):
         by_seed = []
         for seed in SEEDS:
-            with (Path(path) / f"{arm}_seed_{seed}.csv").open(encoding="utf-8", newline="") as handle:
-                rows = {int(row["reaction_id"]): int(row["reranked_rank"])
-                        for row in csv.DictReader(handle)}
+            with (Path(path) / f"{arm}_seed_{seed}.csv").open(
+                encoding="utf-8", newline=""
+            ) as handle:
+                rows = {
+                    int(row["reaction_id"]): int(row["reranked_rank"])
+                    for row in csv.DictReader(handle)
+                }
             if not set(ids).issubset(rows):
                 raise ValueError("Historical G1 prediction missing a common reaction.")
             by_seed.append([rows[rid] for rid in ids])
@@ -58,8 +62,12 @@ def k1_ranks(path: str | Path, ids: list[int]) -> tuple[np.ndarray, np.ndarray]:
         raise ValueError("Expanded pool does not cover the common cohort.")
     outputs = []
     for arm in ("baseline", "augmented"):
-        outputs.append(np.asarray([[int(rows[rid][f"{arm}_rank_seed_{seed}"])
-                                    for rid in ids] for seed in SEEDS], dtype=np.int16))
+        outputs.append(
+            np.asarray(
+                [[int(rows[rid][f"{arm}_rank_seed_{seed}"]) for rid in ids] for seed in SEEDS],
+                dtype=np.int16,
+            )
+        )
     return outputs[0], outputs[1]
 
 
@@ -71,7 +79,7 @@ def _scores(ranks: np.ndarray, metric: str) -> np.ndarray:
 
 
 def _independent_crossed_interval(
-    old: np.ndarray, new: np.ndarray, clusters: np.ndarray, draws: int, seed: int,
+    old: np.ndarray, new: np.ndarray, clusters: np.ndarray, draws: int, seed: int
 ) -> tuple[float, float]:
     labels = np.asarray(clusters, dtype=object)
     groups = [np.flatnonzero(labels == value) for value in dict.fromkeys(labels.tolist())]
@@ -82,8 +90,9 @@ def _independent_crossed_interval(
         rows = np.concatenate([groups[item] for item in picked])
         old_seeds = rng.integers(0, old.shape[0], size=old.shape[0])
         new_seeds = rng.integers(0, new.shape[0], size=new.shape[0])
-        estimates[index] = float(new[np.ix_(new_seeds, rows)].mean()
-                                 - old[np.ix_(old_seeds, rows)].mean())
+        estimates[index] = float(
+            new[np.ix_(new_seeds, rows)].mean() - old[np.ix_(old_seeds, rows)].mean()
+        )
     low, high = np.percentile(estimates, [2.5, 97.5])
     return float(low), float(high)
 
@@ -91,7 +100,10 @@ def _independent_crossed_interval(
 def transfer_summary(
     historical: tuple[np.ndarray, np.ndarray],
     expanded: dict[str, tuple[np.ndarray, np.ndarray]],
-    clusters: np.ndarray, *, draws: int = 10_000, seed: int = 2180,
+    clusters: np.ndarray,
+    *,
+    draws: int = 10_000,
+    seed: int = 2180,
 ) -> list[dict]:
     rows = []
     for pool_index, (pool, arms) in enumerate(expanded.items()):
@@ -101,22 +113,26 @@ def transfer_summary(
             if old_effect.shape != new_effect.shape or old_effect.shape[1] != len(clusters):
                 raise ValueError("Transfer arrays are not matched on the frozen common cohort.")
             loss = new_effect - old_effect
-            p_ci = product_cluster_bootstrap(loss, clusters, draws,
-                                             seed + pool_index * 10 + metric_index)
-            crossed_low, crossed_high = _independent_crossed_interval(
-                old_effect, new_effect, clusters, draws,
-                seed + 100 + pool_index * 10 + metric_index,
+            p_ci = product_cluster_bootstrap(
+                loss, clusters, draws, seed + pool_index * 10 + metric_index
             )
-            rows.append({
-                "pool": pool, "metric": metric, "common_reactions": len(clusters),
-                "historical_effect": float(old_effect.mean()),
-                "expanded_effect": float(new_effect.mean()),
-                "transfer_loss": float(loss.mean()),
-                "product_ci95_low": p_ci["ci95_low"],
-                "product_ci95_high": p_ci["ci95_high"],
-                "crossed_ci95_low": crossed_low,
-                "crossed_ci95_high": crossed_high,
-            })
+            crossed_low, crossed_high = _independent_crossed_interval(
+                old_effect, new_effect, clusters, draws, seed + 100 + pool_index * 10 + metric_index
+            )
+            rows.append(
+                {
+                    "pool": pool,
+                    "metric": metric,
+                    "common_reactions": len(clusters),
+                    "historical_effect": float(old_effect.mean()),
+                    "expanded_effect": float(new_effect.mean()),
+                    "transfer_loss": float(loss.mean()),
+                    "product_ci95_low": p_ci["ci95_low"],
+                    "product_ci95_high": p_ci["ci95_high"],
+                    "crossed_ci95_low": crossed_low,
+                    "crossed_ci95_high": crossed_high,
+                }
+            )
     return rows
 
 

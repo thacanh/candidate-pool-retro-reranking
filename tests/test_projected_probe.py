@@ -6,9 +6,16 @@ from rerank.experiments.run_projected_embedding_probe import (
     collect_existing_prediction_metrics,
 )
 from rerank.projected_probe import (
-    BASE_DIM, HEAD_INPUT_DIM, POOLED_DIM, RAW_INPUT_DIM, ProjectedRanker,
-    expected_parameter_count, fit_pair_normalizer, make_pair_indices,
-    materialize_rows, selected_base_features,
+    BASE_DIM,
+    HEAD_INPUT_DIM,
+    POOLED_DIM,
+    RAW_INPUT_DIM,
+    ProjectedRanker,
+    expected_parameter_count,
+    fit_pair_normalizer,
+    make_pair_indices,
+    materialize_rows,
+    selected_base_features,
 )
 
 
@@ -78,15 +85,22 @@ def _write_prediction_csv(path, reaction_ids):
         writer = csv.DictWriter(handle, fieldnames=fields)
         writer.writeheader()
         for index, reaction_id in enumerate(reaction_ids):
-            writer.writerow({
-                "reaction_id": reaction_id, "source_split": "test",
-                "baseline_hit@1": index, "reranked_hit@1": 1,
-                "baseline_hit@3": 1, "reranked_hit@3": 1,
-                "baseline_hit@5": 1, "reranked_hit@5": 1,
-                "baseline_hit@10": 1, "reranked_hit@10": 1,
-                "baseline_rr": 0.5 + 0.5 * index,
-                "reranked_rr": 1.0,
-            })
+            writer.writerow(
+                {
+                    "reaction_id": reaction_id,
+                    "source_split": "test",
+                    "baseline_hit@1": index,
+                    "reranked_hit@1": 1,
+                    "baseline_hit@3": 1,
+                    "reranked_hit@3": 1,
+                    "baseline_hit@5": 1,
+                    "reranked_hit@5": 1,
+                    "baseline_hit@10": 1,
+                    "reranked_hit@10": 1,
+                    "baseline_rr": 0.5 + 0.5 * index,
+                    "reranked_rr": 1.0,
+                }
+            )
 
 
 def test_complete_prediction_csvs_recover_metrics_without_rescoring(tmp_path):

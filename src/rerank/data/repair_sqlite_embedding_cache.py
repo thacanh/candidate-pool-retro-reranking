@@ -29,9 +29,7 @@ def repair(primary: str | Path, output: str | Path, required: set[str]) -> dict:
     stored_keys = {row[0] for row in source.execute("SELECT smiles FROM embeddings")}
     lookup_failures = set()
     for index, key in enumerate(required, start=1):
-        if source.execute(
-            "SELECT 1 FROM embeddings WHERE smiles=?", (key,)
-        ).fetchone() is None:
+        if source.execute("SELECT 1 FROM embeddings WHERE smiles=?", (key,)).fetchone() is None:
             lookup_failures.add(key)
         if index % 25_000 == 0:
             print(
@@ -41,10 +39,7 @@ def repair(primary: str | Path, output: str | Path, required: set[str]) -> dict:
             )
     repairable = lookup_failures.intersection(stored_keys)
     truly_missing = lookup_failures.difference(stored_keys)
-    print(
-        f"Repairable rows={len(repairable):,}; truly missing={len(truly_missing):,}",
-        flush=True,
-    )
+    print(f"Repairable rows={len(repairable):,}; truly missing={len(truly_missing):,}", flush=True)
 
     target = sqlite3.connect(temporary)
     target.execute("PRAGMA journal_mode=DELETE")
@@ -67,8 +62,7 @@ def repair(primary: str | Path, output: str | Path, required: set[str]) -> dict:
         batch.append((key, n_rows, n_cols, data))
         if len(batch) >= 1_000:
             target.executemany(
-                "INSERT INTO embeddings(smiles,n_rows,n_cols,data) VALUES(?,?,?,?)",
-                batch,
+                "INSERT INTO embeddings(smiles,n_rows,n_cols,data) VALUES(?,?,?,?)", batch
             )
             inserted += len(batch)
             batch.clear()
@@ -80,9 +74,7 @@ def repair(primary: str | Path, output: str | Path, required: set[str]) -> dict:
         )
         inserted += len(batch)
     if inserted != len(repairable):
-        raise RuntimeError(
-            f"Repair scan copied {inserted} rows, expected {len(repairable)}."
-        )
+        raise RuntimeError(f"Repair scan copied {inserted} rows, expected {len(repairable)}.")
     metadata = {
         "complete": 1,
         "required_keys": len(required),
@@ -107,9 +99,7 @@ def repair(primary: str | Path, output: str | Path, required: set[str]) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--primary", default="outputs/study_cache/study_atom_embeddings.sqlite"
-    )
+    parser.add_argument("--primary", default="outputs/study_cache/study_atom_embeddings.sqlite")
     parser.add_argument(
         "--feature-cache", default="outputs/study_cache/official_2d_prior_schema1.pkl"
     )

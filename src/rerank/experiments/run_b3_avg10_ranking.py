@@ -75,10 +75,7 @@ def _load_pickle(path: str | Path):
 
 def _candidate_identity(candidates) -> list[tuple[str, float]]:
     return [
-        (
-            str(item.get("canonical_smiles", item.get("smiles", ""))),
-            float(item["prior"]),
-        )
+        (str(item.get("canonical_smiles", item.get("smiles", ""))), float(item["prior"]))
         for item in candidates
     ]
 
@@ -93,9 +90,7 @@ def _assert_baseline_columns(left, right, label: str) -> None:
 
 
 def assert_selection_pairing(primary: Mapping, b3: Mapping) -> dict:
-    if b3.get("representation_provenance", {}).get("kind") != (
-        "multi_conformer_scalar_average"
-    ):
+    if b3.get("representation_provenance", {}).get("kind") != ("multi_conformer_scalar_average"):
         raise RuntimeError("B3 selection bundle lacks multi-conformer provenance.")
     primary_train = primary["train_products"]
     b3_train = b3["train_products"]
@@ -196,9 +191,7 @@ def run_prepare(args) -> None:
             "encoder_control_has_conformer": True,
             "conformer_seed": None,
             "conformer_seeds": list(CONFORMER_SEEDS),
-            "aggregation": (
-                "arithmetic mean of each pair-level scalar after fragment handling"
-            ),
+            "aggregation": ("arithmetic mean of each pair-level scalar after fragment handling"),
             "atom_embeddings_averaged": False,
             "source_protocol_id": FEATURE_PROTOCOL_ID,
         },
@@ -211,9 +204,7 @@ def run_prepare(args) -> None:
         "audit": {
             "train": main.get("audit"),
             "validation": validation_blob.get("audit"),
-            "test_fields_discarded": sorted(
-                key for key in main if key.startswith("eval_")
-            ),
+            "test_fields_discarded": sorted(key for key in main if key.startswith("eval_")),
         },
         "input_fingerprints": {
             "retained_train_test_cache": file_fingerprint(args.train_test_cache),
@@ -351,9 +342,7 @@ def run_freeze(args) -> None:
     bundle = load_selection_bundle(args.b3_selection_bundle)
     root = Path(args.output_root).resolve()
     bundle_sha = "sha256:" + file_sha256(args.b3_selection_bundle)
-    trials = {
-        str(seed): _validate_trial(root, seed, config, bundle_sha) for seed in SEEDS
-    }
+    trials = {str(seed): _validate_trial(root, seed, config, bundle_sha) for seed in SEEDS}
     record = {
         "record_kind": "b3_avg10_selection_freeze",
         "protocol_id": PROTOCOL_ID,
@@ -365,8 +354,9 @@ def run_freeze(args) -> None:
         "primary_selected_config_fingerprint": config_fingerprint(config),
         "prior_transform": primary["selected_prior_transform"],
         "b3_selection_bundle": file_fingerprint(args.b3_selection_bundle),
-        "retained_b3_train_test_cache_sha256": bundle["input_fingerprints"]
-        ["retained_train_test_cache"]["sha256"],
+        "retained_b3_train_test_cache_sha256": bundle["input_fingerprints"][
+            "retained_train_test_cache"
+        ]["sha256"],
         "representation_provenance": bundle["representation_provenance"],
         "selected_b3": {"trials": trials},
         "seeds": list(SEEDS),
@@ -420,12 +410,8 @@ def _metric_summary(b3: Mapping, primary_manifest: Mapping) -> dict:
     for metric in ("top1", "top3", "top5", "top10", "mrr"):
         values = {
             "b3": np.asarray([b3[str(seed)][metric] for seed in SEEDS]),
-            "single": np.asarray(
-                [primary_aug[str(seed)][metric] for seed in SEEDS]
-            ),
-            "base": np.asarray(
-                [primary_base[str(seed)][metric] for seed in SEEDS]
-            ),
+            "single": np.asarray([primary_aug[str(seed)][metric] for seed in SEEDS]),
+            "base": np.asarray([primary_base[str(seed)][metric] for seed in SEEDS]),
         }
         for label, source in (
             ("b3_avg10", values["b3"]),
@@ -443,9 +429,7 @@ def _metric_summary(b3: Mapping, primary_manifest: Mapping) -> dict:
             result[label][metric] = {
                 "mean": float(np.mean(delta)),
                 "sample_std": float(np.std(delta, ddof=1)),
-                "per_seed": {
-                    str(seed): float(value) for seed, value in zip(SEEDS, delta)
-                },
+                "per_seed": {str(seed): float(value) for seed, value in zip(SEEDS, delta)},
             }
     return result
 
@@ -460,8 +444,7 @@ def run_evaluate(args) -> None:
         args.b3_train_test_cache, freeze["retained_b3_train_test_cache_sha256"]
     )
     primary_payload = _load_test_payload(
-        args.primary_train_test_cache,
-        primary_freeze["retained_train_test_cache_sha256"],
+        args.primary_train_test_cache, primary_freeze["retained_train_test_cache_sha256"]
     )
     pairing = assert_test_pairing(primary_payload, b3_payload)
     result_dir = require_clean_evaluation_result_dir(args.result_dir)
@@ -476,14 +459,10 @@ def run_evaluate(args) -> None:
         result_dir / "predictions",
         device,
     )
-    primary_manifest = json.loads(
-        Path(args.primary_test_manifest).read_text(encoding="utf-8")
-    )
+    primary_manifest = json.loads(Path(args.primary_test_manifest).read_text(encoding="utf-8"))
     if (
-        primary_manifest.get("selection_fingerprint")
-        != primary_freeze["selection_fingerprint"]
-        or primary_manifest.get("test_partition_loaded_only_after_selection_freeze")
-        is not True
+        primary_manifest.get("selection_fingerprint") != primary_freeze["selection_fingerprint"]
+        or primary_manifest.get("test_partition_loaded_only_after_selection_freeze") is not True
     ):
         raise PermissionError("Primary post-freeze test manifest is invalid.")
     manifest = {
@@ -509,10 +488,7 @@ def run_evaluate(args) -> None:
 
 
 def _prediction_matrix(
-    result_root: Path,
-    prefix: str,
-    manifest_metrics: Mapping,
-    reference: pd.DataFrame | None = None,
+    result_root: Path, prefix: str, manifest_metrics: Mapping, reference: pd.DataFrame | None = None
 ) -> tuple[dict[str, np.ndarray], pd.DataFrame, list[dict]]:
     values = {"top1": [], "mrr": []}
     pairing = None
@@ -539,40 +515,26 @@ def _prediction_matrix(
             values[metric].append(array)
         files.append(file_fingerprint(path))
     assert pairing is not None
-    return (
-        {metric: np.stack(rows, axis=0) for metric, rows in values.items()},
-        pairing,
-        files,
-    )
+    return ({metric: np.stack(rows, axis=0) for metric, rows in values.items()}, pairing, files)
 
 
 def run_analyze(args) -> None:
     primary_root = Path(args.primary_result_root).resolve()
     b3_root = Path(args.b3_result_root).resolve()
-    primary_manifest = json.loads(
-        (primary_root / "manifest.json").read_text(encoding="utf-8")
-    )
+    primary_manifest = json.loads((primary_root / "manifest.json").read_text(encoding="utf-8"))
     b3_manifest = json.loads((b3_root / "manifest.json").read_text(encoding="utf-8"))
     if primary_manifest.get("test_partition_loaded_only_after_selection_freeze") is not True:
         raise PermissionError("Primary post-freeze result is invalid.")
     if b3_manifest.get("test_partition_loaded_only_after_b3_and_primary_freezes") is not True:
         raise PermissionError("B3 post-freeze result is invalid.")
     baseline, pairing, baseline_files = _prediction_matrix(
-        primary_root,
-        "baseline",
-        primary_manifest["per_seed_metrics"]["baseline"],
+        primary_root, "baseline", primary_manifest["per_seed_metrics"]["baseline"]
     )
     single, _, single_files = _prediction_matrix(
-        primary_root,
-        "augmented",
-        primary_manifest["per_seed_metrics"]["augmented"],
-        pairing,
+        primary_root, "augmented", primary_manifest["per_seed_metrics"]["augmented"], pairing
     )
     b3, _, b3_files = _prediction_matrix(
-        b3_root,
-        "augmented",
-        b3_manifest["per_seed_metrics"],
-        pairing,
+        b3_root, "augmented", b3_manifest["per_seed_metrics"], pairing
     )
     clusters = pairing["product_smiles"].to_numpy(dtype=object)
     comparisons = {}
@@ -582,10 +544,7 @@ def run_analyze(args) -> None:
     ):
         comparisons[label] = {
             metric: clustered_intervals(
-                array,
-                clusters,
-                n_bootstrap=args.bootstrap_samples,
-                seed=args.bootstrap_seed,
+                array, clusters, n_bootstrap=args.bootstrap_samples, seed=args.bootstrap_seed
             )
             for metric, array in differences.items()
         }

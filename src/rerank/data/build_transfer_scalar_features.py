@@ -51,14 +51,9 @@ def build_feature_shard(args: argparse.Namespace) -> dict:
     if args.lru_items < 256:
         raise ValueError("--lru-items must be at least 256 for one complete product.")
     index = load_pool_index(
-        args.index_npz,
-        args.index_manifest,
-        args.products_jsonl,
-        args.merged_jsonl,
+        args.index_npz, args.index_manifest, args.products_jsonl, args.merged_jsonl
     )
-    start_rank, stop_rank = shard_bounds(
-        index.product_count, args.shard_index, args.shard_count
-    )
+    start_rank, stop_rank = shard_bounds(index.product_count, args.shard_index, args.shard_count)
     if args.limit_products is not None:
         if args.limit_products < 1:
             raise ValueError("--limit-products must be positive.")
@@ -139,9 +134,7 @@ def build_feature_shard(args: argparse.Namespace) -> dict:
             for candidate in candidate_values
         ]
         scalar_started = time.perf_counter()
-        rows = core_scalar_rows(
-            product, candidate_values, product_embedding, candidate_embeddings
-        )
+        rows = core_scalar_rows(product, candidate_values, product_embedding, candidate_embeddings)
         scalar_seconds += time.perf_counter() - scalar_started
         for candidate in candidate_values:
             product_ranks.append(product_rank)
@@ -214,10 +207,7 @@ def build_feature_shard(args: argparse.Namespace) -> dict:
             "backend_encode": backend_seconds,
             "scalar_computation": scalar_seconds,
         },
-        "host": {
-            "platform": platform.platform(),
-            "logical_cpu_count": os.cpu_count(),
-        },
+        "host": {"platform": platform.platform(), "logical_cpu_count": os.cpu_count()},
         "created_at_utc": utc_now(),
     }
     atomic_json(manifest_path, manifest)
@@ -246,7 +236,10 @@ def finalize(args: argparse.Namespace) -> dict:
             raise ValueError("WS-E scalar shard has the wrong protocol.")
         if record.get("smoke_limit_products") is not None:
             raise ValueError("A smoke-limited shard cannot enter the scientific manifest.")
-        if int(record["shard_index"]) != shard_index or int(record["shard_count"]) != args.shard_count:
+        if (
+            int(record["shard_index"]) != shard_index
+            or int(record["shard_count"]) != args.shard_count
+        ):
             raise ValueError("WS-E scalar shard numbering mismatch.")
         if int(record["product_rank_start"]) != expected_start:
             raise ValueError("WS-E scalar shards do not cover contiguous product ranks.")
@@ -283,9 +276,7 @@ def finalize(args: argparse.Namespace) -> dict:
         if backend_identity is None:
             backend_identity = current_backend_identity
         elif current_backend_identity != backend_identity:
-            raise ValueError(
-                "WS-E scalar shards were produced by different execution backends."
-            )
+            raise ValueError("WS-E scalar shards were produced by different execution backends.")
         total_rows += rows
         outputs.append(record["output"])
         manifests.append(fingerprint(manifest_path))
@@ -360,10 +351,7 @@ def main() -> None:
     args = parse_args()
     if args.command == "index":
         result = build_pool_index(
-            args.merged_jsonl,
-            args.products_jsonl,
-            args.output_npz,
-            args.output_manifest,
+            args.merged_jsonl, args.products_jsonl, args.output_npz, args.output_manifest
         )
     elif args.command == "build-shard":
         result = build_feature_shard(args)

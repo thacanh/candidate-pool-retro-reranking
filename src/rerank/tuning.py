@@ -97,20 +97,18 @@ def capacity_arm_config(settings: CapacitySettings, arm: str) -> GridConfig:
 
 def capacity_settings_fingerprint(settings: CapacitySettings) -> str:
     validate_capacity_settings(settings)
-    return "sha256:" + hashlib.sha256(
-        json.dumps(asdict(settings), sort_keys=True, separators=(",", ":")).encode()
-    ).hexdigest()
+    return (
+        "sha256:"
+        + hashlib.sha256(
+            json.dumps(asdict(settings), sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+    )
 
 
 def enumerate_d1_grid() -> tuple[GridConfig, ...]:
     """Return all 81 configurations in the signed-off nested-loop order."""
 
-    values = itertools.product(
-        (32, 64, 128),
-        (0.0, 0.1, 0.3),
-        (1e-4, 3e-4, 1e-3),
-        (0.0, 0.1, 0.3),
-    )
+    values = itertools.product((32, 64, 128), (0.0, 0.1, 0.3), (1e-4, 3e-4, 1e-3), (0.0, 0.1, 0.3))
     grid = tuple(
         GridConfig(index, width, dropout, learning_rate, margin)
         for index, (width, dropout, learning_rate, margin) in enumerate(values)
@@ -121,9 +119,12 @@ def enumerate_d1_grid() -> tuple[GridConfig, ...]:
 
 
 def config_fingerprint(config: GridConfig) -> str:
-    return "sha256:" + hashlib.sha256(
-        json.dumps(asdict(config), sort_keys=True, separators=(",", ":")).encode()
-    ).hexdigest()
+    return (
+        "sha256:"
+        + hashlib.sha256(
+            json.dumps(asdict(config), sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+    )
 
 
 def shard_config_indices(shard_index: int, shard_count: int) -> tuple[int, ...]:
@@ -208,9 +209,7 @@ def transform_selection_cache(bundle: Mapping, arm: str, prior_transform: str) -
     train_products = []
     for product in bundle["train_products"]:
         copied = dict(product)
-        copied["features"] = transform_feature_matrix(
-            product["features"], prior_transform, columns
-        )
+        copied["features"] = transform_feature_matrix(product["features"], prior_transform, columns)
         train_products.append(copied)
     validation = bundle["validation_payload"]
     return {
@@ -239,9 +238,7 @@ def validate_selection_bundle(bundle: Mapping) -> None:
         if (
             provenance.get("encoder_control_has_conformer") is not False
             or provenance.get("conformer_seed") is not None
-            or provenance.get(
-                "prepare_conformer_seed_argument_is_scientific_provenance"
-            )
+            or provenance.get("prepare_conformer_seed_argument_is_scientific_provenance")
             is not False
         ):
             raise ValueError("Encoder-control provenance incorrectly claims a conformer.")
@@ -249,9 +246,7 @@ def validate_selection_bundle(bundle: Mapping) -> None:
         if (
             provenance.get("encoder_control_has_conformer") is not True
             or not isinstance(provenance.get("conformer_seed"), int)
-            or provenance.get(
-                "prepare_conformer_seed_argument_is_scientific_provenance"
-            )
+            or provenance.get("prepare_conformer_seed_argument_is_scientific_provenance")
             is not True
         ):
             raise ValueError("Indexed-conformer provenance is incomplete.")
@@ -278,7 +273,9 @@ def validate_selection_bundle(bundle: Mapping) -> None:
     }
     leaked = forbidden.intersection(bundle)
     if leaked:
-        raise PermissionError(f"Selection bundle contains forbidden test-like keys: {sorted(leaked)}")
+        raise PermissionError(
+            f"Selection bundle contains forbidden test-like keys: {sorted(leaked)}"
+        )
     validation = bundle.get("validation_payload")
     if not isinstance(validation, Mapping):
         raise ValueError("Selection bundle lacks its official-validation payload.")
@@ -291,9 +288,7 @@ def validate_selection_bundle(bundle: Mapping) -> None:
     metadata = validation["eval_metadata"]
     if any(str(row.get("source_split")) != "valid" for row in metadata):
         raise PermissionError("Selection payload contains a non-validation reaction.")
-    for (_, candidates), matrix in zip(
-        validation["eval_pwc"], validation["eval_features"]
-    ):
+    for (_, candidates), matrix in zip(validation["eval_pwc"], validation["eval_features"]):
         array = np.asarray(matrix, dtype=np.float32)
         if array.ndim != 2 or array.shape[1] != 7 or len(array) != len(candidates):
             raise ValueError("Validation features must be candidate-aligned and seven-column.")
@@ -324,11 +319,7 @@ def file_sha256(path: str | Path) -> str:
 def file_fingerprint(path: str | Path) -> dict:
     path = Path(path)
     stat = path.stat()
-    return {
-        "path": str(path.resolve()),
-        "size_bytes": stat.st_size,
-        "sha256": file_sha256(path),
-    }
+    return {"path": str(path.resolve()), "size_bytes": stat.st_size, "sha256": file_sha256(path)}
 
 
 def atomic_json_dump(payload: Mapping, path: str | Path) -> None:
@@ -369,9 +360,10 @@ def prepare_selection_bundle(
         validation_blob = pickle.load(handle)
     legacy = _unwrap_legacy_blob(legacy_blob)
     validation = validation_blob.get("payload", validation_blob)
-    if legacy.get("feature_mode") != "3d+prior" or validation_blob.get(
-        "feature_mode"
-    ) != "3d+prior":
+    if (
+        legacy.get("feature_mode") != "3d+prior"
+        or validation_blob.get("feature_mode") != "3d+prior"
+    ):
         raise ValueError("Tuned revision requires seven-column 3d+prior compact caches.")
     expected_encoder_compatibility = {
         "cache_layout": "seven-column 3d+prior",
@@ -379,9 +371,7 @@ def prepare_selection_bundle(
         "prepare_conformer_seed_argument_is_not_encoder_provenance": True,
     }
     legacy_encoder_control = legacy_blob.get("encoder_control_has_conformer") is False
-    validation_encoder_control = (
-        validation_blob.get("encoder_control_has_conformer") is False
-    )
+    validation_encoder_control = validation_blob.get("encoder_control_has_conformer") is False
     if legacy_encoder_control or validation_encoder_control:
         if not (legacy_encoder_control and validation_encoder_control):
             raise ValueError("Encoder-control train/test and validation artifacts disagree.")
@@ -432,9 +422,7 @@ def prepare_selection_bundle(
         "audit": {
             "train": legacy.get("audit"),
             "validation": validation_blob.get("audit"),
-            "test_fields_discarded": sorted(
-                key for key in legacy if key.startswith("eval_")
-            ),
+            "test_fields_discarded": sorted(key for key in legacy if key.startswith("eval_")),
         },
         "input_fingerprints": {
             "retained_train_test_cache": file_fingerprint(train_test_cache_path),
@@ -474,8 +462,7 @@ def select_shared_config(trials: Iterable[Mapping]) -> dict:
                 "config_fingerprint": config_fingerprint(config),
                 "mean_best_validation_mrr": float(np.mean(scores)),
                 "per_seed_best_validation_mrr": {
-                    str(seed): float(by_seed[seed]["best_validation_mrr"])
-                    for seed in SEEDS
+                    str(seed): float(by_seed[seed]["best_validation_mrr"]) for seed in SEEDS
                 },
                 "per_seed_best_epoch": {
                     str(seed): int(by_seed[seed]["best_epoch"]) for seed in SEEDS
@@ -530,12 +517,8 @@ def trainable_parameter_count(input_dim: int, hidden_width: int) -> int:
 def assert_d3_capacity_match() -> dict:
     from rerank.model import RankerMLP
 
-    baseline_model = RankerMLP(
-        input_dim=4, hidden_dims=[48], dropout=0.0, use_batch_norm=False
-    )
-    augmented_model = RankerMLP(
-        input_dim=7, hidden_dims=[32], dropout=0.0, use_batch_norm=False
-    )
+    baseline_model = RankerMLP(input_dim=4, hidden_dims=[48], dropout=0.0, use_batch_norm=False)
+    augmented_model = RankerMLP(input_dim=7, hidden_dims=[32], dropout=0.0, use_batch_norm=False)
     baseline = sum(parameter.numel() for parameter in baseline_model.parameters())
     augmented = sum(parameter.numel() for parameter in augmented_model.parameters())
     if baseline != trainable_parameter_count(4, 48):
@@ -543,9 +526,7 @@ def assert_d3_capacity_match() -> dict:
     if augmented != trainable_parameter_count(7, 32):
         raise AssertionError("D3 augmented model no longer matches the declared architecture.")
     if baseline != 289 or augmented != 289 or baseline != augmented:
-        raise AssertionError(
-            f"D3 capacity mismatch: baseline={baseline}, augmented={augmented}."
-        )
+        raise AssertionError(f"D3 capacity mismatch: baseline={baseline}, augmented={augmented}.")
     return {
         "baseline": {"input_dim": 4, "hidden_width": 48, "parameters": baseline},
         "augmented": {"input_dim": 7, "hidden_width": 32, "parameters": augmented},
@@ -574,9 +555,7 @@ def validation_mrr(
 ) -> float:
     """Official-validation conditional MRR with stable candidate-score ties."""
 
-    prepared = prepare_validation(
-        normalizer, eval_pwc, eval_features, ground_truths
-    )
+    prepared = prepare_validation(normalizer, eval_pwc, eval_features, ground_truths)
     return validation_mrr_prepared(model, prepared, device)
 
 
@@ -595,9 +574,7 @@ def prepare_validation(
     normalized_parts = []
     offsets = [0]
     match_masks = []
-    for (_, candidates), features, ground_truth in zip(
-        eval_pwc, eval_features, ground_truths
-    ):
+    for (_, candidates), features, ground_truth in zip(eval_pwc, eval_features, ground_truths):
         matrix = np.asarray(features, dtype=np.float32)
         if len(matrix) != len(candidates):
             raise ValueError("A validation feature matrix is not candidate-aligned.")
@@ -634,9 +611,7 @@ def validation_mrr_prepared(
     with torch.no_grad():
         for start in range(0, len(prepared.features), batch_size):
             tensor = torch.as_tensor(
-                prepared.features[start : start + batch_size],
-                dtype=torch.float32,
-                device=device,
+                prepared.features[start : start + batch_size], dtype=torch.float32, device=device
             )
             score_parts.append(model.score(tensor).detach().cpu().numpy())
     scores = np.concatenate(score_parts)
@@ -677,14 +652,10 @@ def train_validation_trial(
         raise ValueError("Trial seed allowlist must be non-empty and unique.")
     if seed not in allowed_seeds:
         raise ValueError(
-            f"Seed {seed} is outside the explicit trial seed allowlist "
-            f"{allowed_seeds}."
+            f"Seed {seed} is outside the explicit trial seed allowlist " f"{allowed_seeds}."
         )
     dataset = make_pairwise_dataset(
-        selection_cache,
-        seed=seed,
-        max_neg_per_pos=5,
-        negative_mining="random",
+        selection_cache, seed=seed, max_neg_per_pos=5, negative_mining="random"
     )
     normalizer = fit_normalizer_from_dataset(dataset)
     Path(normalizer_path).parent.mkdir(parents=True, exist_ok=True)
@@ -702,9 +673,7 @@ def train_validation_trial(
         use_batch_norm=False,
     ).to(device)
     criterion = PairwiseRankingLoss(margin=config.margin, reduction="mean")
-    optimizer = torch.optim.AdamW(
-        model.parameters(), lr=config.learning_rate, weight_decay=1e-3
-    )
+    optimizer = torch.optim.AdamW(model.parameters(), lr=config.learning_rate, weight_decay=1e-3)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, T_max=max(max_epochs - 5, 1), eta_min=config.learning_rate * 0.01
     )

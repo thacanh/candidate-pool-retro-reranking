@@ -30,10 +30,7 @@ from rerank.trainer import RankerTrainer, TrainerConfig
 from rerank.experiments.run_controlled_study import FROZEN_CONFIG, _sample_std, _score_precomputed
 
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("feature_controls")
 
 
@@ -179,9 +176,7 @@ def _permute_unimol_columns(
     return result
 
 
-def transform_feature_cache(
-    payload: dict, variant: str, control_seed: int = 20260803
-) -> dict:
+def transform_feature_cache(payload: dict, variant: str, control_seed: int = 20260803) -> dict:
     """Return a transformed cache view without mutating the frozen base cache."""
     if variant not in VARIANTS:
         raise ValueError(f"Unknown variant: {variant}")
@@ -191,12 +186,8 @@ def transform_feature_cache(
     eval_raw = payload["eval_features"]
 
     if variant == "permuted_unimol":
-        train_matrices = _permute_unimol_columns(
-            train_raw, np.random.default_rng(control_seed)
-        )
-        eval_matrices = _permute_unimol_columns(
-            eval_raw, np.random.default_rng(control_seed + 1)
-        )
+        train_matrices = _permute_unimol_columns(train_raw, np.random.default_rng(control_seed))
+        eval_matrices = _permute_unimol_columns(eval_raw, np.random.default_rng(control_seed + 1))
     else:
         train_matrices = [_select_columns(matrix, columns) for matrix in train_raw]
         eval_matrices = [_select_columns(matrix, columns) for matrix in eval_raw]
@@ -302,15 +293,10 @@ def _run_variant(
             ),
         )
         trainer.fit(train_dataset)
-        model.load_state_dict(
-            torch.load(checkpoint, map_location="cpu", weights_only=True)
-        )
+        model.load_state_dict(torch.load(checkpoint, map_location="cpu", weights_only=True))
         model.to("cpu").eval()
         precomputed = _score_precomputed(
-            feature_cache["eval_pwc"],
-            feature_cache["eval_features"],
-            normalizer,
-            model,
+            feature_cache["eval_pwc"], feature_cache["eval_features"], normalizer, model
         )
         evaluation = evaluate_reranking(
             products_with_candidates=feature_cache["eval_pwc"],
@@ -351,9 +337,7 @@ def _run_variant(
         values = [all_metrics[str(seed)][metric] for seed in seeds]
         summary[f"{metric}_mean"] = float(np.mean(values))
         summary[f"{metric}_std"] = _sample_std(values)
-        summary[f"baseline_{metric}"] = all_metrics[str(seeds[0])][
-            f"baseline_{metric}"
-        ]
+        summary[f"baseline_{metric}"] = all_metrics[str(seeds[0])][f"baseline_{metric}"]
     pd.DataFrame([summary]).to_csv(output_dir / "experiment_summary.csv", index=False)
 
     manifest = {
@@ -383,17 +367,10 @@ def _run_variant(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--base-feature-cache",
-        default="outputs/study_cache/official_3d_prior_schema1.pkl",
+        "--base-feature-cache", default="outputs/study_cache/official_3d_prior_schema1.pkl"
     )
-    parser.add_argument(
-        "--variants",
-        type=_parse_csv,
-        default=_parse_csv(",".join(VARIANTS)),
-    )
-    parser.add_argument(
-        "--seeds", type=_parse_seeds, default=_parse_seeds("42,43,44,45,46")
-    )
+    parser.add_argument("--variants", type=_parse_csv, default=_parse_csv(",".join(VARIANTS)))
+    parser.add_argument("--seeds", type=_parse_seeds, default=_parse_seeds("42,43,44,45,46"))
     parser.add_argument("--control-seed", type=int, default=20260803)
     parser.add_argument("--torch-threads", type=int, default=1)
     parser.add_argument("--device", default="cpu")
@@ -413,17 +390,9 @@ def main() -> None:
     output_root = Path(args.output_root)
     output_root.mkdir(parents=True, exist_ok=True)
     for variant in args.variants:
-        transformed = transform_feature_cache(
-            base_payload, variant, control_seed=args.control_seed
-        )
+        transformed = transform_feature_cache(base_payload, variant, control_seed=args.control_seed)
         _run_variant(
-            variant,
-            transformed,
-            output_root,
-            args.seeds,
-            args.device,
-            args.control_seed,
-            base_path,
+            variant, transformed, output_root, args.seeds, args.device, args.control_seed, base_path
         )
 
 

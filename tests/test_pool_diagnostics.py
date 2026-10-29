@@ -68,13 +68,28 @@ def test_m2_default_uses_frozen_cap10_common_coverage(monkeypatch):
         [
             "analyze_pool_diagnostics.py",
             "m2",
-            "--output-dir", "out",
-            "--anchor-prediction-root", "anchor",
-            "--k1-manifest", "a", "--k1-manifest", "b", "--k1-manifest", "c",
-            "--pool-jsonl", "a", "--pool-jsonl", "b", "--pool-jsonl", "c",
-            "--historical-pool-jsonl", "historical",
-            "--l1-diagnostics", "l1",
-            "--d5-root", "d5",
+            "--output-dir",
+            "out",
+            "--anchor-prediction-root",
+            "anchor",
+            "--k1-manifest",
+            "a",
+            "--k1-manifest",
+            "b",
+            "--k1-manifest",
+            "c",
+            "--pool-jsonl",
+            "a",
+            "--pool-jsonl",
+            "b",
+            "--pool-jsonl",
+            "c",
+            "--historical-pool-jsonl",
+            "historical",
+            "--l1-diagnostics",
+            "l1",
+            "--d5-root",
+            "d5",
         ],
     )
     assert parse_args().expected_common_count == 3814
@@ -85,10 +100,7 @@ def test_expanded_effects_only_reads_requested_covered_rows():
     for seed in range(42, 62):
         covered[f"baseline_rank_seed_{seed}"] = 2
         covered[f"augmented_rank_seed_{seed}"] = 1
-    records = {
-        1: covered,
-        2: {"covered": False, "candidate_count": 0, "prior_rank": 0},
-    }
+    records = {1: covered, 2: {"covered": False, "candidate_count": 0, "prior_rank": 0}}
     result = _expanded_effects(records, {1})
     assert set(result) == {1}
     assert result[1]["mean_20seed_delta_top1"] == pytest.approx(1.0)

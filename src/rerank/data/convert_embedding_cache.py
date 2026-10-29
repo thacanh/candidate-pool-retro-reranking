@@ -75,9 +75,7 @@ class StreamingOuterDictUnpickler(pickle._Unpickler):
         # lightweight placeholders for subsequent per-array payloads.
         value = self.stack[-1]
         self.memo[self.memo_index] = (
-            value
-            if self.memo_index < 18 or self._safe_to_retain(value)
-            else None
+            value if self.memo_index < 18 or self._safe_to_retain(value) else None
         )
         self.memo_index += 1
 
@@ -95,9 +93,7 @@ class StreamingOuterDictUnpickler(pickle._Unpickler):
     def _memo_get(self, index: int):
         value = self.memo[index]
         if value is None:
-            raise pickle.UnpicklingError(
-                f"Unexpected reference to discarded memo index {index}."
-            )
+            raise pickle.UnpicklingError(f"Unexpected reference to discarded memo index {index}.")
         self.append(value)
 
     def load_binget(self):
@@ -125,31 +121,20 @@ class StreamingOuterDictUnpickler(pickle._Unpickler):
                 target[items[index]] = items[index + 1]
 
 
-StreamingOuterDictUnpickler.dispatch[pickle.EMPTY_DICT[0]] = (
-    StreamingOuterDictUnpickler.load_empty_dictionary
-)
-StreamingOuterDictUnpickler.dispatch[pickle.MEMOIZE[0]] = (
-    StreamingOuterDictUnpickler.load_memoize
-)
-StreamingOuterDictUnpickler.dispatch[pickle.BINGET[0]] = (
-    StreamingOuterDictUnpickler.load_binget
-)
-StreamingOuterDictUnpickler.dispatch[pickle.LONG_BINGET[0]] = (
-    StreamingOuterDictUnpickler.load_long_binget
-)
-StreamingOuterDictUnpickler.dispatch[pickle.SETITEM[0]] = (
-    StreamingOuterDictUnpickler.load_setitem
-)
-StreamingOuterDictUnpickler.dispatch[pickle.SETITEMS[0]] = (
-    StreamingOuterDictUnpickler.load_setitems
-)
+StreamingOuterDictUnpickler.dispatch[
+    pickle.EMPTY_DICT[0]
+] = StreamingOuterDictUnpickler.load_empty_dictionary
+StreamingOuterDictUnpickler.dispatch[pickle.MEMOIZE[0]] = StreamingOuterDictUnpickler.load_memoize
+StreamingOuterDictUnpickler.dispatch[pickle.BINGET[0]] = StreamingOuterDictUnpickler.load_binget
+StreamingOuterDictUnpickler.dispatch[
+    pickle.LONG_BINGET[0]
+] = StreamingOuterDictUnpickler.load_long_binget
+StreamingOuterDictUnpickler.dispatch[pickle.SETITEM[0]] = StreamingOuterDictUnpickler.load_setitem
+StreamingOuterDictUnpickler.dispatch[pickle.SETITEMS[0]] = StreamingOuterDictUnpickler.load_setitems
 
 
 def convert(
-    source_pickle: str | Path,
-    output_sqlite: str | Path,
-    required: set[str],
-    resume: bool = False,
+    source_pickle: str | Path, output_sqlite: str | Path, required: set[str], resume: bool = False
 ) -> dict:
     output_sqlite = Path(output_sqlite)
     temporary = output_sqlite.with_suffix(output_sqlite.suffix + ".incomplete")
@@ -179,17 +164,11 @@ def convert(
         connection.execute(
             "CREATE TABLE metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID"
         )
-    stored_keys = {
-        row[0] for row in connection.execute("SELECT smiles FROM embeddings")
-    }
+    stored_keys = {row[0] for row in connection.execute("SELECT smiles FROM embeddings")}
     failed_existing = int(
         connection.execute("SELECT COUNT(*) FROM embeddings WHERE data IS NULL").fetchone()[0]
     )
-    state = {
-        "source_items": 0,
-        "stored_items": len(stored_keys),
-        "failed_items": failed_existing,
-    }
+    state = {"source_items": 0, "stored_items": len(stored_keys), "failed_items": failed_existing}
     if resuming:
         print(f"Resuming with {len(stored_keys):,} embeddings already stored.", flush=True)
 
@@ -238,7 +217,10 @@ def convert(
     }
     connection.executemany(
         "INSERT INTO metadata(key,value) VALUES(?,?)",
-        [(key, json.dumps(value) if isinstance(value, dict) else str(value)) for key, value in metadata.items()],
+        [
+            (key, json.dumps(value) if isinstance(value, dict) else str(value))
+            for key, value in metadata.items()
+        ],
     )
     connection.commit()
     connection.execute("PRAGMA optimize")
@@ -255,9 +237,7 @@ def main() -> None:
         default="outputs/study_cache/official_2d_prior_schema1.pkl",
         help="Official-split 2D feature cache used to define the required molecule set.",
     )
-    parser.add_argument(
-        "--output", default="outputs/study_cache/study_atom_embeddings.sqlite"
-    )
+    parser.add_argument("--output", default="outputs/study_cache/study_atom_embeddings.sqlite")
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
 

@@ -26,8 +26,12 @@ def test_trial_seed_gate_stays_d1_by_default_and_requires_explicit_g1_allowlist(
 
     monkeypatch.setattr("rerank.study_data.make_pairwise_dataset", fake_dataset)
     common = (
-        {}, enumerate_d1_grid()[0], 47, "cpu",
-        tmp_path / "checkpoint.pt", tmp_path / "normalizer.npz",
+        {},
+        enumerate_d1_grid()[0],
+        47,
+        "cpu",
+        tmp_path / "checkpoint.pt",
+        tmp_path / "normalizer.npz",
     )
 
     with pytest.raises(ValueError, match="explicit trial seed allowlist"):

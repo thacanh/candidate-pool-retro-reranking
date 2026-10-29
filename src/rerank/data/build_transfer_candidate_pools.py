@@ -73,7 +73,9 @@ def _load_inventory(path: str | Path) -> tuple[list[tuple[str, ...]], dict[tuple
 
 def _load_aizynth(
     path: str | Path,
-) -> tuple[list[tuple[str, ...]], dict[tuple[str, ...], str], dict[tuple[str, ...], list[dict[str, Any]]]]:
+) -> tuple[
+    list[tuple[str, ...]], dict[tuple[str, ...], str], dict[tuple[str, ...], list[dict[str, Any]]]
+]:
     order: list[tuple[str, ...]] = []
     raw_products: dict[tuple[str, ...], str] = {}
     pools: dict[tuple[str, ...], list[dict[str, Any]]] = defaultdict(list)
@@ -104,9 +106,7 @@ def _load_aizynth(
     return order, raw_products, pools
 
 
-def _load_localretro(
-    path: str | Path,
-) -> dict[tuple[str, ...], list[dict[str, Any]]]:
+def _load_localretro(path: str | Path) -> dict[tuple[str, ...], list[dict[str, Any]]]:
     pools: dict[tuple[str, ...], list[dict[str, Any]]] = defaultdict(list)
     seen_candidates: dict[tuple[str, ...], set[tuple[str, ...]]] = defaultdict(set)
     with Path(path).open("r", encoding="utf-8") as handle:
@@ -173,9 +173,7 @@ def _local_record(product: str, record: Mapping[str, Any], pool_size: int) -> di
 
 
 def _merged_records(
-    product: str,
-    aizynth: list[dict[str, Any]],
-    localretro: list[dict[str, Any]],
+    product: str, aizynth: list[dict[str, Any]], localretro: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
     merged: dict[tuple[str, ...], dict[str, Any]] = {}
     for record in aizynth:
@@ -231,8 +229,7 @@ def _merged_records(
 
 
 def _coverage(
-    source_csv: str | Path,
-    pools: Mapping[str, Mapping[tuple[str, ...], set[tuple[str, ...]]]],
+    source_csv: str | Path, pools: Mapping[str, Mapping[tuple[str, ...], set[tuple[str, ...]]]]
 ) -> dict[str, Any]:
     source = pd.read_csv(source_csv)
     results: dict[str, Any] = {}
@@ -325,7 +322,9 @@ def build_three_pools(
             pool_sets["localretro_only"][key] = local_set
             pool_sets["merged"][key] = union
             aiz_records.extend(_aiz_record(product, record, len(aiz_pool)) for record in aiz_pool)
-            local_records.extend(_local_record(product, record, len(local_pool)) for record in local_pool)
+            local_records.extend(
+                _local_record(product, record, len(local_pool)) for record in local_pool
+            )
             merged_records.extend(_merged_records(product, aiz_pool, local_pool))
 
         paths = {
@@ -364,9 +363,7 @@ def build_three_pools(
         }
         atomic_json(staging / "coverage.json", coverage)
         atomic_json(staging / "overlap.json", overlap_report)
-        outputs = {
-            name: fingerprint(path) for name, path in paths.items()
-        }
+        outputs = {name: fingerprint(path) for name, path in paths.items()}
         outputs.update(
             {
                 "products": fingerprint(staging / "products.jsonl"),

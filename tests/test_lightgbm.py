@@ -11,15 +11,10 @@ from rerank.experiments.run_lightgbm import (
 
 
 def _bundle():
-    matrix = np.asarray(
-        [[0.8, 1, 2, 3, 4, 5, 6], [0.2, 7, 8, 9, 10, 11, 12]],
-        dtype=np.float32,
-    )
+    matrix = np.asarray([[0.8, 1, 2, 3, 4, 5, 6], [0.2, 7, 8, 9, 10, 11, 12]], dtype=np.float32)
     candidates = [{"smiles": "C", "prior": 0.8}, {"smiles": "CC", "prior": 0.2}]
     return {
-        "train_products": [{
-            "features": matrix, "positive_indices": [0], "negative_indices": [1]
-        }],
+        "train_products": [{"features": matrix, "positive_indices": [0], "negative_indices": [1]}],
         "validation_payload": {
             "eval_pwc": [("CO", candidates)],
             "eval_ground_truths": ["C"],
@@ -32,7 +27,11 @@ def test_d4_grid_order_and_equal_query_groups():
     grid = enumerate_grid()
     assert len(grid) == 27
     assert (grid[0].num_leaves, grid[0].min_child_samples, grid[0].learning_rate) == (7, 10, 0.03)
-    assert (grid[-1].num_leaves, grid[-1].min_child_samples, grid[-1].learning_rate) == (31, 50, 0.2)
+    assert (grid[-1].num_leaves, grid[-1].min_child_samples, grid[-1].learning_rate) == (
+        31,
+        50,
+        0.2,
+    )
     baseline = build_query_arrays(_bundle(), "baseline", "raw")
     augmented = build_query_arrays(_bundle(), "augmented", "raw")
     assert baseline["train_x"].shape[1] == 4

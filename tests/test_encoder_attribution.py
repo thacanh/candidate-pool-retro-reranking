@@ -5,10 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from rerank.analysis.analyze_encoder_attribution import (
-    clustered_intervals,
-    load_prediction_set,
-)
+from rerank.analysis.analyze_encoder_attribution import clustered_intervals, load_prediction_set
 
 
 PAIRING = {
@@ -55,9 +52,7 @@ def _write_result(root: Path, seeds=(42, 43), mismatch=False) -> None:
 
 
 def test_clustered_interval_is_deterministic_and_uses_seed_mean():
-    differences = np.asarray(
-        [[0.0, 0.1, 0.0, 0.1], [0.2, 0.1, 0.0, 0.1]], dtype=float
-    )
+    differences = np.asarray([[0.0, 0.1, 0.0, 0.1], [0.2, 0.1, 0.0, 0.1]], dtype=float)
     clusters = np.asarray(["A", "B", "C", "D"], dtype=object)
     first = clustered_intervals(differences, clusters, n_bootstrap=500, seed=17)
     second = clustered_intervals(differences, clusters, n_bootstrap=500, seed=17)
@@ -81,12 +76,7 @@ def test_prediction_loader_checks_manifest_and_exact_pairing(tmp_path):
     root = tmp_path / "control"
     _write_result(root)
     loaded = load_prediction_set(
-        "control",
-        root,
-        "augmented",
-        "encoder_control",
-        seeds=(42, 43),
-        expected_reactions=4,
+        "control", root, "augmented", "encoder_control", seeds=(42, 43), expected_reactions=4
     )
     assert loaded.values["top1"].shape == (2, 4)
     assert loaded.values["mrr"].mean() == pytest.approx(0.875)
@@ -98,10 +88,5 @@ def test_prediction_loader_rejects_pairing_mismatch(tmp_path):
     _write_result(root, mismatch=True)
     with pytest.raises(ValueError, match="Pairing mismatch"):
         load_prediction_set(
-            "control",
-            root,
-            "augmented",
-            "encoder_control",
-            seeds=(42, 43),
-            expected_reactions=4,
+            "control", root, "augmented", "encoder_control", seeds=(42, 43), expected_reactions=4
         )

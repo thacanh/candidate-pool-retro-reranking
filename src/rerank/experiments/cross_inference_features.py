@@ -54,9 +54,16 @@ def training_arm_features(
         mapped = features[:, :7]
         columns = HISTORICAL_BASELINE if arm == "baseline" else HISTORICAL_AUGMENTED
     else:
-        mapped = features if evaluation_pool == "aizynthfinder_only" else np.column_stack(
-            (features, np.ones(len(features), dtype=np.float32),
-             np.zeros(len(features), dtype=np.float32))
+        mapped = (
+            features
+            if evaluation_pool == "aizynthfinder_only"
+            else np.column_stack(
+                (
+                    features,
+                    np.ones(len(features), dtype=np.float32),
+                    np.zeros(len(features), dtype=np.float32),
+                )
+            )
         )
         columns = AIZ_BASELINE if arm == "baseline" else AIZ_AUGMENTED
     return np.asarray(mapped[:, columns], dtype=np.float32)
@@ -70,7 +77,12 @@ def clipping_audit(
     values = np.asarray(arm_features, dtype=np.float32)
     mean = np.asarray(mean, dtype=np.float32)
     std = np.asarray(std, dtype=np.float32)
-    if values.ndim != 2 or not len(values) or mean.shape != (values.shape[1],) or std.shape != mean.shape:
+    if (
+        values.ndim != 2
+        or not len(values)
+        or mean.shape != (values.shape[1],)
+        or std.shape != mean.shape
+    ):
         raise ValueError("Normalizer and feature matrix dimensions differ.")
     if not np.isfinite(values).all() or not np.isfinite(mean).all() or not np.isfinite(std).all():
         raise ValueError("Clipping audit requires finite values.")
@@ -82,7 +94,9 @@ def clipping_audit(
     return {
         "prior_lower_fraction": prior_lower,
         "prior_upper_fraction": prior_upper,
-        "any_feature_clipped_fraction": float(np.mean(np.any(np.abs(standardized) > clip_sigma, axis=1))),
+        "any_feature_clipped_fraction": float(
+            np.mean(np.any(np.abs(standardized) > clip_sigma, axis=1))
+        ),
         "prior_total_clipped_fraction": prior_lower + prior_upper,
         "uninterpretable_prior_clipping_gt_10pct": prior_lower + prior_upper > 0.1,
     }

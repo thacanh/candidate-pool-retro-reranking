@@ -17,13 +17,11 @@ def sha256(path: str | Path) -> str:
 
 def fingerprint(path: str | Path) -> dict:
     source = Path(path).resolve(strict=True)
-    return {"path": str(source), "size_bytes": source.stat().st_size,
-            "sha256": sha256(source)}
+    return {"path": str(source), "size_bytes": source.stat().st_size, "sha256": sha256(source)}
 
 
 def require_approval(
-    approval_path: str | Path, plan_path: str | Path,
-    runner_path: str | Path, protocol_id: str,
+    approval_path: str | Path, plan_path: str | Path, runner_path: str | Path, protocol_id: str
 ) -> dict:
     """Require a recorded authorization bound to the current plan and runner bytes."""
 
@@ -39,14 +37,19 @@ def require_approval(
     if approval.get("authorization_basis") == "repository_owner_explicit_override":
         # Each isolated job needs its own explicit owner instruction. A reported
         # verbal waiver is never represented as a signed supervisor approval.
-        owner_jobs = {"dd-n2-cross-inference-v1", "dd-n3-pool-specific-selection-v1",
-                      "dd-n4-morgan-atom-transfer-v1"}
+        owner_jobs = {
+            "dd-n2-cross-inference-v1",
+            "dd-n3-pool-specific-selection-v1",
+            "dd-n4-morgan-atom-transfer-v1",
+        }
         quotes = approval.get("authorization_quotes", {})
-        if (protocol_id not in owner_jobs
-                or approval.get("supervisor") is not None
-                or approval.get("supervisor_signature_present") is not False
-                or not isinstance(quotes, dict)
-                or not quotes.get(protocol_id)):
+        if (
+            protocol_id not in owner_jobs
+            or approval.get("supervisor") is not None
+            or approval.get("supervisor_signature_present") is not False
+            or not isinstance(quotes, dict)
+            or not quotes.get(protocol_id)
+        ):
             raise PermissionError("Invalid repository-owner override record for this job.")
     elif not approval.get("supervisor"):
         raise PermissionError("Supervisor identity is missing.")
@@ -55,8 +58,11 @@ def require_approval(
     if approval.get("analysis_plan_sha256") != sha256(plan_path):
         raise PermissionError("Approved analysis-plan bytes differ from the current plan.")
     recorded_runner = approval.get("runner_sha256", {}).get(protocol_id)
-    expected_runner = (recorded_runner.get(Path(runner_path).name)
-                       if isinstance(recorded_runner, dict) else recorded_runner)
+    expected_runner = (
+        recorded_runner.get(Path(runner_path).name)
+        if isinstance(recorded_runner, dict)
+        else recorded_runner
+    )
     if expected_runner != sha256(runner_path):
         raise PermissionError("Approved runner bytes differ from the current runner.")
     return approval

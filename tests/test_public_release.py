@@ -49,11 +49,7 @@ def test_compact_operational_table_is_complete() -> None:
         "localretro_only",
         "merged",
     }
-    assert {row["system"] for row in rows} == {
-        "candidate_prior",
-        "prior_2d",
-        "prior_2d_unimol",
-    }
+    assert {row["system"] for row in rows} == {"candidate_prior", "prior_2d", "prior_2d_unimol"}
     for row in rows:
         within = float(row["within_pool_top1"])
         end_to_end = float(row["end_to_end_top1"])
@@ -101,7 +97,19 @@ def test_final_round_payload_and_public_hashes() -> None:
         assert path.stat().st_size == row["size_bytes"]
         if row["transformation"] == "byte-identical":
             assert row["sha256"] == row["source_sha256"]
-    assert {"N1", "N2", "N2_prior_distribution", "N3_S1", "N3_S2", "N3_S3", "N3_S4", "N4", "N5", "P1", "prior_gap_supplement"} <= aliases
+    assert {
+        "N1",
+        "N2",
+        "N2_prior_distribution",
+        "N3_S1",
+        "N3_S2",
+        "N3_S3",
+        "N3_S4",
+        "N4",
+        "N5",
+        "P1",
+        "prior_gap_supplement",
+    } <= aliases
 
 
 def test_adaptation_compact_rows_match_included_frozen_statistics():
@@ -113,15 +121,23 @@ def test_adaptation_compact_rows_match_included_frozen_statistics():
     for row in rows:
         pool, metric, stage = row["pool"], row["metric"], row["stage"]
         if stage == "full_grid":
-            source = json.loads((base / f"final_round/N3_S4/{pool}/statistics.json").read_text())["common_transfer"]
+            source = json.loads((base / f"final_round/N3_S4/{pool}/statistics.json").read_text())[
+                "common_transfer"
+            ]
             keys = ("transfer_loss", "crossed_ci95_low", "crossed_ci95_high")
         elif stage == "prior_reselected":
             source = list(csv.DictReader((base / "final_round/N3_S3/transfer_effects.csv").open()))
             keys = ("transfer_loss", "crossed_ci95_low", "crossed_ci95_high")
         else:
             assert stage == "original"
-            source = list(csv.DictReader((base / "final_round/N5/n5_crossed_transfer_intervals.csv").open()))
-            keys = ("mean_transfer_loss", "crossed_product_seed_ci95_low", "crossed_product_seed_ci95_high")
+            source = list(
+                csv.DictReader((base / "final_round/N5/n5_crossed_transfer_intervals.csv").open())
+            )
+            keys = (
+                "mean_transfer_loss",
+                "crossed_product_seed_ci95_low",
+                "crossed_product_seed_ci95_high",
+            )
         match = [r for r in source if r["pool"] == pool and r["metric"] == metric]
         assert len(match) == 1
         for field, key in zip(("effect", "low", "high"), keys):

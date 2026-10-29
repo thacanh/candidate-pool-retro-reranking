@@ -60,7 +60,9 @@ def main():
     assert s3["test_partition_loaded_only_after_choice_and_model_freezes"] is True
     bind(s3["s2_choice_freeze"])
     bind(s3["transfer_effects"])
-    assert archives["N3_S2"].read("N3_S2/results/choice_freeze.json") == archives["N3_S2"].read("N3_S2/results/manifest.json")
+    assert archives["N3_S2"].read("N3_S2/results/choice_freeze.json") == archives["N3_S2"].read(
+        "N3_S2/results/manifest.json"
+    )
     primary = json.loads(Path(PRIMARY, "freeze/model_selection.json").read_text(encoding="utf-8"))
     counts = {}
     for stage, expected in (("N3_S2", 30), ("N3_S3", 120)):
@@ -76,8 +78,11 @@ def main():
     choices = {}
     ids, _ = common_cohort(COMMON_COHORT)
     historical = historical_g1_ranks(Path(PRIMARY) / "g1_20seed/test_results/predictions", ids)
-    csv_rows = list(csv.DictReader(io.StringIO(archives["N3_S3"].read(
-        "N3_S3/results/transfer_effects.csv").decode())))
+    csv_rows = list(
+        csv.DictReader(
+            io.StringIO(archives["N3_S3"].read("N3_S3/results/transfer_effects.csv").decode())
+        )
+    )
     assert len(csv_rows) == 6 and s3["common_reactions"] == len(ids) == 3814
     effects = []
     for pool, chosen in s2["choices"].items():
@@ -95,8 +100,11 @@ def main():
             means[transform] = float(np.mean(actual))
             assert abs(means[transform] - stats["mean_best_validation_mrr"]) < 1e-12
         assert choose_transform(means) == chosen["selected"] == s3["choices"][pool]
-        choices[pool] = dict(selected=chosen["selected"], validation_means=means,
-                             validation_gain_over_raw=means[chosen["selected"]] - means["raw"])
+        choices[pool] = dict(
+            selected=chosen["selected"],
+            validation_means=means,
+            validation_gain_over_raw=means[chosen["selected"]] - means["raw"],
+        )
         frozen = read("N3_S3", f"{pool}/models/freeze.json")
         assert frozen["complete"] and frozen["seeds"] == list(range(42, 62))
         assert frozen["selected_prior_transform"] == chosen["selected"]
@@ -109,8 +117,13 @@ def main():
         for key in ("model_freeze", "feature_freeze", "predictions"):
             bind(test[key])
         bind(s3["result_predictions"][pool])
-        rows = [json.loads(line) for line in archives["N3_S3"].read(
-            f"N3_S3/results/{pool}/test_results/reaction_ranks.jsonl").decode().splitlines()]
+        rows = [
+            json.loads(line)
+            for line in archives["N3_S3"]
+            .read(f"N3_S3/results/{pool}/test_results/reaction_ranks.jsonl")
+            .decode()
+            .splitlines()
+        ]
         by_id = {r["reaction_id"]: r for r in rows}
         assert len(rows) == len(by_id) == test["test_reactions_total"] == 5004
         covered = [r for r in rows if r["covered"]]
@@ -118,23 +131,35 @@ def main():
         assert all(by_id[rid]["covered"] for rid in ids)
         arrays = {}
         for arm in ("baseline", "augmented"):
-            arrays[arm] = np.asarray([[by_id[rid][f"{arm}_rank_seed_{seed}"] for rid in ids]
-                                      for seed in range(42, 62)])
+            arrays[arm] = np.asarray(
+                [[by_id[rid][f"{arm}_rank_seed_{seed}"] for rid in ids] for seed in range(42, 62)]
+            )
             assert np.all((arrays[arm] >= 1) & (arrays[arm] <= 10))
             for seed in range(42, 62):
                 ranks = np.asarray([r[f"{arm}_rank_seed_{seed}"] for r in covered])
-                for metric, val in (("top1", float(np.mean(ranks == 1))), ("mrr", float(np.mean(1/ranks)))):
+                for metric, val in (
+                    ("top1", float(np.mean(ranks == 1))),
+                    ("mrr", float(np.mean(1 / ranks))),
+                ):
                     stored = test["per_seed_metrics"][arm][str(seed)]
                     assert abs(val - stored["within_pool"][metric]) < 1e-12
-                    assert abs(val * len(covered)/len(rows) - stored["end_to_end"][metric]) < 1e-12
+                    assert (
+                        abs(val * len(covered) / len(rows) - stored["end_to_end"][metric]) < 1e-12
+                    )
         for metric in ("top1", "mrr"):
-            score = (lambda r: (r == 1).astype(float)) if metric == "top1" else (lambda r: 1/r)
+            score = (lambda r: (r == 1).astype(float)) if metric == "top1" else (lambda r: 1 / r)
             old = float((score(historical[1]) - score(historical[0])).mean())
             new = float((score(arrays["augmented"]) - score(arrays["baseline"])).mean())
             row = next(r for r in csv_rows if r["pool"] == pool and r["metric"] == metric)
-            for key, val in (("historical_effect", old), ("expanded_effect", new), ("transfer_loss", new-old)):
+            for key, val in (
+                ("historical_effect", old),
+                ("expanded_effect", new),
+                ("transfer_loss", new - old),
+            ):
                 assert abs(val - float(row[key])) < 1e-12
-            effects.append({k: (v if k in ("pool", "metric") else float(v)) for k, v in row.items()})
+            effects.append(
+                {k: (v if k in ("pool", "metric") else float(v)) for k, v in row.items()}
+            )
     # Import only after every check passed. Never rewrite embedded Linux paths.
     targets = {s: root / "outputs/dd_final_round" / s for s in archives}
     for target in targets.values():
@@ -146,27 +171,55 @@ def main():
         for name in z.namelist():
             if not name.startswith(prefix):
                 continue
-            target = targets[stage] / name[len(prefix):]
+            target = targets[stage] / name[len(prefix) :]
             target.parent.mkdir(parents=True, exist_ok=True)
             with z.open(name) as source, target.open("xb") as dest:
                 import shutil
+
                 shutil.copyfileobj(source, dest)
             assert sha256(target) == receipts[stage]["members"][name]["sha256"]
             imported_files += 1
-    clipping = [d["training_pair_prior_clipping"]["prior_total_clipped_fraction"]
-                for pool in s1["pools"].values() for arm in pool["arms"].values() for d in arm.values()]
-    report = dict(status="verified_and_imported", protocol_id=s3["protocol_id"],
-        archives=checked, files_imported=imported_files, trial_counts=counts, choices=choices,
-        common_reactions=3814, seeds=list(range(42, 62)), effects_recalculated_from_predictions=effects,
-        maximum_s1_prior_clipping=max(clipping), s1_numerical_tie_audit_count=len(s1["numerical_tie_audit"]),
-        scientific_artifact_bytes_unchanged=True, ci_recomputed=False,
-        manuscript_modified=False, instance_needed_to_recover_n3_results=False,
-        caveats=["S2 runtime_seconds times choice calculation only, not preparation/training.",
-                 "Own-pool effect intervals are not in transfer_effects.csv; positive point estimates alone are not evidence of resolved gains.",
-                 "Transfer-loss crossed intervals exclude zero in 3/6 contrasts after prior reselection, not 6/6."])
+    clipping = [
+        d["training_pair_prior_clipping"]["prior_total_clipped_fraction"]
+        for pool in s1["pools"].values()
+        for arm in pool["arms"].values()
+        for d in arm.values()
+    ]
+    report = dict(
+        status="verified_and_imported",
+        protocol_id=s3["protocol_id"],
+        archives=checked,
+        files_imported=imported_files,
+        trial_counts=counts,
+        choices=choices,
+        common_reactions=3814,
+        seeds=list(range(42, 62)),
+        effects_recalculated_from_predictions=effects,
+        maximum_s1_prior_clipping=max(clipping),
+        s1_numerical_tie_audit_count=len(s1["numerical_tie_audit"]),
+        scientific_artifact_bytes_unchanged=True,
+        ci_recomputed=False,
+        manuscript_modified=False,
+        instance_needed_to_recover_n3_results=False,
+        caveats=[
+            "S2 runtime_seconds times choice calculation only, not preparation/training.",
+            "Own-pool effect intervals are not in transfer_effects.csv; positive point estimates alone are not evidence of resolved gains.",
+            "Transfer-loss crossed intervals exclude zero in 3/6 contrasts after prior reselection, not 6/6.",
+        ],
+    )
     atomic_json(report_path, report)
-    print(json.dumps(dict(status=report["status"], report=str(report_path),
-                         imported_files=imported_files, choices=choices, effects=effects), indent=2))
+    print(
+        json.dumps(
+            dict(
+                status=report["status"],
+                report=str(report_path),
+                imported_files=imported_files,
+                choices=choices,
+                effects=effects,
+            ),
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

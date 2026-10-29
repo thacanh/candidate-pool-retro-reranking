@@ -21,12 +21,7 @@ def write_jsonl(path: Path, records) -> Path:
 
 
 def record(product, reactant, prior, label=0):
-    return {
-        "product": product,
-        "reactant": reactant,
-        "prior": prior,
-        "label": label,
-    }
+    return {"product": product, "reactant": reactant, "prior": prior, "label": label}
 
 
 def valid_manifest():
@@ -35,11 +30,7 @@ def valid_manifest():
         "comparator": "legacy-cap10-fixed50-v1",
         "single_intended_change": "recorded-environment regeneration",
         "input_fingerprints": {
-            "source_csv": {
-                "path": "data/uspto_smiles.csv",
-                "size_bytes": 12,
-                "sha256": "a" * 64,
-            }
+            "source_csv": {"path": "data/uspto_smiles.csv", "size_bytes": 12, "sha256": "a" * 64}
         },
         "settings": {"candidate_cap": 10},
         "environment": {"python": "3.11"},
@@ -79,11 +70,7 @@ def test_fragment_equivalence_label_ignored_and_duplicate_winner(tmp_path):
 
 def test_equal_prior_duplicate_keeps_first_occurrence(tmp_path):
     path = write_jsonl(
-        tmp_path / "pool.jsonl",
-        [
-            record("CCO", "O.CC", 0.7),
-            record("CCO", "CC.O", 0.7),
-        ],
+        tmp_path / "pool.jsonl", [record("CCO", "O.CC", 0.7), record("CCO", "CC.O", 0.7)]
     )
     loaded = load_normalized_pools(path)
     candidate = loaded.pools[loaded.product_order[0]].ordered_candidates()[0]
@@ -93,16 +80,9 @@ def test_equal_prior_duplicate_keeps_first_occurrence(tmp_path):
 
 
 def test_duplicate_count_mismatch_fails_even_when_normalized_pool_matches(tmp_path):
-    reference = write_jsonl(
-        tmp_path / "reference.jsonl",
-        [record("CCO", "CC.O", 0.7)],
-    )
+    reference = write_jsonl(tmp_path / "reference.jsonl", [record("CCO", "CC.O", 0.7)])
     regenerated = write_jsonl(
-        tmp_path / "regenerated.jsonl",
-        [
-            record("CCO", "CC.O", 0.7),
-            record("CCO", "O.CC", 0.7),
-        ],
+        tmp_path / "regenerated.jsonl", [record("CCO", "CC.O", 0.7), record("CCO", "O.CC", 0.7)]
     )
     summary, discrepancies = compare_candidate_pools(reference, regenerated)
     assert summary["comparison_passed"] is False
@@ -136,10 +116,7 @@ def test_duplicate_count_mismatch_fails_even_when_normalized_pool_matches(tmp_pa
     ],
 )
 def test_missing_and_extra_products_fail(
-    tmp_path,
-    reference_records,
-    regenerated_records,
-    issue_type,
+    tmp_path, reference_records, regenerated_records, issue_type
 ):
     reference = write_jsonl(tmp_path / "reference.jsonl", reference_records)
     regenerated = write_jsonl(tmp_path / "regenerated.jsonl", regenerated_records)
@@ -154,12 +131,10 @@ def test_missing_and_extra_products_fail(
 
 def test_stable_equal_prior_order_must_match(tmp_path):
     reference = write_jsonl(
-        tmp_path / "reference.jsonl",
-        [record("CCO", "CC.O", 0.5), record("CCO", "CN.O", 0.5)],
+        tmp_path / "reference.jsonl", [record("CCO", "CC.O", 0.5), record("CCO", "CN.O", 0.5)]
     )
     regenerated = write_jsonl(
-        tmp_path / "regenerated.jsonl",
-        [record("CCO", "CN.O", 0.5), record("CCO", "CC.O", 0.5)],
+        tmp_path / "regenerated.jsonl", [record("CCO", "CN.O", 0.5), record("CCO", "CC.O", 0.5)]
     )
     summary, discrepancies = compare_candidate_pools(reference, regenerated)
     assert summary["comparison_passed"] is False
@@ -172,18 +147,9 @@ def test_stable_equal_prior_order_must_match(tmp_path):
 
 
 def test_prior_tolerance_boundary(tmp_path):
-    reference = write_jsonl(
-        tmp_path / "reference.jsonl",
-        [record("CCO", "CC.O", 0.5)],
-    )
-    within = write_jsonl(
-        tmp_path / "within.jsonl",
-        [record("CCO", "CC.O", 0.5000004)],
-    )
-    outside = write_jsonl(
-        tmp_path / "outside.jsonl",
-        [record("CCO", "CC.O", 0.500001)],
-    )
+    reference = write_jsonl(tmp_path / "reference.jsonl", [record("CCO", "CC.O", 0.5)])
+    within = write_jsonl(tmp_path / "within.jsonl", [record("CCO", "CC.O", 0.5000004)])
+    outside = write_jsonl(tmp_path / "outside.jsonl", [record("CCO", "CC.O", 0.500001)])
     assert compare_candidate_pools(reference, within)[0]["comparison_passed"] is True
     failed, discrepancies = compare_candidate_pools(reference, outside)
     assert failed["comparison_passed"] is False
@@ -197,22 +163,13 @@ def test_prior_tolerance_boundary(tmp_path):
 
 def test_exact_prior_fraction_and_float32_ulp_metrics(tmp_path):
     half_bits = struct.unpack(">I", struct.pack(">f", 0.5))[0]
-    next_float32_after_half = struct.unpack(
-        ">f", struct.pack(">I", half_bits + 1)
-    )[0]
+    next_float32_after_half = struct.unpack(">f", struct.pack(">I", half_bits + 1))[0]
     reference = write_jsonl(
-        tmp_path / "reference.jsonl",
-        [
-            record("CCO", "CC.O", 0.75),
-            record("CCO", "CN.O", 0.5),
-        ],
+        tmp_path / "reference.jsonl", [record("CCO", "CC.O", 0.75), record("CCO", "CN.O", 0.5)]
     )
     regenerated = write_jsonl(
         tmp_path / "regenerated.jsonl",
-        [
-            record("CCO", "CC.O", 0.75),
-            record("CCO", "CN.O", next_float32_after_half),
-        ],
+        [record("CCO", "CC.O", 0.75), record("CCO", "CN.O", next_float32_after_half)],
     )
     summary, discrepancies = compare_candidate_pools(reference, regenerated)
     assert summary["comparison_passed"] is True
@@ -227,14 +184,8 @@ def test_exact_prior_fraction_and_float32_ulp_metrics(tmp_path):
 
 
 def test_nonfinite_prior_fails_closed(tmp_path):
-    reference = write_jsonl(
-        tmp_path / "reference.jsonl",
-        [record("CCO", "CC.O", 0.5)],
-    )
-    regenerated = write_jsonl(
-        tmp_path / "regenerated.jsonl",
-        [record("CCO", "CC.O", float("nan"))],
-    )
+    reference = write_jsonl(tmp_path / "reference.jsonl", [record("CCO", "CC.O", 0.5)])
+    regenerated = write_jsonl(tmp_path / "regenerated.jsonl", [record("CCO", "CC.O", float("nan"))])
     summary, discrepancies = compare_candidate_pools(reference, regenerated)
     assert summary["comparison_passed"] is False
     assert summary["regenerated"]["fatal_error_count"] == 1
@@ -256,14 +207,8 @@ def test_manifest_schema_accepts_complete_and_reports_missing():
 
 
 def test_cli_emits_reports_and_returns_nonzero_on_failure(tmp_path):
-    reference = write_jsonl(
-        tmp_path / "reference.jsonl",
-        [record("CCO", "CC.O", 0.5)],
-    )
-    regenerated = write_jsonl(
-        tmp_path / "regenerated.jsonl",
-        [record("CCO", "CN.O", 0.5)],
-    )
+    reference = write_jsonl(tmp_path / "reference.jsonl", [record("CCO", "CC.O", 0.5)])
+    regenerated = write_jsonl(tmp_path / "regenerated.jsonl", [record("CCO", "CN.O", 0.5)])
     manifest_path = tmp_path / "manifest.json"
     manifest_path.write_text(json.dumps(valid_manifest()), encoding="utf-8")
     summary_path = tmp_path / "summary.json"
@@ -287,8 +232,7 @@ def test_cli_emits_reports_and_returns_nonzero_on_failure(tmp_path):
     assert summary["passed"] is False
     assert summary["manifest_validation"]["valid"] is True
     discrepancies = [
-        json.loads(line)
-        for line in discrepancies_path.read_text(encoding="utf-8").splitlines()
+        json.loads(line) for line in discrepancies_path.read_text(encoding="utf-8").splitlines()
     ]
     assert discrepancies
 

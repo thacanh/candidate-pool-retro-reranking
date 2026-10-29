@@ -55,9 +55,7 @@ def reaction_class(value: object) -> int:
     return result
 
 
-def verify_t5chem_archive(
-    source_csv: str | Path, archive_path: str | Path
-) -> dict:
+def verify_t5chem_archive(source_csv: str | Path, archive_path: str | Path) -> dict:
     """Verify the DOI-linked T5Chem mirror against the local split row by row."""
     archive_path = Path(archive_path)
     if archive_path.stat().st_size != T5CHEM_ARCHIVE_SIZE_BYTES:
@@ -67,9 +65,7 @@ def verify_t5chem_archive(
         )
     archive_md5 = md5(archive_path)
     if archive_md5 != T5CHEM_ARCHIVE_MD5:
-        raise ValueError(
-            f"Unexpected T5Chem archive MD5: {archive_md5} != {T5CHEM_ARCHIVE_MD5}"
-        )
+        raise ValueError(f"Unexpected T5Chem archive MD5: {archive_md5} != {T5CHEM_ARCHIVE_MD5}")
 
     local = pd.read_csv(source_csv).reset_index(drop=True)
     split_files = {"train": "train", "valid": "val", "test": "test"}
@@ -80,9 +76,7 @@ def verify_t5chem_archive(
 
     with tarfile.open(archive_path, "r:bz2") as archive:
         for local_split, archive_split in split_files.items():
-            subset = local.loc[local["set"].astype(str) == local_split].reset_index(
-                drop=True
-            )
+            subset = local.loc[local["set"].astype(str) == local_split].reset_index(drop=True)
             prefix = f"data/USPTO_50k/{archive_split}"
             source_handle = archive.extractfile(f"{prefix}.source")
             target_handle = archive.extractfile(f"{prefix}.target")
@@ -101,15 +95,9 @@ def verify_t5chem_archive(
             for index, (product, reactant) in enumerate(zip(products, reactants)):
                 local_product = str(subset.at[index, "products_smiles"])
                 local_reactant = str(subset.at[index, "reactants_smiles"])
-                raw_pair_matches += int(
-                    product == local_product and reactant == local_reactant
-                )
-                canonical_product_matches += int(
-                    canonical(product) == canonical(local_product)
-                )
-                canonical_reactant_matches += int(
-                    canonical(reactant) == canonical(local_reactant)
-                )
+                raw_pair_matches += int(product == local_product and reactant == local_reactant)
+                canonical_product_matches += int(canonical(product) == canonical(local_product))
+                canonical_reactant_matches += int(canonical(reactant) == canonical(local_reactant))
 
     expected = len(local)
     if canonical_product_matches != expected or canonical_reactant_matches != expected:
@@ -143,9 +131,7 @@ def main() -> None:
     parser.add_argument("--chemformer-pickle", required=True)
     parser.add_argument("--source-csv", default="data/uspto_smiles.csv")
     parser.add_argument("--output", default="data/uspto_reaction_metadata.csv")
-    parser.add_argument(
-        "--provenance-output", default="data/uspto_provenance.json"
-    )
+    parser.add_argument("--provenance-output", default="data/uspto_provenance.json")
     parser.add_argument(
         "--t5chem-archive",
         help=(
@@ -161,21 +147,15 @@ def main() -> None:
     if not required.issubset(official.columns):
         raise ValueError(f"Unexpected official schema: {official.columns.tolist()}")
     if len(official) != len(local):
-        raise ValueError(
-            f"Row-count mismatch: official={len(official)}, local={len(local)}"
-        )
+        raise ValueError(f"Row-count mismatch: official={len(official)}, local={len(local)}")
     if not official["set"].astype(str).equals(local["set"].astype(str)):
         raise ValueError("Official and local split columns do not match row-for-row.")
 
     product_matches = 0
     reactant_matches = 0
     for index in range(len(local)):
-        official_product = Chem.MolToSmiles(
-            official.at[index, "products_mol"], canonical=True
-        )
-        official_reactants = Chem.MolToSmiles(
-            official.at[index, "reactants_mol"], canonical=True
-        )
+        official_product = Chem.MolToSmiles(official.at[index, "products_mol"], canonical=True)
+        official_reactants = Chem.MolToSmiles(official.at[index, "reactants_mol"], canonical=True)
         if official_product == canonical(local.at[index, "products_smiles"]):
             product_matches += 1
         if official_reactants == canonical(local.at[index, "reactants_smiles"]):
@@ -217,15 +197,9 @@ def main() -> None:
                 "doi": "10.6084/m9.figshare.5104873.v1",
                 "license": "CC0",
             },
-            "reaction_role_assignment_and_random_subset": {
-                "paper_doi": "10.1021/acs.jcim.6b00564"
-            },
-            "retrosynthesis_benchmark": {
-                "paper_doi": "10.1021/acscentsci.7b00303"
-            },
-            "chemformer_distribution": {
-                "paper_doi": "10.1088/2632-2153/ac3ffb"
-            },
+            "reaction_role_assignment_and_random_subset": {"paper_doi": "10.1021/acs.jcim.6b00564"},
+            "retrosynthesis_benchmark": {"paper_doi": "10.1021/acscentsci.7b00303"},
+            "chemformer_distribution": {"paper_doi": "10.1088/2632-2153/ac3ffb"},
         },
     }
     if args.t5chem_archive:

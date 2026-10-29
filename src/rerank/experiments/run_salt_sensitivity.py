@@ -128,11 +128,7 @@ def _candidate_smiles(candidate: dict[str, Any]) -> str:
 
 def _all_candidate_strings(sections: Iterable[tuple[str, list[dict]]]) -> list[str]:
     return sorted(
-        {
-            _candidate_smiles(candidate)
-            for _, candidates in sections
-            for candidate in candidates
-        }
+        {_candidate_smiles(candidate) for _, candidates in sections for candidate in candidates}
     )
 
 
@@ -149,9 +145,10 @@ def _salt_map(strings: list[str]) -> tuple[dict[str, str], dict[str, Any]]:
         removed_fragments += max(0, original_count - surviving_count)
         if index % 5_000 == 0 or index == len(strings):
             print(f"F3 salt scan: {index}/{len(strings)} unique candidates", flush=True)
-    counts = {name: sum(value == name for value in statuses.values()) for name in (
-        "changed", "unchanged", "SMILES parse", "salt-removal-empty"
-    )}
+    counts = {
+        name: sum(value == name for value in statuses.values())
+        for name in ("changed", "unchanged", "SMILES parse", "salt-removal-empty")
+    }
     return mapping, {
         "unique_candidate_strings": len(strings),
         "status_counts": counts,
@@ -185,9 +182,7 @@ def _embed_required(
             chunk = required[start : start + batch_items]
             with contextlib.redirect_stdout(sink), contextlib.redirect_stderr(sink):
                 arrays, statuses, errors = backend.encode_batch(chunk)
-            for smiles, array, status, error in zip(
-                chunk, arrays, statuses, errors, strict=True
-            ):
+            for smiles, array, status, error in zip(chunk, arrays, statuses, errors, strict=True):
                 status_counts[status] = status_counts.get(status, 0) + 1
                 cause = _embedding_cause(smiles, status, array, error)
                 if cause is not None:
@@ -214,12 +209,16 @@ def _embed_required(
                 f"{rate:.2f}/s | ETA {eta/60:.1f} min",
                 flush=True,
             )
-    return embeddings, audit_rows, {
-        "required_unique_fragments": len(required),
-        "status_counts": status_counts,
-        "runtime_seconds": time.perf_counter() - started,
-        "backend": backend.metadata(),
-    }
+    return (
+        embeddings,
+        audit_rows,
+        {
+            "required_unique_fragments": len(required),
+            "status_counts": status_counts,
+            "runtime_seconds": time.perf_counter() - started,
+            "backend": backend.metadata(),
+        },
+    )
 
 
 def _load_or_embed_required(
@@ -230,9 +229,7 @@ def _load_or_embed_required(
     checkpoint: Path,
     dictionary: Path,
 ) -> tuple[dict[str, np.ndarray], list[dict[str, Any]], dict[str, Any]]:
-    required_sha = "sha256:" + hashlib.sha256(
-        "\n".join(required).encode("utf-8")
-    ).hexdigest()
+    required_sha = "sha256:" + hashlib.sha256("\n".join(required).encode("utf-8")).hexdigest()
     expected = {
         "record_kind": "f3_affected_atom_embedding_cache",
         "protocol_id": F3_PROTOCOL_ID,
@@ -255,9 +252,7 @@ def _load_or_embed_required(
         audit["cache"] = file_fingerprint(path)
         return embeddings, list(cached["generated_non_ok"]), audit
 
-    embeddings, generated_non_ok, audit = _embed_required(
-        required, backend, batch_items
-    )
+    embeddings, generated_non_ok, audit = _embed_required(required, backend, batch_items)
     audit["cache_reused"] = False
     if path is not None:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -285,10 +280,7 @@ def _embedding_for(smiles: str, embeddings: dict[str, np.ndarray]) -> np.ndarray
 
 
 def _feature_row(
-    product: str,
-    candidate: str,
-    prior: float,
-    embeddings: dict[str, np.ndarray],
+    product: str, candidate: str, prior: float, embeddings: dict[str, np.ndarray]
 ) -> np.ndarray:
     product_embedding = _embedding_for(product, embeddings)
     candidate_embedding = _embedding_for(candidate, embeddings)
@@ -311,8 +303,7 @@ def _feature_row(
 def _inventory_sections(container: dict[str, Any], selection: bool) -> list[tuple[str, list[dict]]]:
     if selection:
         sections = [
-            (str(row["product_smiles"]), row["candidates"])
-            for row in container["train_products"]
+            (str(row["product_smiles"]), row["candidates"]) for row in container["train_products"]
         ]
         sections.extend(
             (str(product), candidates)
@@ -397,9 +388,7 @@ def _transform_matrix(
 
 
 def _write_fallback_audit(
-    output: Path,
-    existing_status_csv: str | Path,
-    generated_rows: list[dict[str, Any]],
+    output: Path, existing_status_csv: str | Path, generated_rows: list[dict[str, Any]]
 ) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     with open(existing_status_csv, encoding="utf-8", newline="") as handle:
@@ -419,8 +408,7 @@ def _write_fallback_audit(
     output.parent.mkdir(parents=True, exist_ok=True)
     with open(output, "w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(
-            handle,
-            fieldnames=("scope", "smiles", "status", "failure_cause", "error"),
+            handle, fieldnames=("scope", "smiles", "status", "failure_cause", "error")
         )
         writer.writeheader()
         writer.writerows(rows)
@@ -431,8 +419,7 @@ def _write_fallback_audit(
         "artifact": file_fingerprint(output),
         "audited_non_ok_rows": len(rows),
         "frozen_zero_fallback_rows": sum(
-            row["scope"] == "frozen seed-42 non-ok inventory"
-            and row["status"] == "fallback_zero"
+            row["scope"] == "frozen seed-42 non-ok inventory" and row["status"] == "fallback_zero"
             for row in rows
         ),
         "cause_counts": cause_counts,
@@ -466,17 +453,10 @@ def transform_container(
         device=device,
     )
     embeddings, generated_non_ok, embedding_audit = _load_or_embed_required(
-        required,
-        backend,
-        batch_items,
-        embedding_cache,
-        checkpoint,
-        dictionary,
+        required, backend, batch_items, embedding_cache, checkpoint, dictionary
     )
     with open(fallback_status_csv, encoding="utf-8", newline="") as handle:
-        frozen_non_ok = {
-            row["smiles"]: row["status"] for row in csv.DictReader(handle)
-        }
+        frozen_non_ok = {row["smiles"]: row["status"] for row in csv.DictReader(handle)}
     feature_audit = {
         "control_pairs_recomputed": 0,
         "control_feature_mismatches": 0,
@@ -507,8 +487,7 @@ def transform_container(
         validation = container["validation_payload"]
         validation["eval_features"] = [
             _transform_matrix(
-                str(product), candidates, matrix, mapping, embeddings,
-                frozen_non_ok, feature_audit
+                str(product), candidates, matrix, mapping, embeddings, frozen_non_ok, feature_audit
             )
             for (product, candidates), matrix in zip(
                 validation["eval_pwc"], validation["eval_features"], strict=True
@@ -517,8 +496,7 @@ def transform_container(
     else:
         container["eval_features"] = [
             _transform_matrix(
-                str(product), candidates, matrix, mapping, embeddings,
-                frozen_non_ok, feature_audit
+                str(product), candidates, matrix, mapping, embeddings, frozen_non_ok, feature_audit
             )
             for (product, candidates), matrix in zip(
                 container["eval_pwc"], container["eval_features"], strict=True
@@ -560,9 +538,7 @@ def prepare_selection(args: argparse.Namespace) -> dict[str, Any]:
             raise FileExistsError(f"Refusing to overwrite F3 artifact: {target}")
     started = time.perf_counter()
     primary = validate_selection_freeze(args.primary_freeze)
-    if "sha256:" + file_sha256(args.primary_selection) != primary[
-        "selection_bundle_sha256"
-    ]:
+    if "sha256:" + file_sha256(args.primary_selection) != primary["selection_bundle_sha256"]:
         raise ValueError("Primary selection bundle does not belong to its freeze.")
     checkpoint, dictionary = discover_weight_paths(args.checkpoint, args.dictionary)
     assets = validate_weight_paths(checkpoint, dictionary)
@@ -595,9 +571,7 @@ def prepare_selection(args: argparse.Namespace) -> dict[str, Any]:
     bundle["representation_provenance"] = {
         **bundle["representation_provenance"],
         "source_protocol_id": F3_PROTOCOL_ID,
-        "base_source_protocol_id": bundle["representation_provenance"].get(
-            "source_protocol_id"
-        ),
+        "base_source_protocol_id": bundle["representation_provenance"].get("source_protocol_id"),
         "backend": audit["embedding"]["backend"],
     }
     bundle["input_fingerprints"] = {
@@ -684,9 +658,7 @@ def fit_validation(args: argparse.Namespace) -> dict[str, Any]:
     for seed in SEEDS:
         result_path = _trial_path(root, args.arm, seed)
         if result_path.exists():
-            completed[str(seed)] = _validate_trial(
-                root, args.arm, seed, config, bundle_sha
-            )
+            completed[str(seed)] = _validate_trial(root, args.arm, seed, config, bundle_sha)
             continue
         run_dir = result_path.parent
         checkpoint = run_dir / "best_checkpoint.pt"
@@ -742,8 +714,7 @@ def freeze(args: argparse.Namespace) -> dict[str, Any]:
         config = _config(primary, arm)
         selected[arm] = {
             "trials": {
-                str(seed): _validate_trial(root, arm, seed, config, bundle_sha)
-                for seed in SEEDS
+                str(seed): _validate_trial(root, arm, seed, config, bundle_sha) for seed in SEEDS
             }
         }
     record = {
@@ -754,9 +725,7 @@ def freeze(args: argparse.Namespace) -> dict[str, Any]:
         "primary_freeze": file_fingerprint(args.primary_freeze),
         "selection_bundle": file_fingerprint(args.selection_bundle),
         "prepare_manifest": file_fingerprint(args.prepare_manifest),
-        "retained_primary_train_test_cache_sha256": primary[
-            "retained_train_test_cache_sha256"
-        ],
+        "retained_primary_train_test_cache_sha256": primary["retained_train_test_cache_sha256"],
         "selected_prior_transform": primary["selected_prior_transform"],
         "selected_baseline": selected["baseline"],
         "selected_augmented": selected["augmented"],
@@ -766,9 +735,12 @@ def freeze(args: argparse.Namespace) -> dict[str, Any]:
         "test_partition_loaded": False,
         "complete": True,
     }
-    record["freeze_fingerprint"] = "sha256:" + hashlib.sha256(
-        json.dumps(record, sort_keys=True, separators=(",", ":")).encode()
-    ).hexdigest()
+    record["freeze_fingerprint"] = (
+        "sha256:"
+        + hashlib.sha256(
+            json.dumps(record, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+    )
     immutable_json_dump(record, args.output, "F3 model freeze")
     return record
 
@@ -829,15 +801,14 @@ def evaluate_test(args: argparse.Namespace) -> dict[str, Any]:
     )
     primary_manifest_path = Path(args.primary_test_manifest).resolve()
     primary_manifest = json.loads(primary_manifest_path.read_text(encoding="utf-8"))
-    if (
-        primary_manifest.get("selection_fingerprint")
-        != freeze_record["primary_selection_fingerprint"]
-        or not primary_manifest.get("test_partition_loaded_only_after_selection_freeze")
-    ):
+    if primary_manifest.get("selection_fingerprint") != freeze_record[
+        "primary_selection_fingerprint"
+    ] or not primary_manifest.get("test_partition_loaded_only_after_selection_freeze"):
         raise ValueError("Frozen primary test manifest is incompatible with F3.")
-    if json.loads(Path(args.f3_freeze).read_text(encoding="utf-8"))[
-        "freeze_fingerprint"
-    ] != original_fingerprint:
+    if (
+        json.loads(Path(args.f3_freeze).read_text(encoding="utf-8"))["freeze_fingerprint"]
+        != original_fingerprint
+    ):
         raise RuntimeError("F3 freeze changed during test evaluation.")
     record = {
         "schema_version": 1,
@@ -846,10 +817,7 @@ def evaluate_test(args: argparse.Namespace) -> dict[str, Any]:
         "f3_freeze": file_fingerprint(args.f3_freeze),
         "primary_current_handling_manifest": file_fingerprint(primary_manifest_path),
         "current_handling_metrics": primary_manifest["per_seed_metrics"],
-        "salt_removed_metrics": {
-            "baseline": salted_baseline,
-            "augmented": salted_augmented,
-        },
+        "salt_removed_metrics": {"baseline": salted_baseline, "augmented": salted_augmented},
         "salt_removed_descriptive_summary": summarize_paired_metrics(
             salted_baseline, salted_augmented
         ),

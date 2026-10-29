@@ -59,20 +59,31 @@ def _trial_path(root: Path, arm: str, seed: int) -> Path:
     return root / "validation" / arm / f"seed_{seed}" / "trial.json"
 
 
-def _validate_trial(root: Path, arm: str, seed: int, config: GridConfig, bundle_sha: str, primary_fp: str) -> dict:
+def _validate_trial(
+    root: Path, arm: str, seed: int, config: GridConfig, bundle_sha: str, primary_fp: str
+) -> dict:
     path = _trial_path(root, arm, seed)
     trial = json.loads(path.read_text(encoding="utf-8"))
     expected = {
-        "record_kind": "g1_validation_trial", "protocol_id": G1_PROTOCOL_ID,
-        "arm": arm, "seed": seed, "config_fingerprint": config_fingerprint(config),
+        "record_kind": "g1_validation_trial",
+        "protocol_id": G1_PROTOCOL_ID,
+        "arm": arm,
+        "seed": seed,
+        "config_fingerprint": config_fingerprint(config),
         "selection_bundle_sha256": bundle_sha,
-        "primary_selection_fingerprint": primary_fp, "test_partition_loaded": False,
+        "primary_selection_fingerprint": primary_fp,
+        "test_partition_loaded": False,
     }
     if any(trial.get(key) != value for key, value in expected.items()):
         raise RuntimeError(f"G1 validation trial is incompatible: {path}")
-    for rel_key, hash_key in (("checkpoint_relpath", "checkpoint_sha256"), ("normalizer_relpath", "normalizer_sha256")):
+    for rel_key, hash_key in (
+        ("checkpoint_relpath", "checkpoint_sha256"),
+        ("normalizer_relpath", "normalizer_sha256"),
+    ):
         artifact = (root / trial[rel_key]).resolve()
-        if not artifact.is_relative_to(root) or trial[hash_key] != "sha256:" + file_sha256(artifact):
+        if not artifact.is_relative_to(root) or trial[hash_key] != "sha256:" + file_sha256(
+            artifact
+        ):
             raise RuntimeError(f"G1 artifact checksum failed: {artifact}")
     return trial
 
@@ -90,7 +101,9 @@ def run_fit(args) -> None:
     for seed in args.seeds:
         path = _trial_path(root, args.arm, seed)
         if path.exists():
-            _validate_trial(root, args.arm, seed, config, bundle_sha, freeze["selection_fingerprint"])
+            _validate_trial(
+                root, args.arm, seed, config, bundle_sha, freeze["selection_fingerprint"]
+            )
             continue
         run_dir = path.parent
         checkpoint = run_dir / "best_checkpoint.pt"
@@ -100,15 +113,25 @@ def run_fit(args) -> None:
         run_dir.mkdir(parents=True, exist_ok=True)
         started = time.perf_counter()
         trained = train_validation_trial(
-            cache, config, seed, device, checkpoint, normalizer,
-            max_epochs=MAX_EPOCHS, patience=PATIENCE, min_improvement=MIN_IMPROVEMENT,
+            cache,
+            config,
+            seed,
+            device,
+            checkpoint,
+            normalizer,
+            max_epochs=MAX_EPOCHS,
+            patience=PATIENCE,
+            min_improvement=MIN_IMPROVEMENT,
             allowed_seeds=G1_SEEDS,
         )
         trial = {
-            "record_kind": "g1_validation_trial", "protocol_id": G1_PROTOCOL_ID,
+            "record_kind": "g1_validation_trial",
+            "protocol_id": G1_PROTOCOL_ID,
             "comparator": "same frozen arm configuration across paired seeds 42--61",
             "single_intended_change": "training RNG seed",
-            "arm": args.arm, "seed": seed, "config": asdict(config),
+            "arm": args.arm,
+            "seed": seed,
+            "config": asdict(config),
             "config_fingerprint": config_fingerprint(config),
             "selection_bundle_sha256": bundle_sha,
             "primary_selection_fingerprint": freeze["selection_fingerprint"],
@@ -138,21 +161,27 @@ def run_freeze(args) -> None:
             "config": asdict(config),
             "config_fingerprint": config_fingerprint(config),
             "trials": {
-                str(seed): _validate_trial(root, arm, seed, config, bundle_sha, primary["selection_fingerprint"])
+                str(seed): _validate_trial(
+                    root, arm, seed, config, bundle_sha, primary["selection_fingerprint"]
+                )
                 for seed in G1_SEEDS
             },
         }
     record = {
-        "record_kind": "g1_20seed_freeze", "protocol_id": G1_PROTOCOL_ID,
+        "record_kind": "g1_20seed_freeze",
+        "protocol_id": G1_PROTOCOL_ID,
         "comparator": "frozen validation-tuned baseline and augmented arms",
         "single_intended_change": "extend paired training seeds from 42--46 to 42--61",
         "primary_selection_fingerprint": primary["selection_fingerprint"],
         "selection_bundle_sha256": bundle_sha,
-        "retained_train_test_cache_sha256": bundle["input_fingerprints"]["retained_train_test_cache"]["sha256"],
+        "retained_train_test_cache_sha256": bundle["input_fingerprints"][
+            "retained_train_test_cache"
+        ]["sha256"],
         "prior_transform": primary["selected_prior_transform"],
         "selected_baseline": selected["baseline"],
         "selected_augmented": selected["augmented"],
-        "seeds": list(G1_SEEDS), "test_partition_loaded": False,
+        "seeds": list(G1_SEEDS),
+        "test_partition_loaded": False,
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
     }
     record["freeze_fingerprint"] = canonical_fingerprint(record)
@@ -188,20 +217,34 @@ def run_evaluate(args) -> None:
     device = resolve_device(args.device)
     predictions = result / "predictions"
     baseline = _score_test_arm(
-        payload, freeze["selected_baseline"], freeze["prior_transform"], "baseline",
-        root, predictions, device, seeds=G1_SEEDS,
+        payload,
+        freeze["selected_baseline"],
+        freeze["prior_transform"],
+        "baseline",
+        root,
+        predictions,
+        device,
+        seeds=G1_SEEDS,
     )
     augmented = _score_test_arm(
-        payload, freeze["selected_augmented"], freeze["prior_transform"], "augmented",
-        root, predictions, device, seeds=G1_SEEDS,
+        payload,
+        freeze["selected_augmented"],
+        freeze["prior_transform"],
+        "augmented",
+        root,
+        predictions,
+        device,
+        seeds=G1_SEEDS,
     )
     manifest = {
         "manifest_kind": "g1_20seed_post_freeze_test_evaluation",
-        "protocol_id": G1_PROTOCOL_ID, "g1_freeze": file_fingerprint(args.g1_freeze),
+        "protocol_id": G1_PROTOCOL_ID,
+        "g1_freeze": file_fingerprint(args.g1_freeze),
         "per_seed_metrics": {"baseline": baseline, "augmented": augmented},
         "test_partition_loaded_only_after_20seed_freeze": True,
         "fixed_training_config": FIXED_TUNING_CONFIG,
-        "environment": environment_record(device), "git_commit": git_commit(),
+        "environment": environment_record(device),
+        "git_commit": git_commit(),
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
     }
     immutable_json_dump(manifest, result / "manifest.json", "G1 test manifest")

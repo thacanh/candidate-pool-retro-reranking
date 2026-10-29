@@ -1,35 +1,7 @@
+"""Score candidate lists and compare rerankers with the original prior order.
+
+Learned rerankers use the supplied feature extractor and fitted model.
 """
-MODULE 8 — Inference / Reranking (v2 — two-model ablation)
-============================================================
-Fair comparison matching the paper design:
-
-    1. Baseline    — prior-sorted (AiZynthFinder output, no ML used)
-    2. Reranker2D  — MLP trained on 5 2D features [f1,f3,f4,f9,f10]
-                     Does NOT use UniMol embeddings
-    3. Reranker3D  — MLP trained on 10 3D features [f1,f3,f4,f5,f6,f7,f8,f9,f10,f11]
-                     USES UniMol embeddings
-
-Usage in the paper:
-    # Train 2 separate models (see train_colab_v3.ipynb):
-    # model_2d = train(extractor_2d, feature_mode='2d')
-    # model_3d = train(extractor_3d, feature_mode='3d')
-
-    extractor_2d = FeatureExtractor(encoder, feature_mode='2d')
-    extractor_3d = FeatureExtractor(encoder, feature_mode='3d')
-
-    reranker_2d = Reranker2D(extractor_2d, model_2d)
-    reranker_3d = Reranker3D(extractor_3d, model_3d)
-
-    cmp = TripleComparison(reranker_2d, reranker_3d)
-    result = cmp.compare(products_with_candidates, ground_truths)
-    print(result.summary())
-
-This isolates the true impact of the 3D embeddings because:
-  - model_2d never sees the 3D features
-  - model_3d is trained with all 3D features from scratch
-  - Δ(3D − 2D) = net contribution of UniMol 3D embeddings
-"""
-
 from __future__ import annotations
 
 import logging
@@ -42,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 # Type alias
 AiZynCandidate = Dict[str, object]
-
 
 
 # Base Reranker
@@ -61,19 +32,12 @@ class Reranker:
         name:              Name to identify in outputs (default "Reranker-3D").
     """
 
-    def __init__(
-        self,
-        feature_extractor,
-        model,
-        name: str = "Reranker-3D",
-    ) -> None:
+    def __init__(self, feature_extractor, model, name: str = "Reranker-3D") -> None:
         self.extractor = feature_extractor
         self.model = model
         self.name = name
 
-
     # Hook for subclasses to modify features before scoring
-
 
     def _postprocess_features(self, feature_matrix: np.ndarray) -> np.ndarray:
         """
@@ -88,14 +52,10 @@ class Reranker:
         """
         return feature_matrix
 
-
     # Core reranking logic
 
-
     def rerank(
-        self,
-        product_smiles: str,
-        candidates: List[AiZynCandidate],
+        self, product_smiles: str, candidates: List[AiZynCandidate]
     ) -> Tuple[List[AiZynCandidate], np.ndarray]:
         """
         Rerank candidates for a single product.
@@ -112,9 +72,7 @@ class Reranker:
             return [], np.array([], dtype=np.float32)
 
         # Step 1: Sort by prior DESC → assign rank
-        sorted_cands = sorted(
-            candidates, key=lambda c: float(c["prior"]), reverse=True
-        )
+        sorted_cands = sorted(candidates, key=lambda c: float(c["prior"]), reverse=True)
         cand_smiles = [str(c["smiles"]) for c in sorted_cands]
         cand_priors = [float(c["prior"]) for c in sorted_cands]
         ranks = list(range(len(sorted_cands)))
@@ -141,13 +99,10 @@ class Reranker:
 
         return ranked_candidates, ranked_scores
 
-
     # Batch API
 
-
     def rerank_batch(
-        self,
-        products_with_candidates: List[Tuple[str, List[AiZynCandidate]]],
+        self, products_with_candidates: List[Tuple[str, List[AiZynCandidate]]]
     ) -> List[Tuple[List[AiZynCandidate], np.ndarray]]:
         """
         Rerank candidates for multiple products.
@@ -159,23 +114,16 @@ class Reranker:
         n = len(products_with_candidates)
 
         for i, (product_smi, candidates) in enumerate(products_with_candidates):
-            logger.debug(
-                "[%s] [%d/%d] Reranking: %s", self.name, i + 1, n, product_smi
-            )
+            logger.debug("[%s] [%d/%d] Reranking: %s", self.name, i + 1, n, product_smi)
             ranked, scores = self.rerank(product_smi, candidates)
             results.append((ranked, scores))
 
         return results
 
-
     # Convenience
 
-
     def top_k(
-        self,
-        product_smiles: str,
-        candidates: List[AiZynCandidate],
-        k: int = 1,
+        self, product_smiles: str, candidates: List[AiZynCandidate], k: int = 1
     ) -> List[AiZynCandidate]:
         """Top-k reranked candidates."""
         ranked, _ = self.rerank(product_smiles, candidates)
@@ -183,7 +131,6 @@ class Reranker:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name!r})"
-
 
 
 # Reranker2D (2D-only model — does not use UniMol)
@@ -204,8 +151,8 @@ class Reranker2D(Reranker):
 
     def __init__(
         self,
-        feature_extractor,   # FeatureExtractor(mode='2d')
-        model,               # RankerMLP.for_2d()
+        feature_extractor,  # FeatureExtractor(mode='2d')
+        model,  # RankerMLP.for_2d()
         name: str = "Reranker-2D",
     ) -> None:
         super().__init__(feature_extractor, model, name=name)
@@ -213,7 +160,6 @@ class Reranker2D(Reranker):
 
 # Backward-compat alias
 RerankerNo3D = Reranker2D
-
 
 
 # Baseline (prior-sorted, no reranking)
@@ -230,9 +176,7 @@ class BaselineRanker:
     name: str = "Baseline-Prior"
 
     def rerank(
-        self,
-        product_smiles: str,
-        candidates: List[AiZynCandidate],
+        self, product_smiles: str, candidates: List[AiZynCandidate]
     ) -> Tuple[List[AiZynCandidate], np.ndarray]:
         """
         Sort candidates by prior DESC — this matches the raw AiZynthFinder output.
@@ -240,25 +184,17 @@ class BaselineRanker:
         if not candidates:
             return [], np.array([], dtype=np.float32)
 
-        sorted_cands = sorted(
-            candidates, key=lambda c: float(c["prior"]), reverse=True
-        )
-        scores = np.array(
-            [float(c["prior"]) for c in sorted_cands], dtype=np.float32
-        )
+        sorted_cands = sorted(candidates, key=lambda c: float(c["prior"]), reverse=True)
+        scores = np.array([float(c["prior"]) for c in sorted_cands], dtype=np.float32)
         return sorted_cands, scores
 
     def rerank_batch(
-        self,
-        products_with_candidates: List[Tuple[str, List[AiZynCandidate]]],
+        self, products_with_candidates: List[Tuple[str, List[AiZynCandidate]]]
     ) -> List[Tuple[List[AiZynCandidate], np.ndarray]]:
         return [self.rerank(p, cands) for p, cands in products_with_candidates]
 
     def top_k(
-        self,
-        product_smiles: str,
-        candidates: List[AiZynCandidate],
-        k: int = 1,
+        self, product_smiles: str, candidates: List[AiZynCandidate], k: int = 1
     ) -> List[AiZynCandidate]:
         ranked, _ = self.rerank(product_smiles, candidates)
         return ranked[:k]
@@ -267,13 +203,13 @@ class BaselineRanker:
         return f"BaselineRanker(name={self.name!r})"
 
 
-
 # Reranker3D alias (full 3D model)
 
 
 # The Reranker class supports full 3D features by default.
 # Define an alias here to make naming clearer in notebooks.
 Reranker3D = Reranker
+
 
 @dataclass
 class EvaluationResult3Way:
@@ -352,10 +288,10 @@ class EvaluationResult3Way:
         ]
 
         for k in self.ks:
-            b  = self.baseline_accuracy[k]
-            n  = self.no3d_accuracy[k]
-            f  = self.full3d_accuracy[k]
-            d  = self.delta_3d_vs_no3d[k]
+            b = self.baseline_accuracy[k]
+            n = self.no3d_accuracy[k]
+            f = self.full3d_accuracy[k]
+            d = self.delta_3d_vs_no3d[k]
             sign = "+" if d >= 0 else ""
             lines.append(
                 f"{k:>4}  "
@@ -403,14 +339,21 @@ class EvaluationResult3Way:
         """Generate LaTeX table to copy-paste directly into the paper."""
         rows = []
         header = (
-            r"\begin{table}[h]" "\n"
-            r"\centering" "\n"
+            r"\begin{table}[h]"
+            "\n"
+            r"\centering"
+            "\n"
             r"\caption{Retrosynthesis reranking results. "
-            r"$\Delta$ denotes improvement of 3D over No-3D reranker.}" "\n"
-            r"\label{tab:reranking_results}" "\n"
-            r"\begin{tabular}{lcccccc}" "\n"
-            r"\toprule" "\n"
-            r"Method & Top-1 & Top-3 & Top-5 & Top-10 & MRR \\" "\n"
+            r"$\Delta$ denotes improvement of 3D over No-3D reranker.}"
+            "\n"
+            r"\label{tab:reranking_results}"
+            "\n"
+            r"\begin{tabular}{lcccccc}"
+            "\n"
+            r"\toprule"
+            "\n"
+            r"Method & Top-1 & Top-3 & Top-5 & Top-10 & MRR \\"
+            "\n"
             r"\midrule"
         )
         rows.append(header)
@@ -425,20 +368,15 @@ class EvaluationResult3Way:
             f"{self.baseline_name} & {_fmt(self.baseline_accuracy)} "
             f"& {self.baseline_mrr:.4f} \\\\"
         )
-        rows.append(
-            f"{self.no3d_name} & {_fmt(self.no3d_accuracy)} "
-            f"& {self.no3d_mrr:.4f} \\\\"
-        )
+        rows.append(f"{self.no3d_name} & {_fmt(self.no3d_accuracy)} " f"& {self.no3d_mrr:.4f} \\\\")
         rows.append(r"\midrule")
         rows.append(
-            f"{self.full3d_name} & {_fmt(self.full3d_accuracy)} "
-            f"& {self.full3d_mrr:.4f} \\\\"
+            f"{self.full3d_name} & {_fmt(self.full3d_accuracy)} " f"& {self.full3d_mrr:.4f} \\\\"
         )
         rows.append(r"\bottomrule")
         rows.append(r"\end{tabular}")
         rows.append(r"\end{table}")
         return "\n".join(rows)
-
 
 
 # TripleComparison — main orchestrator for the paper
@@ -461,12 +399,12 @@ class TripleComparison:
 
     def __init__(
         self,
-        reranker_2d: Reranker,    # Reranker2D instance
-        reranker_3d: Reranker,    # Reranker3D (full Reranker) instance
+        reranker_2d: Reranker,  # Reranker2D instance
+        reranker_3d: Reranker,  # Reranker3D (full Reranker) instance
         ks: Optional[List[int]] = None,
     ) -> None:
         self.baseline = BaselineRanker()
-        self.no3d = reranker_2d    # backward compat name
+        self.no3d = reranker_2d  # backward compat name
         self.full3d = reranker_3d
         self.ks = ks or [1, 3, 5, 10]
 
@@ -487,11 +425,7 @@ class TripleComparison:
         Returns:
             EvaluationResult3Way containing all evaluation metrics.
         """
-        from rerank.evaluate import (
-            top_k_accuracy,
-            mean_reciprocal_rank,
-            _is_match,
-        )
+        from rerank.evaluate import top_k_accuracy, mean_reciprocal_rank, _is_match
 
         n = len(products_with_candidates)
         logger.info("TripleComparison: evaluating %d products …", n)
@@ -513,8 +447,8 @@ class TripleComparison:
             return [[str(c["smiles"]) for c in ranked] for ranked, _ in results]
 
         baseline_lists = _to_smiles_list(baseline_results)
-        no3d_lists     = _to_smiles_list(no3d_results)
-        full3d_lists   = _to_smiles_list(full3d_results)
+        no3d_lists = _to_smiles_list(no3d_results)
+        full3d_lists = _to_smiles_list(full3d_results)
 
         # Compute metrics
         result = EvaluationResult3Way(
@@ -526,19 +460,13 @@ class TripleComparison:
         )
 
         for k in self.ks:
-            result.baseline_accuracy[k] = top_k_accuracy(
-                ground_truths, baseline_lists, k
-            )
-            result.no3d_accuracy[k] = top_k_accuracy(
-                ground_truths, no3d_lists, k
-            )
-            result.full3d_accuracy[k] = top_k_accuracy(
-                ground_truths, full3d_lists, k
-            )
+            result.baseline_accuracy[k] = top_k_accuracy(ground_truths, baseline_lists, k)
+            result.no3d_accuracy[k] = top_k_accuracy(ground_truths, no3d_lists, k)
+            result.full3d_accuracy[k] = top_k_accuracy(ground_truths, full3d_lists, k)
 
         result.baseline_mrr = mean_reciprocal_rank(ground_truths, baseline_lists)
-        result.no3d_mrr     = mean_reciprocal_rank(ground_truths, no3d_lists)
-        result.full3d_mrr   = mean_reciprocal_rank(ground_truths, full3d_lists)
+        result.no3d_mrr = mean_reciprocal_rank(ground_truths, no3d_lists)
+        result.full3d_mrr = mean_reciprocal_rank(ground_truths, full3d_lists)
 
         # Log summary
         print(result.summary())
@@ -546,9 +474,13 @@ class TripleComparison:
         # Optional CSV export
         if output_csv:
             self._save_csv(
-                result, output_csv,
-                products_with_candidates, ground_truths,
-                baseline_lists, no3d_lists, full3d_lists,
+                result,
+                output_csv,
+                products_with_candidates,
+                ground_truths,
+                baseline_lists,
+                no3d_lists,
+                full3d_lists,
             )
 
         return result
@@ -573,26 +505,18 @@ class TripleComparison:
         from rerank.evaluate import _is_match
 
         rows = []
-        for i, ((product, _), gt) in enumerate(
-            zip(products_with_candidates, ground_truths)
-        ):
+        for i, ((product, _), gt) in enumerate(zip(products_with_candidates, ground_truths)):
             row: Dict = {"product_smiles": product, "ground_truth": gt}
             for k in self.ks:
-                row[f"baseline_hit@{k}"] = int(
-                    any(_is_match(c, gt) for c in baseline_lists[i][:k])
-                )
-                row[f"no3d_hit@{k}"] = int(
-                    any(_is_match(c, gt) for c in no3d_lists[i][:k])
-                )
-                row[f"full3d_hit@{k}"] = int(
-                    any(_is_match(c, gt) for c in full3d_lists[i][:k])
-                )
+                row[f"baseline_hit@{k}"] = int(any(_is_match(c, gt) for c in baseline_lists[i][:k]))
+                row[f"no3d_hit@{k}"] = int(any(_is_match(c, gt) for c in no3d_lists[i][:k]))
+                row[f"full3d_hit@{k}"] = int(any(_is_match(c, gt) for c in full3d_lists[i][:k]))
 
             # Per-product reciprocal rank
             for prefix, cands in [
                 ("baseline", baseline_lists[i]),
-                ("no3d",     no3d_lists[i]),
-                ("full3d",   full3d_lists[i]),
+                ("no3d", no3d_lists[i]),
+                ("full3d", full3d_lists[i]),
             ]:
                 rr = 0.0
                 for rank, cand in enumerate(cands, start=1):

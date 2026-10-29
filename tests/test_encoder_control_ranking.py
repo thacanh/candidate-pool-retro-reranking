@@ -8,8 +8,7 @@ from rerank.experiments.run_encoder_control_ranking import assert_selection_base
 
 def _bundle(kind):
     features = np.asarray(
-        [[0.9, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0], [0.1, 7, 8, 9, 10, 11, 12]],
-        dtype=np.float32,
+        [[0.9, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0], [0.1, 7, 8, 9, 10, 11, 12]], dtype=np.float32
     )
     candidates = [
         {"smiles": "C", "canonical_smiles": "C", "prior": 0.9},
@@ -17,11 +16,15 @@ def _bundle(kind):
     ]
     return {
         "representation_provenance": {"kind": kind},
-        "train_products": [{
-            "product_key": "CO", "candidates": candidates,
-            "positive_indices": [0], "negative_indices": [1],
-            "features": features.copy(),
-        }],
+        "train_products": [
+            {
+                "product_key": "CO",
+                "candidates": candidates,
+                "positive_indices": [0],
+                "negative_indices": [1],
+                "features": features.copy(),
+            }
+        ],
         "validation_payload": {
             "eval_pwc": [("CO", candidates)],
             "eval_ground_truths": ["C"],

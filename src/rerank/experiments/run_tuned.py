@@ -197,9 +197,7 @@ def immutable_json_dump(payload: dict, path: str | Path, label: str) -> None:
 
 
 def require_no_partial_trial_artifacts(
-    result_path: str | Path,
-    checkpoint_path: str | Path,
-    normalizer_path: str | Path,
+    result_path: str | Path, checkpoint_path: str | Path, normalizer_path: str | Path
 ) -> None:
     """A missing result record never authorizes replacing retained trial state."""
 
@@ -266,9 +264,7 @@ def run_search(args) -> None:
     selected_indices = shard_config_indices(args.shard_index, args.shard_count)
     grid = enumerate_d1_grid()
     device = resolve_device(args.device)
-    selection_cache = transform_selection_cache(
-        bundle, args.arm, args.prior_transform
-    )
+    selection_cache = transform_selection_cache(bundle, args.arm, args.prior_transform)
     started = time.perf_counter()
     completed = 0
     resumed = 0
@@ -317,8 +313,7 @@ def run_search(args) -> None:
                     break
                 if progress is not None:
                     progress.set_postfix(
-                        cfg=f"{config.index:03d}", seed=seed, state="running",
-                        refresh=True,
+                        cfg=f"{config.index:03d}", seed=seed, state="running", refresh=True
                     )
                 result_path = trial_path(
                     output_root, args.arm, args.prior_transform, config.index, seed
@@ -342,8 +337,7 @@ def run_search(args) -> None:
                         resumed += 1
                         if progress is not None:
                             progress.set_postfix(
-                                cfg=f"{config.index:03d}", seed=seed, state="resumed",
-                                refresh=False,
+                                cfg=f"{config.index:03d}", seed=seed, state="resumed", refresh=False
                             )
                             progress.update(1)
                         continue
@@ -465,9 +459,7 @@ def run_search(args) -> None:
         print(json.dumps(manifest, indent=2))
 
 
-def collect_trials(
-    output_root: Path, arm: str, transform: str, bundle_sha256: str
-) -> list[dict]:
+def collect_trials(output_root: Path, arm: str, transform: str, bundle_sha256: str) -> list[dict]:
     base = output_root / "search" / arm / transform
     trials = []
     grid = enumerate_d1_grid()
@@ -535,17 +527,13 @@ def _trim_selected(selected: dict, output_root: Path) -> dict:
     for seed, trial in selected["trials"].items():
         checkpoint = (output_root / trial["checkpoint_relpath"]).resolve()
         normalizer = (output_root / trial["normalizer_relpath"]).resolve()
-        if not checkpoint.is_relative_to(output_root) or not normalizer.is_relative_to(
-            output_root
-        ):
+        if not checkpoint.is_relative_to(output_root) or not normalizer.is_relative_to(output_root):
             raise RuntimeError("A selected artifact path escapes the tuning output root.")
         if "sha256:" + file_sha256(checkpoint) != trial["checkpoint_sha256"]:
             raise RuntimeError(f"Selected checkpoint failed its fingerprint: {checkpoint}")
         if "sha256:" + file_sha256(normalizer) != trial["normalizer_sha256"]:
             raise RuntimeError(f"Selected normalizer failed its fingerprint: {normalizer}")
-        result["trials"][seed] = {
-            key: value for key, value in trial.items() if key != "history"
-        }
+        result["trials"][seed] = {key: value for key, value in trial.items() if key != "history"}
     return result
 
 
@@ -693,9 +681,7 @@ def _require_capacity_plan(path: str | Path, bundle_sha256: str | None = None) -
         raise PermissionError("D-CAPACITY plan must be frozen without test access.")
     settings = CapacitySettings(**record.get("non_width_settings", {}))
     validate_capacity_settings(settings)
-    if capacity_settings_fingerprint(settings) != record.get(
-        "non_width_settings_fingerprint"
-    ):
+    if capacity_settings_fingerprint(settings) != record.get("non_width_settings_fingerprint"):
         raise PermissionError("D-CAPACITY non-width settings fingerprint is invalid.")
     if not str(record.get("decision_note", "")).strip():
         raise PermissionError("D-CAPACITY plan lacks its required decision note.")
@@ -717,9 +703,7 @@ def run_capacity(args) -> None:
     capacity = assert_d3_capacity_match()[args.arm]
     if capacity["parameters"] != 289 or capacity["hidden_width"] != config.hidden_width:
         raise AssertionError("D-CAPACITY runtime model differs from its frozen plan.")
-    selection_cache = transform_selection_cache(
-        bundle, args.arm, plan["prior_transform"]
-    )
+    selection_cache = transform_selection_cache(bundle, args.arm, plan["prior_transform"])
     output_root = Path(args.output_root).resolve()
     device = resolve_device(args.device)
     completed = 0
@@ -857,11 +841,7 @@ def run_freeze_capacity(args) -> None:
     if not paired:
         raise RuntimeError("D-CAPACITY requires paired baseline/augmented seeds 42--46.")
     for seed in map(str, SEEDS):
-        pairing_fields = (
-            "n_train_pairs",
-            "n_validation_reactions",
-            "n_validation_candidate_rows",
-        )
+        pairing_fields = ("n_train_pairs", "n_validation_reactions", "n_validation_candidate_rows")
         if any(baseline[seed][field] != augmented[seed][field] for field in pairing_fields):
             raise RuntimeError(f"D-CAPACITY pairing gate failed for seed {seed}.")
     record = {
@@ -873,9 +853,7 @@ def run_freeze_capacity(args) -> None:
         "capacity_plan_fingerprint": plan["capacity_plan_fingerprint"],
         "selection_bundle_sha256": bundle_sha256,
         "representation_provenance": plan["representation_provenance"],
-        "retained_train_test_cache_sha256": plan[
-            "retained_train_test_cache_sha256"
-        ],
+        "retained_train_test_cache_sha256": plan["retained_train_test_cache_sha256"],
         "prior_transform": plan["prior_transform"],
         "non_width_settings": plan["non_width_settings"],
         "non_width_settings_fingerprint": plan["non_width_settings_fingerprint"],
@@ -956,12 +934,8 @@ def _score_test_arm(
     columns = feature_columns_for_arm(arm)
     input_dim = len(columns)
     metrics = {}
-    prediction_targets = {
-        seed: prediction_dir / f"{arm}_seed_{seed}.csv" for seed in seeds
-    }
-    existing_predictions = [
-        path for path in prediction_targets.values() if path.exists()
-    ]
+    prediction_targets = {seed: prediction_dir / f"{arm}_seed_{seed}.csv" for seed in seeds}
+    existing_predictions = [path for path in prediction_targets.values() if path.exists()]
     if existing_predictions:
         raise FileExistsError(
             "Refusing to overwrite existing reaction-level predictions: "
@@ -994,9 +968,12 @@ def _score_test_arm(
             for (_, candidates), matrix in zip(payload["eval_pwc"], payload["eval_features"]):
                 features = transform_feature_matrix(matrix, transform, columns)
                 normalized = normalizer.transform(features)
-                scores = model.score(
-                    torch.as_tensor(normalized, dtype=torch.float32, device=device)
-                ).detach().cpu().numpy()
+                scores = (
+                    model.score(torch.as_tensor(normalized, dtype=torch.float32, device=device))
+                    .detach()
+                    .cpu()
+                    .numpy()
+                )
                 order = np.argsort(-scores, kind="stable")
                 results.append(([candidates[index] for index in order], scores[order]))
         prediction_dir.mkdir(parents=True, exist_ok=True)
@@ -1036,10 +1013,7 @@ def summarize_paired_metrics(baseline: dict, augmented: dict) -> dict:
         augmented_values = np.asarray(
             [augmented[str(seed)][metric] for seed in SEEDS], dtype=np.float64
         )
-        for label, values in (
-            ("baseline", baseline_values),
-            ("augmented", augmented_values),
-        ):
+        for label, values in (("baseline", baseline_values), ("augmented", augmented_values)):
             summary[label][metric] = {
                 "mean": float(np.mean(values)),
                 "sample_std": float(np.std(values, ddof=1)),
@@ -1048,18 +1022,14 @@ def summarize_paired_metrics(baseline: dict, augmented: dict) -> dict:
         summary["paired_delta"][metric] = {
             "mean": float(np.mean(differences)),
             "sample_std": float(np.std(differences, ddof=1)),
-            "per_seed": {
-                str(seed): float(value) for seed, value in zip(SEEDS, differences)
-            },
+            "per_seed": {str(seed): float(value) for seed, value in zip(SEEDS, differences)},
         }
     return summary
 
 
 def run_evaluate_test(args) -> None:
     result_dir = require_clean_evaluation_result_dir(args.result_dir)
-    freeze, payload = load_test_cache_after_freeze(
-        args.selection_freeze, args.train_test_cache
-    )
+    freeze, payload = load_test_cache_after_freeze(args.selection_freeze, args.train_test_cache)
     device = resolve_device(args.device)
     output_root = Path(args.output_root).resolve()
     transform = freeze["selected_prior_transform"]
@@ -1099,9 +1069,7 @@ def run_evaluate_test(args) -> None:
         "git_commit": git_commit(),
         "created_at_utc": utc_now(),
     }
-    immutable_json_dump(
-        manifest, result_dir / "manifest.json", "post-selection test manifest"
-    )
+    immutable_json_dump(manifest, result_dir / "manifest.json", "post-selection test manifest")
     print(json.dumps(manifest, indent=2))
 
 
@@ -1152,9 +1120,7 @@ def run_evaluate_capacity_test(args) -> None:
         "git_commit": git_commit(),
         "created_at_utc": utc_now(),
     }
-    immutable_json_dump(
-        manifest, result_dir / "manifest.json", "D-CAPACITY test manifest"
-    )
+    immutable_json_dump(manifest, result_dir / "manifest.json", "D-CAPACITY test manifest")
     print(json.dumps(manifest, indent=2))
 
 
@@ -1216,8 +1182,7 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
 
     capacity_plan = subparsers.add_parser(
-        "prepare-capacity",
-        help="Freeze explicitly chosen non-width settings for D-CAPACITY.",
+        "prepare-capacity", help="Freeze explicitly chosen non-width settings for D-CAPACITY."
     )
     capacity_plan.add_argument("--selection-bundle", required=True)
     capacity_plan.add_argument("--prior-freeze", required=True)
@@ -1246,16 +1211,13 @@ def build_parser() -> argparse.ArgumentParser:
     capacity_freeze.add_argument("--output", required=True)
 
     capacity_evaluate = subparsers.add_parser(
-        "evaluate-capacity-test",
-        help="Evaluate D-CAPACITY only after its dedicated freeze.",
+        "evaluate-capacity-test", help="Evaluate D-CAPACITY only after its dedicated freeze."
     )
     capacity_evaluate.add_argument("--capacity-freeze", required=True)
     capacity_evaluate.add_argument("--train-test-cache", required=True)
     capacity_evaluate.add_argument("--output-root", required=True)
     capacity_evaluate.add_argument("--result-dir", required=True)
-    capacity_evaluate.add_argument(
-        "--device", choices=["auto", "cpu", "cuda"], default="auto"
-    )
+    capacity_evaluate.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
 
     capacity = subparsers.add_parser(
         "check-capacity", help="Assert the prespecified D3 parameter counts."
@@ -1268,10 +1230,7 @@ def main() -> None:
     args = build_parser().parse_args()
     if args.command == "prepare":
         bundle = prepare_selection_bundle(
-            args.train_test_cache,
-            args.validation_cache,
-            args.output,
-            args.conformer_seed,
+            args.train_test_cache, args.validation_cache, args.output, args.conformer_seed
         )
         print(
             json.dumps(
@@ -1314,9 +1273,7 @@ def main() -> None:
             "created_at_utc": utc_now(),
         }
         if args.output:
-            immutable_json_dump(
-                record, args.output, "D-CAPACITY assertion record"
-            )
+            immutable_json_dump(record, args.output, "D-CAPACITY assertion record")
         print(json.dumps(record, indent=2))
 
 

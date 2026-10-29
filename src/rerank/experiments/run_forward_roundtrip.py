@@ -76,9 +76,7 @@ def canonical_fragment_set(smiles: Any) -> tuple[str, ...] | None:
         molecule = Chem.MolFromSmiles(fragment)
         if molecule is None:
             return None
-        fragments.append(
-            Chem.MolToSmiles(molecule, canonical=True, isomericSmiles=True)
-        )
+        fragments.append(Chem.MolToSmiles(molecule, canonical=True, isomericSmiles=True))
     return tuple(sorted(fragments))
 
 
@@ -96,10 +94,9 @@ def _load_json(path: Path) -> dict[str, Any]:
 def _matches_frozen_content(path: Path, fingerprint: dict[str, Any]) -> bool:
     """Compare immutable file content while permitting bundle relocation."""
     actual = file_fingerprint(path)
-    return (
-        int(actual["size_bytes"]) == int(fingerprint["size_bytes"])
-        and str(actual["sha256"]) == str(fingerprint["sha256"])
-    )
+    return int(actual["size_bytes"]) == int(fingerprint["size_bytes"]) and str(
+        actual["sha256"]
+    ) == str(fingerprint["sha256"])
 
 
 def _expected_asset_record(ledger_path: Path) -> dict[str, Any]:
@@ -161,11 +158,7 @@ def verify_assets(ledger_path: Path, paths: AssetPaths) -> dict[str, Any]:
         "ledger": file_fingerprint(ledger_path),
         "checkpoint": checkpoint,
         "vocabulary": vocabulary,
-        "repository": {
-            "path": str(paths.repository.resolve()),
-            "commit": commit,
-            "clean": True,
-        },
+        "repository": {"path": str(paths.repository.resolve()), "commit": commit, "clean": True},
         "task": "forward_prediction",
     }
 
@@ -176,9 +169,7 @@ def _load_prediction(path: Path, expected_reactions: int) -> pd.DataFrame:
     if missing:
         raise ValueError(f"{path} is missing columns: {sorted(missing)}")
     if len(frame) != expected_reactions:
-        raise ValueError(
-            f"{path} has {len(frame)} rows; expected {expected_reactions}."
-        )
+        raise ValueError(f"{path} has {len(frame)} rows; expected {expected_reactions}.")
     if frame["reaction_id"].duplicated().any():
         raise ValueError(f"{path} has duplicate reaction IDs.")
     if set(frame["source_split"].astype(str)) != {"test"}:
@@ -196,9 +187,7 @@ def _validate_exact_hit(frame: pd.DataFrame, prediction: str, hit: str) -> None:
     computed = np.asarray(
         [
             canonical_fragment_set(value) == canonical_fragment_set(reference)
-            for value, reference in zip(
-                frame[prediction], frame["ground_truth"], strict=True
-            )
+            for value, reference in zip(frame[prediction], frame["ground_truth"], strict=True)
         ],
         dtype=np.int8,
     )
@@ -264,9 +253,7 @@ def prepare_inputs(
         baseline = _load_prediction(baseline_path, expected_reactions)
         augmented = _load_prediction(augmented_path, expected_reactions)
         _assert_same(
-            baseline,
-            augmented,
-            ("reaction_id", "product_smiles", "ground_truth", "baseline_top1"),
+            baseline, augmented, ("reaction_id", "product_smiles", "ground_truth", "baseline_top1")
         )
         if anchor is None:
             anchor = baseline
@@ -316,16 +303,11 @@ def prepare_inputs(
 
     usage = pd.DataFrame(usage_rows)
     usage.insert(0, "usage_id", np.arange(len(usage), dtype=np.int64))
-    inference = usage[["precursor_smiles", "product_smiles"]].drop_duplicates(
-        keep="first"
-    )
+    inference = usage[["precursor_smiles", "product_smiles"]].drop_duplicates(keep="first")
     inference = inference.reset_index(drop=True)
     inference.insert(0, "inference_id", np.arange(len(inference), dtype=np.int64))
     usage = usage.merge(
-        inference,
-        on=["precursor_smiles", "product_smiles"],
-        how="left",
-        validate="many_to_one",
+        inference, on=["precursor_smiles", "product_smiles"], how="left", validate="many_to_one"
     )
     if usage["inference_id"].isna().any():
         raise RuntimeError("Failed to assign an inference ID to every F1 usage row.")
@@ -375,24 +357,18 @@ def prepare_inputs(
 
 def _read_chemformer_output(path: Path, expected_rows: int) -> pd.DataFrame:
     frame = pd.read_csv(path, sep="\t", keep_default_na=False)
-    target_columns = [
-        column for column in ("target_smiles", "ground_truth") if column in frame
-    ]
+    target_columns = [column for column in ("target_smiles", "ground_truth") if column in frame]
     if len(target_columns) != 1:
         raise ValueError(
             "Chemformer output must contain exactly one target column: "
             "target_smiles (legacy Chemformer) or ground_truth (AiZynthModels)."
         )
-    required = {
-        f"sampled_smiles_{beam}" for beam in range(1, CHEMFORMER_BEAMS + 1)
-    }
+    required = {f"sampled_smiles_{beam}" for beam in range(1, CHEMFORMER_BEAMS + 1)}
     missing = required.difference(frame.columns)
     if missing:
         raise ValueError(f"Chemformer output is missing columns: {sorted(missing)}")
     if len(frame) != expected_rows:
-        raise ValueError(
-            f"Chemformer output has {len(frame)} rows; expected {expected_rows}."
-        )
+        raise ValueError(f"Chemformer output has {len(frame)} rows; expected {expected_rows}.")
     frame = frame.rename(columns={target_columns[0]: "target_smiles"})
     return frame
 
@@ -433,9 +409,9 @@ def _paired_roundtrip_statistics(
     }
     anchor_products: np.ndarray | None = None
     for seed in seeds:
-        baseline = scored[
-            (scored["system"] == SYSTEM_2D) & (scored["seed"] == seed)
-        ].sort_values("reaction_id")
+        baseline = scored[(scored["system"] == SYSTEM_2D) & (scored["seed"] == seed)].sort_values(
+            "reaction_id"
+        )
         augmented = scored[
             (scored["system"] == SYSTEM_AUGMENTED) & (scored["seed"] == seed)
         ].sort_values("reaction_id")
@@ -444,13 +420,12 @@ def _paired_roundtrip_statistics(
         ).equals(augmented["reaction_id"].reset_index(drop=True)):
             raise ValueError("F1 paired systems are not reaction aligned.")
         if anchor_products is None:
-            anchor_products = baseline["product_smiles"].map(canonical_product).to_numpy(
-                dtype=object
+            anchor_products = (
+                baseline["product_smiles"].map(canonical_product).to_numpy(dtype=object)
             )
         for metric in differences:
             differences[metric].append(
-                augmented[metric].to_numpy(dtype=float)
-                - baseline[metric].to_numpy(dtype=float)
+                augmented[metric].to_numpy(dtype=float) - baseline[metric].to_numpy(dtype=float)
             )
     if anchor_products is None or any(value is None for value in anchor_products):
         raise ValueError("F1 contains an invalid frozen target product.")
@@ -467,10 +442,7 @@ def _paired_roundtrip_statistics(
             "augmented_minus_2d": point,
             "ci95": [lower, upper],
             "paired_cluster_sign_flip_p": paired_cluster_permutation_test(
-                matrix,
-                anchor_products,
-                permutation_replicates,
-                permutation_rng,
+                matrix, anchor_products, permutation_replicates, permutation_rng
             ),
             "positive_seed_count": int(np.sum(matrix.mean(axis=1) > 0)),
             "zero_seed_count": int(np.sum(matrix.mean(axis=1) == 0)),
@@ -528,27 +500,21 @@ def evaluate_output(
     for beam in range(1, CHEMFORMER_BEAMS + 1):
         column = f"beam{beam}_canonical"
         canonical_columns.append(column)
-        scored_inference[column] = output[f"sampled_smiles_{beam}"].map(
-            canonical_product
-        )
+        scored_inference[column] = output[f"sampled_smiles_{beam}"].map(canonical_product)
     targets = scored_inference["product_smiles"].map(canonical_product)
     if targets.isna().any():
         raise ValueError("Prepared F1 target includes invalid product SMILES.")
-    scored_inference["roundtrip_beam1"] = (
-        scored_inference["beam1_canonical"] == targets
-    ).astype(np.int8)
+    scored_inference["roundtrip_beam1"] = (scored_inference["beam1_canonical"] == targets).astype(
+        np.int8
+    )
     scored_inference["roundtrip_beam5"] = np.asarray(
         [
             any(row[column] == target for column in canonical_columns)
-            for (_, row), target in zip(
-                scored_inference.iterrows(), targets, strict=True
-            )
+            for (_, row), target in zip(scored_inference.iterrows(), targets, strict=True)
         ],
         dtype=np.int8,
     )
-    scored_inference["invalid_beam_count"] = scored_inference[
-        canonical_columns
-    ].isna().sum(axis=1)
+    scored_inference["invalid_beam_count"] = scored_inference[canonical_columns].isna().sum(axis=1)
     scored = usage.merge(
         scored_inference[
             [
@@ -628,19 +594,14 @@ def evaluate_output(
             "paired_statistics": file_fingerprint(paired_path),
         },
     }
-    immutable_json_dump(
-        result_manifest, result_dir / "manifest.json", "F1 result manifest"
-    )
+    immutable_json_dump(result_manifest, result_dir / "manifest.json", "F1 result manifest")
     return result_manifest
 
 
 def _default_assets(root: Path) -> AssetPaths:
     return AssetPaths(
         checkpoint=root / "assets" / "chemformer_forward" / "last.ckpt",
-        vocabulary=root
-        / "assets"
-        / "chemformer_official"
-        / "bart_vocab_downstream.json",
+        vocabulary=root / "assets" / "chemformer_official" / "bart_vocab_downstream.json",
         repository=root / "assets" / "chemformer_official",
     )
 
@@ -655,8 +616,7 @@ def build_parser() -> argparse.ArgumentParser:
         item.add_argument("--asset-ledger", default="data/provenance/external_assets.json")
         item.add_argument("--checkpoint", default="assets/chemformer_forward/last.ckpt")
         item.add_argument(
-            "--vocabulary",
-            default="assets/chemformer_official/bart_vocab_downstream.json",
+            "--vocabulary", default="assets/chemformer_official/bart_vocab_downstream.json"
         )
         item.add_argument("--repository", default="assets/chemformer_official")
     prepare.add_argument(
@@ -674,17 +634,14 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     prepare.add_argument(
-        "--output-dir",
-        default="outputs/jcheminform_revision/f1_roundtrip/prepared",
+        "--output-dir", default="outputs/jcheminform_revision/f1_roundtrip/prepared"
     )
     evaluate.add_argument(
-        "--prepare-dir",
-        default="outputs/jcheminform_revision/f1_roundtrip/prepared",
+        "--prepare-dir", default="outputs/jcheminform_revision/f1_roundtrip/prepared"
     )
     evaluate.add_argument("--chemformer-output", required=True)
     evaluate.add_argument(
-        "--result-dir",
-        default="outputs/jcheminform_revision/f1_roundtrip/results",
+        "--result-dir", default="outputs/jcheminform_revision/f1_roundtrip/results"
     )
     return parser
 

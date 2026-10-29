@@ -82,9 +82,7 @@ def test_prepare_and_evaluate_frozen_roundtrip(
     prepare_manifest = json.loads(prepare_manifest_path.read_text(encoding="utf-8"))
     for fingerprint in prepare_manifest["outputs"].values():
         fingerprint["path"] = "/relocated/bundle/" + Path(fingerprint["path"]).name
-    prepare_manifest_path.write_text(
-        json.dumps(prepare_manifest), encoding="utf-8"
-    )
+    prepare_manifest_path.write_text(json.dumps(prepare_manifest), encoding="utf-8")
     output_rows = []
     for row in inference.itertuples(index=False):
         correct = row.precursor_smiles in {"N", "CC"}
@@ -112,9 +110,10 @@ def test_prepare_and_evaluate_frozen_roundtrip(
     )
     assert manifest["protocol_id"] == f1.F1_PROTOCOL_ID
     table = pd.read_csv(results / "system_metrics.csv").set_index("system")
-    assert table.loc[f1.SYSTEM_AUGMENTED, "roundtrip_beam1_mean"] > table.loc[
-        f1.SYSTEM_2D, "roundtrip_beam1_mean"
-    ]
+    assert (
+        table.loc[f1.SYSTEM_AUGMENTED, "roundtrip_beam1_mean"]
+        > table.loc[f1.SYSTEM_2D, "roundtrip_beam1_mean"]
+    )
     assert (table["roundtrip_beam5_mean"] == 1.0).all()
     paired = json.loads((results / "paired_statistics.json").read_text())
     assert paired["roundtrip_beam1"]["augmented_minus_2d"] > 0
@@ -125,9 +124,7 @@ def test_prepare_rejects_unpaired_frozen_predictions(
 ) -> None:
     predictions = tmp_path / "predictions"
     predictions.mkdir()
-    _prediction_frame(augmented=False).to_csv(
-        predictions / "baseline_seed_42.csv", index=False
-    )
+    _prediction_frame(augmented=False).to_csv(predictions / "baseline_seed_42.csv", index=False)
     changed = _prediction_frame(augmented=True)
     changed.loc[0, "product_smiles"] = "CCC"
     changed.to_csv(predictions / "augmented_seed_42.csv", index=False)
@@ -175,15 +172,11 @@ def test_checkpoint_migration_changes_only_vocabulary_metadata(
     monkeypatch.setattr(migration, "EXPECTED_SOURCE_SHA256", migration.sha256(source))
     record = migration.migrate(source, output, manifest)
     loaded = torch.load(output, map_location="cpu", weights_only=False)
-    assert loaded["hyper_parameters"] == {
-        "vocabulary_size": 523,
-        "other": "unchanged",
-    }
+    assert loaded["hyper_parameters"] == {"vocabulary_size": 523, "other": "unchanged"}
     assert torch.equal(
-        loaded["state_dict"]["weight"],
-        torch.arange(12, dtype=torch.float32).reshape(3, 4),
+        loaded["state_dict"]["weight"], torch.arange(12, dtype=torch.float32).reshape(3, 4)
     )
     metadata = record["checkpoint_metadata"]
-    assert metadata["state_dict_logical_sha256_before"] == metadata[
-        "state_dict_logical_sha256_after"
-    ]
+    assert (
+        metadata["state_dict_logical_sha256_before"] == metadata["state_dict_logical_sha256_after"]
+    )

@@ -60,11 +60,7 @@ def file_sha256(path: Path) -> str:
 def file_record(path: Path) -> dict:
     resolved = path.resolve()
     stat = resolved.stat()
-    return {
-        "path": str(resolved),
-        "size_bytes": int(stat.st_size),
-        "sha256": file_sha256(resolved),
-    }
+    return {"path": str(resolved), "size_bytes": int(stat.st_size), "sha256": file_sha256(resolved)}
 
 
 @dataclass(frozen=True)
@@ -204,10 +200,7 @@ def clustered_intervals(
         for start in range(0, n_bootstrap, batch_size):
             stop = min(start + batch_size, n_bootstrap)
             sampled = rng.integers(
-                0,
-                len(cluster_rows),
-                size=(stop - start, len(cluster_rows)),
-                dtype=np.int32,
+                0, len(cluster_rows), size=(stop - start, len(cluster_rows)), dtype=np.int32
             )
             draws[start:stop] = reaction_values[sampled].mean(axis=1)
     else:
@@ -248,20 +241,31 @@ def analyze(
             raise ValueError(f"Primary selection fingerprint mismatch: {control_root}")
 
     baseline = load_prediction_set(
-        "2d", primary_root, "baseline", "primary_baseline",
-        expected_reactions=expected_reactions,
+        "2d", primary_root, "baseline", "primary_baseline", expected_reactions=expected_reactions
     )
     unimol = load_prediction_set(
-        "unimol", primary_root, "augmented", "primary_augmented",
-        expected_reactions=expected_reactions, reference_pairing=baseline.pairing,
+        "unimol",
+        primary_root,
+        "augmented",
+        "primary_augmented",
+        expected_reactions=expected_reactions,
+        reference_pairing=baseline.pairing,
     )
     morgan = load_prediction_set(
-        "morgan", morgan_root, "augmented", "encoder_control",
-        expected_reactions=expected_reactions, reference_pairing=baseline.pairing,
+        "morgan",
+        morgan_root,
+        "augmented",
+        "encoder_control",
+        expected_reactions=expected_reactions,
+        reference_pairing=baseline.pairing,
     )
     grover = load_prediction_set(
-        "grover", grover_root, "augmented", "encoder_control",
-        expected_reactions=expected_reactions, reference_pairing=baseline.pairing,
+        "grover",
+        grover_root,
+        "augmented",
+        "encoder_control",
+        expected_reactions=expected_reactions,
+        reference_pairing=baseline.pairing,
     )
     systems = {item.name: item for item in (baseline, morgan, grover, unimol)}
     comparisons = (
@@ -292,8 +296,7 @@ def analyze(
                     **intervals,
                     "equivalence_margin": margin,
                     "metric_equivalent": bool(
-                        intervals["ci90_low"] > -margin
-                        and intervals["ci90_high"] < margin
+                        intervals["ci90_low"] > -margin and intervals["ci90_high"] < margin
                     ),
                     "superior_95": bool(intervals["ci95_low"] > 0.0),
                     "inferior_95": bool(intervals["ci95_high"] < 0.0),
@@ -312,11 +315,7 @@ def analyze(
 
     all_three_equivalent = all(
         pair_decisions[name]["equivalent_both_endpoints"]
-        for name in (
-            "grover_minus_morgan",
-            "unimol_minus_grover",
-            "unimol_minus_morgan",
-        )
+        for name in ("grover_minus_morgan", "unimol_minus_grover", "unimol_minus_morgan")
     )
     if all_three_equivalent:
         interpretation = "representation_agnostic_atom_level_comparison"
@@ -362,9 +361,7 @@ def analyze(
             "equivalence_margins": EQUIVALENCE_MARGINS,
             "superiority_reporting": "95% paired clustered interval excludes zero",
         },
-        "input_files": {
-            name: prediction_set.files for name, prediction_set in systems.items()
-        },
+        "input_files": {name: prediction_set.files for name, prediction_set in systems.items()},
         "pair_decisions": pair_decisions,
         "all_three_equivalent": all_three_equivalent,
         "prespecified_interpretation": interpretation,
@@ -394,12 +391,17 @@ def main() -> None:
         bootstrap_seed=args.bootstrap_seed,
         expected_reactions=args.expected_reactions,
     )
-    print(json.dumps({
-        "protocol_id": result["protocol_id"],
-        "pairing_gate": result["pairing_gate"],
-        "pair_decisions": result["pair_decisions"],
-        "prespecified_interpretation": result["prespecified_interpretation"],
-    }, indent=2))
+    print(
+        json.dumps(
+            {
+                "protocol_id": result["protocol_id"],
+                "pairing_gate": result["pairing_gate"],
+                "pair_decisions": result["pair_decisions"],
+                "prespecified_interpretation": result["prespecified_interpretation"],
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

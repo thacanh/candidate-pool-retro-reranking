@@ -263,7 +263,10 @@ def _effect_row(
 def _validate_gates(data: Mapping[str, Any], paths: Mapping[str, Path]) -> list[str]:
     checks: list[str] = []
     b_manifest = data["b_manifest"]
-    require(b_manifest["analyses"]["B2"]["protocol_id"] == "legacy-cap10-fixed50-v1", "B2 protocol mismatch")
+    require(
+        b_manifest["analyses"]["B2"]["protocol_id"] == "legacy-cap10-fixed50-v1",
+        "B2 protocol mismatch",
+    )
     require(data["b2"]["top1_robustness_gate"]["passed"] is True, "B2 robustness gate did not pass")
     checks.append("B2 crossed 5x5 robustness gate passed")
 
@@ -272,7 +275,10 @@ def _validate_gates(data: Mapping[str, Any], paths: Mapping[str, Path]) -> list[
     checks.append("B3 primary-manifest fingerprint matches D1")
 
     require(data["d1"]["protocol_id"] == "cap10-tuned-v1", "D1 protocol mismatch")
-    require(data["d1"]["test_partition_loaded_only_after_selection_freeze"] is True, "D1 test lock missing")
+    require(
+        data["d1"]["test_partition_loaded_only_after_selection_freeze"] is True,
+        "D1 test lock missing",
+    )
     require(data["d3"]["control_id"] == "D-CAPACITY", "D3 control mismatch")
     require(data["d3"]["protocol_id"] == "cap10-tuned-v1", "D3 source protocol mismatch")
     require(
@@ -281,25 +287,47 @@ def _validate_gates(data: Mapping[str, Any], paths: Mapping[str, Path]) -> list[
         == 289,
         "D3 parameter-count gate failed",
     )
-    require(data["d3"]["test_partition_loaded_only_after_capacity_freeze"] is True, "D3 test lock missing")
+    require(
+        data["d3"]["test_partition_loaded_only_after_capacity_freeze"] is True,
+        "D3 test lock missing",
+    )
     require(data["d4"]["protocol_id"] == "cap10-lightgbm-v1", "D4 protocol mismatch")
     require(data["d4"]["test_partition_loaded_only_after_freeze"] is True, "D4 test lock missing")
     require(data["d5"]["protocol_id"] == "D-EXTERNAL-RXN-EBM-FF-CAP10-v1", "D5 protocol mismatch")
-    require(data["d5"]["test_partition_used_for_training_or_selection"] is False, "D5 test leakage gate failed")
+    require(
+        data["d5"]["test_partition_used_for_training_or_selection"] is False,
+        "D5 test leakage gate failed",
+    )
     validate_file_record(paths["d1"], data["d5"]["inputs"]["primary_manifest"])
     checks.append("D1--D5 post-freeze official-test gates passed")
 
     encoder = data["encoder_manifest"]
-    require(encoder["protocol_id"] == "cap10-tuned-encoder-attribution-v1", "Encoder protocol mismatch")
+    require(
+        encoder["protocol_id"] == "cap10-tuned-encoder-attribution-v1", "Encoder protocol mismatch"
+    )
     require(encoder["pairing_gate"]["status"] == "exact", "Encoder pairing gate failed")
     validate_file_record(paths["encoder_summary"], encoder["summary_csv"])
-    require(data["c2"]["test_partition_loaded_only_after_c2_freeze"] is True, "C2 test lock missing")
+    require(
+        data["c2"]["test_partition_loaded_only_after_c2_freeze"] is True, "C2 test lock missing"
+    )
     checks.append("C1 exact pairing and C2 post-freeze test gates passed")
 
-    require(data["wse_manifest"]["protocol_id"] == "ws-e-three-pool-frozen-ranker-v1", "WS-E protocol mismatch")
-    require(data["wse_stats"]["protocol_id"] == data["wse_manifest"]["protocol_id"], "WS-E manifest/statistics mismatch")
-    require(data["f1_manifest"]["protocol_id"] == "f1-chemformer-forward-roundtrip-v1", "F1 protocol mismatch")
-    require(data["f1_manifest"]["test_partition_used_for_training_or_selection"] is False, "F1 test leakage gate failed")
+    require(
+        data["wse_manifest"]["protocol_id"] == "ws-e-three-pool-frozen-ranker-v1",
+        "WS-E protocol mismatch",
+    )
+    require(
+        data["wse_stats"]["protocol_id"] == data["wse_manifest"]["protocol_id"],
+        "WS-E manifest/statistics mismatch",
+    )
+    require(
+        data["f1_manifest"]["protocol_id"] == "f1-chemformer-forward-roundtrip-v1",
+        "F1 protocol mismatch",
+    )
+    require(
+        data["f1_manifest"]["test_partition_used_for_training_or_selection"] is False,
+        "F1 test leakage gate failed",
+    )
     require(data["f2_manifest"]["protocol_id"] == "f2-morgan-chirality-v1", "F2 protocol mismatch")
     require(data["f3_manifest"]["protocol_id"] == "f3-salt-removal-v1", "F3 protocol mismatch")
     checks.append("WS-E and F1--F3 protocol gates passed")
@@ -448,7 +476,9 @@ def _build_system_rows(data: Mapping[str, Any]) -> list[dict[str, Any]]:
         ("d3", "D3", data["d3"]["protocol_id"], "capacity289"),
         ("d4", "D4", data["d4"]["protocol_id"], "lambdamart"),
     ):
-        summary = data[source_key].get("descriptive_summary", data[source_key].get("per_arm_metrics"))
+        summary = data[source_key].get(
+            "descriptive_summary", data[source_key].get("per_arm_metrics")
+        )
         for arm in ("baseline", "augmented"):
             for metric in ("top1", "mrr"):
                 item = summary[arm][metric]
@@ -492,7 +522,9 @@ def _build_system_rows(data: Mapping[str, Any]) -> list[dict[str, Any]]:
                         metric=metric,
                         estimate=item[key],
                         n_seeds=0 if system == "candidate_prior" else d5["n_seeds"],
-                        n_reactions=d5["n_covered_reactions"] if scope == "within_pool" else d5["n_official_test_reactions"],
+                        n_reactions=d5["n_covered_reactions"]
+                        if scope == "within_pool"
+                        else d5["n_official_test_reactions"],
                         coverage=d5["coverage"],
                         source_key="d5",
                         source_locator=f"$.aggregate.{metric}.{key}",
@@ -656,7 +688,10 @@ def _build_effect_rows(data: Mapping[str, Any]) -> list[dict[str, Any]]:
     c2, d1 = data["c2"], data["d1"]
     for metric in ("top1", "mrr"):
         projected = float(c2["descriptive_summary"][metric]["mean"])
-        for comparison, arm in (("projected_minus_2d", "baseline"), ("projected_minus_unimol_scalar", "augmented")):
+        for comparison, arm in (
+            ("projected_minus_2d", "baseline"),
+            ("projected_minus_unimol_scalar", "augmented"),
+        ):
             rows.append(
                 _effect_row(
                     workstream="C",
@@ -765,7 +800,9 @@ def _build_effect_rows(data: Mapping[str, Any]) -> list[dict[str, Any]]:
                         n_seeds=5,
                         n_reactions=item["n_reactions"],
                         n_product_clusters=item["n_product_clusters"],
-                        decision=pool_data["top1_assessment"] if metric == "top1" else _decision(*item["ci95"]),
+                        decision=pool_data["top1_assessment"]
+                        if metric == "top1"
+                        else _decision(*item["ci95"]),
                         source_key="wse_stats",
                         source_locator=f"$.pools.{pool}.scopes.{scope}.{metric}",
                     )
@@ -833,7 +870,9 @@ def _build_effect_rows(data: Mapping[str, Any]) -> list[dict[str, Any]]:
                     workstream="G",
                     analysis_id="G1",
                     protocol_id=data["g_manifest"]["protocol_id"],
-                    claim_role="revised_primary_headline" if inference_scope == "seed_marginal" else "companion_product_cluster_ci",
+                    claim_role="revised_primary_headline"
+                    if inference_scope == "seed_marginal"
+                    else "companion_product_cluster_ci",
                     comparison="prior_2d_unimol_minus_prior_2d",
                     scope=inference_scope,
                     metric=metric,
@@ -858,7 +897,9 @@ def _build_effect_rows(data: Mapping[str, Any]) -> list[dict[str, Any]]:
                     workstream="G",
                     analysis_id="G2",
                     protocol_id=data["g_manifest"]["protocol_id"],
-                    claim_role="prespecified_class_top1_family" if is_top1 else "secondary_class_mrr_no_p_family",
+                    claim_role="prespecified_class_top1_family"
+                    if is_top1
+                    else "secondary_class_mrr_no_p_family",
                     comparison=f"class_{class_id}_augmented_minus_2d",
                     scope="within_pool_reaction_class",
                     metric=metric,
@@ -870,7 +911,9 @@ def _build_effect_rows(data: Mapping[str, Any]) -> list[dict[str, Any]]:
                     n_seeds=20,
                     n_reactions=raw["n_reactions"],
                     n_product_clusters=raw["n_reactions"],
-                    decision=("bh_significant_q05" if significant else "not_bh_significant_q05") if is_top1 else "descriptive_secondary_endpoint",
+                    decision=("bh_significant_q05" if significant else "not_bh_significant_q05")
+                    if is_top1
+                    else "descriptive_secondary_endpoint",
                     source_key="g2",
                     source_locator=f"row:reaction_class={class_id};metric={metric}",
                 )
@@ -930,36 +973,71 @@ def _build_h2_rows(data: Mapping[str, Any]) -> list[dict[str, Any]]:
     return rows
 
 
-def _cross_checks(data: Mapping[str, Any], system_rows: Sequence[Mapping[str, Any]], effect_rows: Sequence[Mapping[str, Any]]) -> list[str]:
+def _cross_checks(
+    data: Mapping[str, Any],
+    system_rows: Sequence[Mapping[str, Any]],
+    effect_rows: Sequence[Mapping[str, Any]],
+) -> list[str]:
     checks: list[str] = []
     encoder_unimol = next(
-        row for row in effect_rows
-        if row["analysis_id"] == "C1" and row["comparison"] == "unimol_minus_2d" and row["metric"] == "top1"
+        row
+        for row in effect_rows
+        if row["analysis_id"] == "C1"
+        and row["comparison"] == "unimol_minus_2d"
+        and row["metric"] == "top1"
     )
-    assert_close(encoder_unimol["effect"], data["d1"]["descriptive_summary"]["paired_delta"]["top1"]["mean"], "C1/D1 Top-1")
+    assert_close(
+        encoder_unimol["effect"],
+        data["d1"]["descriptive_summary"]["paired_delta"]["top1"]["mean"],
+        "C1/D1 Top-1",
+    )
     checks.append("C1 Uni-Mol-minus-2D Top-1 equals the D1 five-seed delta")
 
-    assert_close(data["f1_stats"]["exact_match_top1"]["augmented_minus_2d"], data["g1"]["top1"]["product_only"]["effect"], "F1/G1 Top-1")
+    assert_close(
+        data["f1_stats"]["exact_match_top1"]["augmented_minus_2d"],
+        data["g1"]["top1"]["product_only"]["effect"],
+        "F1/G1 Top-1",
+    )
     checks.append("F1 exact-match Top-1 equals the G1 20-seed point estimate")
 
-    significant = [row["reaction_class"] for row in data["g2"] if row["top1_bh_significant_q05"].lower() == "true"]
+    significant = [
+        row["reaction_class"]
+        for row in data["g2"]
+        if row["top1_bh_significant_q05"].lower() == "true"
+    ]
     require(significant == ["3"], f"Unexpected G2 significant classes: {significant}")
     checks.append("G2 BH q=0.05 significance is restricted to reaction class 3")
 
     for analysis_id in ("F2", "F3"):
         relevant = [row for row in effect_rows if row["analysis_id"] == analysis_id]
-        require(all(float(row["ci95_low"]) <= 0 <= float(row["ci95_high"]) for row in relevant), f"{analysis_id} sensitivity CI unexpectedly excludes zero")
+        require(
+            all(float(row["ci95_low"]) <= 0 <= float(row["ci95_high"]) for row in relevant),
+            f"{analysis_id} sensitivity CI unexpectedly excludes zero",
+        )
     checks.append("All F2/F3 chemistry-side sensitivity intervals include zero")
 
-    require(all(pool["top1_assessment"] == "no_clear_difference" for pool in data["wse_stats"]["pools"].values()), "WS-E assessment mismatch")
+    require(
+        all(
+            pool["top1_assessment"] == "no_clear_difference"
+            for pool in data["wse_stats"]["pools"].values()
+        ),
+        "WS-E assessment mismatch",
+    )
     checks.append("All three WS-E pool assessments are no-clear-difference")
 
-    d5_rows = [row for row in effect_rows if row["analysis_id"] == "D5" and row["scope"] == "within_pool"]
-    require(all(float(row["ci95_high"]) < 0 for row in d5_rows), "D5 negative-result interval mismatch")
+    d5_rows = [
+        row for row in effect_rows if row["analysis_id"] == "D5" and row["scope"] == "within_pool"
+    ]
+    require(
+        all(float(row["ci95_high"]) < 0 for row in d5_rows), "D5 negative-result interval mismatch"
+    )
     checks.append("Both D5 conditional intervals are strictly negative")
 
     headline = [row for row in effect_rows if row["claim_role"] == "revised_primary_headline"]
-    require(len(headline) == 2 and {row["metric"] for row in headline} == {"top1", "mrr"}, "Headline must be exactly G1 Top-1 and MRR")
+    require(
+        len(headline) == 2 and {row["metric"] for row in headline} == {"top1", "mrr"},
+        "Headline must be exactly G1 Top-1 and MRR",
+    )
     checks.append("Exactly two paper headline effects are designated: G1 Top-1 and MRR")
     return checks
 
@@ -976,13 +1054,30 @@ def build_numerical_ledger(repo_root: Path, output_dir: Path) -> dict[str, Any]:
         raise FileNotFoundError("Missing frozen numerical sources:\n" + "\n".join(missing))
 
     json_keys = {
-        "b_manifest", "b2", "b3", "d1", "d3", "d4", "d5", "encoder_manifest",
-        "morgan", "grover", "c2", "wse_manifest", "wse_stats", "f1_manifest",
-        "f1_stats", "f2_manifest", "f2_stats", "f3_manifest", "f3_stats", "g_manifest", "g1",
+        "b_manifest",
+        "b2",
+        "b3",
+        "d1",
+        "d3",
+        "d4",
+        "d5",
+        "encoder_manifest",
+        "morgan",
+        "grover",
+        "c2",
+        "wse_manifest",
+        "wse_stats",
+        "f1_manifest",
+        "f1_stats",
+        "f2_manifest",
+        "f2_stats",
+        "f3_manifest",
+        "f3_stats",
+        "g_manifest",
+        "g1",
     }
     data: dict[str, Any] = {
-        key: load_json(path) if key in json_keys else load_csv(path)
-        for key, path in paths.items()
+        key: load_json(path) if key in json_keys else load_csv(path) for key, path in paths.items()
     }
     gate_checks = _validate_gates(data, paths)
     b1_rows = _build_b1_rows(data)
@@ -1005,7 +1100,10 @@ def build_numerical_ledger(repo_root: Path, output_dir: Path) -> dict[str, Any]:
     _write_csv(counts_path, tuple(count_rows[0]), count_rows)
     _write_csv(h2_path, tuple(h2_rows[0]), h2_rows)
 
-    outputs = {path.name: file_record(path, root) for path in (b1_path, systems_path, effects_path, counts_path, h2_path)}
+    outputs = {
+        path.name: file_record(path, root)
+        for path in (b1_path, systems_path, effects_path, counts_path, h2_path)
+    }
     manifest = {
         "schema_version": 1,
         "protocol_id": LEDGER_PROTOCOL_ID,
@@ -1047,9 +1145,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo-root", type=Path, default=Path(__file__).resolve().parents[3])
     parser.add_argument(
-        "--output-dir",
-        type=Path,
-        default=Path("outputs/jcheminform_revision/numerical_freeze_v2"),
+        "--output-dir", type=Path, default=Path("outputs/jcheminform_revision/numerical_freeze_v2")
     )
     return parser.parse_args()
 
@@ -1060,7 +1156,16 @@ def main() -> None:
     if not output.is_absolute():
         output = args.repo_root / output
     manifest = build_numerical_ledger(args.repo_root, output)
-    print(json.dumps({"status": "complete", "output": str(output.resolve()), "row_counts": manifest["row_counts"]}, indent=2))
+    print(
+        json.dumps(
+            {
+                "status": "complete",
+                "output": str(output.resolve()),
+                "row_counts": manifest["row_counts"],
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

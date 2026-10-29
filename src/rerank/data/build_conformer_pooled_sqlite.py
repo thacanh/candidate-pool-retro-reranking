@@ -22,7 +22,10 @@ import numpy as np
 
 from rerank.benchmarks.benchmark_conformer_timing import collect_official_feature_workload
 from rerank.data.build_conformer_sqlite import (
-    EMBEDDING_DIM, SeededUniMolBackend, _backend_identity, discover_weight_paths,
+    EMBEDDING_DIM,
+    SeededUniMolBackend,
+    _backend_identity,
+    discover_weight_paths,
     validate_conformer_seed,
 )
 from rerank.study_data import file_fingerprint
@@ -119,8 +122,12 @@ def build(args: argparse.Namespace) -> dict:
 
     checkpoint, dictionary = discover_weight_paths(args.checkpoint, args.dictionary)
     backend = SeededUniMolBackend(
-        seed=seed, checkpoint=checkpoint, dictionary=dictionary,
-        batch_size=args.batch_size, threads=args.threads, device=args.device,
+        seed=seed,
+        checkpoint=checkpoint,
+        dictionary=dictionary,
+        batch_size=args.batch_size,
+        threads=args.threads,
+        device=args.device,
     )
     output = Path(args.output).resolve()
     connection = _open_database(output, seed, required)
@@ -139,7 +146,8 @@ def build(args: argparse.Namespace) -> dict:
     started = time.perf_counter()
     print(
         f"C2 pooled seed {seed}: {len(stored):,} cached, {len(pending):,} pending, "
-        f"{len(required):,} required.", flush=True
+        f"{len(required):,} required.",
+        flush=True,
     )
     for batch_index, start in enumerate(range(0, len(pending), args.batch_size)):
         batch = pending[start : start + args.batch_size]
@@ -151,10 +159,11 @@ def build(args: argparse.Namespace) -> dict:
             else:
                 values = np.asarray(array, dtype=np.float32)
                 pooled = values.mean(axis=0, dtype=np.float64).astype(np.float32)
-                rows.append((smiles, int(values.shape[0]), pooled.tobytes(order="C"), status, error))
+                rows.append(
+                    (smiles, int(values.shape[0]), pooled.tobytes(order="C"), status, error)
+                )
         connection.executemany(
-            "INSERT INTO embeddings(smiles,atom_count,data,status,error) VALUES(?,?,?,?,?)",
-            rows,
+            "INSERT INTO embeddings(smiles,atom_count,data,status,error) VALUES(?,?,?,?,?)", rows
         )
         if (batch_index + 1) % 32 == 0 or start + len(batch) == len(pending):
             connection.commit()
@@ -164,12 +173,17 @@ def build(args: argparse.Namespace) -> dict:
             rate = (completed - len(stored)) / elapsed if completed > len(stored) else 0.0
             eta = (len(required) - completed) / rate if rate > 0 else None
             progress = {
-                "status": "running", "protocol_id": "C-PROJECTED",
-                "cache_kind": CACHE_KIND, "conformer_seed": seed,
-                "completed_items": completed, "required_items": len(required),
+                "status": "running",
+                "protocol_id": "C-PROJECTED",
+                "cache_kind": CACHE_KIND,
+                "conformer_seed": seed,
+                "completed_items": completed,
+                "required_items": len(required),
                 "percent": 100.0 * completed / len(required),
-                "rate_items_per_second": rate, "eta_seconds": eta,
-                "output": str(output), "updated_at_utc": datetime.now(timezone.utc).isoformat(),
+                "rate_items_per_second": rate,
+                "eta_seconds": eta,
+                "output": str(output),
+                "updated_at_utc": datetime.now(timezone.utc).isoformat(),
             }
             _atomic_json(progress, args.progress_json)
             print(
@@ -180,13 +194,20 @@ def build(args: argparse.Namespace) -> dict:
             )
 
     row_count = int(connection.execute("SELECT COUNT(*) FROM embeddings").fetchone()[0])
-    null_count = int(connection.execute("SELECT COUNT(*) FROM embeddings WHERE data IS NULL").fetchone()[0])
-    bad = int(connection.execute(
-        "SELECT COUNT(*) FROM embeddings WHERE data IS NOT NULL AND "
-        "(atom_count < 1 OR length(data) != ?)", (EMBEDDING_DIM * 4,)
-    ).fetchone()[0])
+    null_count = int(
+        connection.execute("SELECT COUNT(*) FROM embeddings WHERE data IS NULL").fetchone()[0]
+    )
+    bad = int(
+        connection.execute(
+            "SELECT COUNT(*) FROM embeddings WHERE data IS NOT NULL AND "
+            "(atom_count < 1 OR length(data) != ?)",
+            (EMBEDDING_DIM * 4,),
+        ).fetchone()[0]
+    )
     if row_count != len(required) or bad:
-        raise RuntimeError(f"Invalid pooled cache: rows={row_count}, required={len(required)}, bad={bad}.")
+        raise RuntimeError(
+            f"Invalid pooled cache: rows={row_count}, required={len(required)}, bad={bad}."
+        )
     backend_metadata = backend.metadata() if pending else backend_metadata
     inputs = {
         "source_csv": file_fingerprint(args.source_csv),
@@ -195,9 +216,12 @@ def build(args: argparse.Namespace) -> dict:
     }
     complete_flag = 1 if scientific_complete else 0
     for key, value in {
-        "complete": complete_flag, "scientific_complete": scientific_complete,
-        "null_embedding_items": null_count, "backend": backend_metadata,
-        "input_fingerprints": inputs, "inventory_audit": inventory_audit,
+        "complete": complete_flag,
+        "scientific_complete": scientific_complete,
+        "null_embedding_items": null_count,
+        "backend": backend_metadata,
+        "input_fingerprints": inputs,
+        "inventory_audit": inventory_audit,
         "completed_at_utc": datetime.now(timezone.utc).isoformat(),
     }.items():
         _write_metadata(connection, key, value)
@@ -206,22 +230,34 @@ def build(args: argparse.Namespace) -> dict:
     connection.close()
     summary = {
         "status": "complete" if scientific_complete else "partial_benchmark",
-        "protocol_id": "C-PROJECTED", "cache_kind": CACHE_KIND,
-        "conformer_seed": seed, "required_items": len(required),
-        "stored_items": row_count, "null_embedding_items": null_count,
-        "cache_path": str(output), "cache_size_bytes": output.stat().st_size,
-        "inventory_audit": inventory_audit, "input_fingerprints": inputs,
+        "protocol_id": "C-PROJECTED",
+        "cache_kind": CACHE_KIND,
+        "conformer_seed": seed,
+        "required_items": len(required),
+        "stored_items": row_count,
+        "null_embedding_items": null_count,
+        "cache_path": str(output),
+        "cache_size_bytes": output.stat().st_size,
+        "inventory_audit": inventory_audit,
+        "input_fingerprints": inputs,
         "backend": backend_metadata,
         "runtime_seconds_this_invocation": time.perf_counter() - started,
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
     }
     _atomic_json(summary, args.summary_json)
-    _atomic_json({
-        "status": summary["status"], "protocol_id": "C-PROJECTED",
-        "conformer_seed": seed, "completed_items": row_count,
-        "required_items": len(required), "percent": 100.0,
-        "output": str(output), "updated_at_utc": datetime.now(timezone.utc).isoformat(),
-    }, args.progress_json)
+    _atomic_json(
+        {
+            "status": summary["status"],
+            "protocol_id": "C-PROJECTED",
+            "conformer_seed": seed,
+            "completed_items": row_count,
+            "required_items": len(required),
+            "percent": 100.0,
+            "output": str(output),
+            "updated_at_utc": datetime.now(timezone.utc).isoformat(),
+        },
+        args.progress_json,
+    )
     return summary
 
 
@@ -252,4 +288,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -11,11 +11,7 @@ from rerank.external_ebm import (
 
 
 def _candidate(smiles, canonical=None):
-    return {
-        "smiles": smiles,
-        "canonical_smiles": canonical or smiles,
-        "prior": 1.0,
-    }
+    return {"smiles": smiles, "canonical_smiles": canonical or smiles, "prior": 1.0}
 
 
 def test_training_adapter_expands_multiple_positives_without_false_negatives():
@@ -39,19 +35,9 @@ def test_training_adapter_expands_multiple_positives_without_false_negatives():
 
 def test_evaluation_adapter_preserves_order_and_canonical_truth_rank():
     payload = {
-        "eval_pwc": [
-            (
-                "CCO",
-                [
-                    {"smiles": "CC", "prior": 0.8},
-                    {"smiles": "O.C", "prior": 0.2},
-                ],
-            )
-        ],
+        "eval_pwc": [("CCO", [{"smiles": "CC", "prior": 0.8}, {"smiles": "O.C", "prior": 0.2}])],
         "eval_ground_truths": ["C.O"],
-        "eval_metadata": [
-            {"reaction_id": 7, "source_split": "valid", "coverage_rank": 2}
-        ],
+        "eval_metadata": [{"reaction_id": 7, "source_split": "valid", "coverage_rank": 2}],
     }
     rows = evaluation_query_rows(payload)
     assert rows[0].candidate_smiles == ("CC", "O.C")

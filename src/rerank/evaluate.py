@@ -1,20 +1,4 @@
-"""
-MODULE 9 — Evaluation (AiZynthFinder edition)
-===============================================
-Compares baseline AiZynthFinder ranking (by prior) vs. MLP-reranked results.
-
-Metrics:
-    top_k_accuracy(k): fraction of products where ground-truth reactant
-                       appears within the first k candidates.
-    mrr:               Mean Reciprocal Rank — more informative than Top-k
-                       because it rewards getting the answer higher up.
-
-FIX #6 (evaluation):
-    Top-k = 1.0 is vacuous when train set = top-10 candidates (closed set).
-    Added MRR as the primary metric.
-    Added a warning when Top-k equals the candidate set size (always 1.0).
-"""
-
+"""Within-pool Top-k/MRR evaluation and reaction-level prediction export."""
 from __future__ import annotations
 
 import json
@@ -28,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 try:
     import pandas as pd
+
     _PANDAS_AVAILABLE = True
 except ImportError:
     _PANDAS_AVAILABLE = False
@@ -35,16 +20,17 @@ except ImportError:
 AiZynCandidate = Dict[str, object]
 
 
-
 # SMILES matching helpers
 
 
 from functools import lru_cache
 
+
 @lru_cache(maxsize=None)
 def _canonicalize(smiles: str) -> str:
     try:
         from rdkit import Chem
+
         mol = Chem.MolFromSmiles(smiles)
         if mol is None:
             return smiles
@@ -67,15 +53,10 @@ def _is_match(candidate: str, ground_truth: str) -> bool:
         return False
 
 
-
 # Core metric functions
 
 
-def top_k_accuracy(
-    ground_truths: List[str],
-    candidate_lists: List[List[str]],
-    k: int,
-) -> float:
+def top_k_accuracy(ground_truths: List[str], candidate_lists: List[List[str]], k: int) -> float:
     """
     Compute top-k accuracy.
 
@@ -90,16 +71,14 @@ def top_k_accuracy(
     if not ground_truths:
         return 0.0
     hits = sum(
-        1 for gt, cands in zip(ground_truths, candidate_lists)
+        1
+        for gt, cands in zip(ground_truths, candidate_lists)
         if any(_is_match(c, gt) for c in cands[:k])
     )
     return hits / len(ground_truths)
 
 
-def mean_reciprocal_rank(
-    ground_truths: List[str],
-    candidate_lists: List[List[str]],
-) -> float:
+def mean_reciprocal_rank(ground_truths: List[str], candidate_lists: List[List[str]]) -> float:
     """
     Compute Mean Reciprocal Rank (MRR).
 
@@ -134,9 +113,9 @@ def _check_topk_validity(k: int, candidate_lists: List[List[str]]) -> None:
         logger.warning(
             "⚠️  Top-%d with max %d candidates per product: this metric is VACUOUS "
             "(always 1.0 if any positive exists). Use Top-1, Top-3, or MRR instead.",
-            k, max_cands,
+            k,
+            max_cands,
         )
-
 
 
 # Result dataclass
@@ -146,18 +125,18 @@ def _check_topk_validity(k: int, candidate_lists: List[List[str]]) -> None:
 class EvaluationResult:
     """Holds per-k accuracy for AiZynthFinder baseline and MLP-reranked."""
 
-    ks:                  List[int]
-    baseline_accuracy:   Dict[int, float]
-    reranked_accuracy:   Dict[int, float]
-    baseline_mrr:        float
-    reranked_mrr:        float
-    n_products:          int
-    product_smiles:      Optional[List[str]]          = None
-    ground_truths:       Optional[List[str]]          = None
-    baseline_candidates: Optional[List[List[str]]]   = None
-    reranked_candidates: Optional[List[List[str]]]   = None
-    reranked_scores:     Optional[List[List[float]]] = None
-    reaction_metadata:   Optional[List[dict]]        = None
+    ks: List[int]
+    baseline_accuracy: Dict[int, float]
+    reranked_accuracy: Dict[int, float]
+    baseline_mrr: float
+    reranked_mrr: float
+    n_products: int
+    product_smiles: Optional[List[str]] = None
+    ground_truths: Optional[List[str]] = None
+    baseline_candidates: Optional[List[List[str]]] = None
+    reranked_candidates: Optional[List[List[str]]] = None
+    reranked_scores: Optional[List[List[float]]] = None
+    reaction_metadata: Optional[List[dict]] = None
 
     @property
     def delta(self) -> Dict[int, float]:
@@ -197,7 +176,6 @@ class EvaluationResult:
         return "\n".join(lines)
 
 
-
 # Main evaluation function
 
 
@@ -232,19 +210,16 @@ def evaluate_reranking(
     if ks is None:
         ks = [1, 3, 5, 10]
     if reaction_metadata is not None and len(reaction_metadata) != len(ground_truths):
-        raise ValueError(
-            "reaction_metadata must be aligned one-to-one with ground_truths."
-        )
+        raise ValueError("reaction_metadata must be aligned one-to-one with ground_truths.")
 
-    products       = [p for p, _ in products_with_candidates]
+    products = [p for p, _ in products_with_candidates]
     all_candidates = [cands for _, cands in products_with_candidates]
 
     logger.info("Evaluating on %d products …", len(products))
 
     # Baseline: prior-sorted order
     baseline_cand_lists: List[List[str]] = [
-        [str(c["smiles"]) for c in cands]
-        for cands in all_candidates
+        [str(c["smiles"]) for c in cands] for cands in all_candidates
     ]
 
     for k in ks:
@@ -269,12 +244,10 @@ def evaluate_reranking(
         reranked_results = reranker.rerank_batch(products_with_candidates)
 
     reranked_cand_lists: List[List[str]] = [
-        [str(c["smiles"]) for c in ranked]
-        for ranked, _ in reranked_results
+        [str(c["smiles"]) for c in ranked] for ranked, _ in reranked_results
     ]
     reranked_scores: List[List[float]] = [
-        np.asarray(scores, dtype=float).tolist()
-        for _, scores in reranked_results
+        np.asarray(scores, dtype=float).tolist() for _, scores in reranked_results
     ]
 
     reranked_acc: Dict[int, float] = {
@@ -310,33 +283,22 @@ def evaluate_reranking(
     return result
 
 
-
 # CSV export helper
 
 
 def _save_csv(result: EvaluationResult, path: str) -> None:
     rows = []
-    for i, (product, gt) in enumerate(
-        zip(result.product_smiles or [], result.ground_truths or [])
-    ):
+    for i, (product, gt) in enumerate(zip(result.product_smiles or [], result.ground_truths or [])):
         baseline_cands = (result.baseline_candidates or [[]])[i]
         reranked_cands = (result.reranked_candidates or [[]])[i]
 
-        metadata = (
-            result.reaction_metadata[i]
-            if result.reaction_metadata is not None
-            else {}
-        )
+        metadata = result.reaction_metadata[i] if result.reaction_metadata is not None else {}
         row: Dict = dict(metadata)
         row.update({"product_smiles": product, "ground_truth": gt})
 
         for k in result.ks:
-            row[f"baseline_hit@{k}"] = int(
-                any(_is_match(c, gt) for c in baseline_cands[:k])
-            )
-            row[f"reranked_hit@{k}"] = int(
-                any(_is_match(c, gt) for c in reranked_cands[:k])
-            )
+            row[f"baseline_hit@{k}"] = int(any(_is_match(c, gt) for c in baseline_cands[:k]))
+            row[f"reranked_hit@{k}"] = int(any(_is_match(c, gt) for c in reranked_cands[:k]))
 
         # Reciprocal rank
         for prefix, cands in [("baseline", baseline_cands), ("reranked", reranked_cands)]:
@@ -358,14 +320,8 @@ def _save_csv(result: EvaluationResult, path: str) -> None:
         row["reranked_candidates_json"] = json.dumps(
             reranked_cands, ensure_ascii=False, separators=(",", ":")
         )
-        scores = (
-            result.reranked_scores[i]
-            if result.reranked_scores is not None
-            else []
-        )
-        row["reranked_scores_json"] = json.dumps(
-            scores, separators=(",", ":")
-        )
+        scores = result.reranked_scores[i] if result.reranked_scores is not None else []
+        row["reranked_scores_json"] = json.dumps(scores, separators=(",", ":"))
         rows.append(row)
 
     df = pd.DataFrame(rows)

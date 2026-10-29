@@ -42,9 +42,7 @@ def _load_prediction(path: Path) -> pd.DataFrame:
     if missing:
         raise ValueError(f"{path} is missing columns: {sorted(missing)}")
     if len(frame) != EXPECTED_COVERED_REACTIONS:
-        raise ValueError(
-            f"{path} has {len(frame)} rows; expected {EXPECTED_COVERED_REACTIONS}."
-        )
+        raise ValueError(f"{path} has {len(frame)} rows; expected {EXPECTED_COVERED_REACTIONS}.")
     if frame["reaction_id"].duplicated().any():
         raise ValueError(f"{path} has duplicate reaction IDs.")
     return frame
@@ -52,11 +50,7 @@ def _load_prediction(path: Path) -> pd.DataFrame:
 
 def align_predictions(current: pd.DataFrame, salt: pd.DataFrame) -> pd.DataFrame:
     aligned = current.merge(
-        salt,
-        on="reaction_id",
-        how="inner",
-        validate="one_to_one",
-        suffixes=("_current", "_salt"),
+        salt, on="reaction_id", how="inner", validate="one_to_one", suffixes=("_current", "_salt")
     )
     if len(aligned) != EXPECTED_COVERED_REACTIONS:
         raise ValueError("Current/salt predictions do not pair exactly.")
@@ -109,10 +103,7 @@ def paired_statistics(
     mrr_matrix = np.stack(mrr_differences)
     first = aligned_by_seed[SEEDS[0]]
     clusters = np.asarray(
-        [
-            canonicalize_smiles(value) or str(value)
-            for value in first["product_smiles_current"]
-        ],
+        [canonicalize_smiles(value) or str(value) for value in first["product_smiles_current"]],
         dtype=object,
     )
     rng = np.random.default_rng(BOOTSTRAP_SEED)
@@ -160,9 +151,8 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
 
     test_manifest_path = Path(args.f3_test_manifest).resolve()
     test_manifest = json.loads(test_manifest_path.read_text(encoding="utf-8"))
-    if (
-        test_manifest.get("protocol_id") != F3_PROTOCOL_ID
-        or not test_manifest.get("test_partition_loaded_only_after_f3_freeze")
+    if test_manifest.get("protocol_id") != F3_PROTOCOL_ID or not test_manifest.get(
+        "test_partition_loaded_only_after_f3_freeze"
     ):
         raise PermissionError("F3 analysis requires a valid post-freeze test manifest.")
 
@@ -206,8 +196,7 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
         "denominators": {
             "official_test_reactions": EXPECTED_TEST_REACTIONS,
             "covered_reactions": EXPECTED_COVERED_REACTIONS,
-            "uncovered_reactions": EXPECTED_TEST_REACTIONS
-            - EXPECTED_COVERED_REACTIONS,
+            "uncovered_reactions": EXPECTED_TEST_REACTIONS - EXPECTED_COVERED_REACTIONS,
         },
         "single_intended_change": "RDKit default SaltRemover molecular input",
         "ground_truth_matching_changed": False,

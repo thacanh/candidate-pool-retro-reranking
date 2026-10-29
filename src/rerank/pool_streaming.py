@@ -38,12 +38,7 @@ CORE_FEATURE_NAMES = (
     "n_fragments",
     "heavy_atom_ratio",
 )
-FULL_FEATURE_NAMES = (
-    "prior",
-    *CORE_FEATURE_NAMES,
-    "source_aizynthfinder",
-    "source_localretro",
-)
+FULL_FEATURE_NAMES = ("prior", *CORE_FEATURE_NAMES, "source_aizynthfinder", "source_localretro")
 BASELINE_COLUMNS = (0, 1, 5, 6, 7, 8)
 AUGMENTED_COLUMNS = tuple(range(len(FULL_FEATURE_NAMES)))
 
@@ -63,11 +58,7 @@ def sha256_file(path: str | Path, chunk_size: int = 1024 * 1024) -> str:
 def fingerprint(path: str | Path) -> dict:
     resolved = Path(path).resolve()
     stat = resolved.stat()
-    return {
-        "path": str(resolved),
-        "size_bytes": stat.st_size,
-        "sha256": sha256_file(resolved),
-    }
+    return {"path": str(resolved), "size_bytes": stat.st_size, "sha256": sha256_file(resolved)}
 
 
 def atomic_json(path: str | Path, payload: Mapping) -> None:
@@ -202,9 +193,7 @@ def build_pool_index(
             else:
                 expected_candidate_rank += 1
             if int(record.get("candidate_rank", -1)) != expected_candidate_rank:
-                raise ValueError(
-                    f"Non-contiguous candidate rank for product {product_rank}."
-                )
+                raise ValueError(f"Non-contiguous candidate rank for product {product_rank}.")
             candidate = str(record.get("reactant", ""))
             if not candidate:
                 raise ValueError("Candidate record has no canonical reactant.")
@@ -253,9 +242,7 @@ def load_pool_index(
     arrays = np.load(index_npz, allow_pickle=False)
     product_records = load_products(products_path)
     products = tuple(str(item["product"]) for item in product_records)
-    canonical_products = tuple(
-        str(item["canonical_product"]) for item in product_records
-    )
+    canonical_products = tuple(str(item["canonical_product"]) for item in product_records)
     starts = arrays["starts"].astype(np.int64, copy=False)
     counts = arrays["counts"].astype(np.int32, copy=False)
     if starts.shape != counts.shape or len(starts) != len(products):
@@ -270,9 +257,7 @@ def load_pool_index(
     )
 
 
-def read_product_records(
-    pool_path: str | Path, index: PoolIndex, product_rank: int
-) -> list[dict]:
+def read_product_records(pool_path: str | Path, index: PoolIndex, product_rank: int) -> list[dict]:
     count = int(index.counts[product_rank])
     if count == 0:
         return []
@@ -317,10 +302,7 @@ def combine_embeddings(
 
 
 def core_scalar_row(
-    product: str,
-    candidate: str,
-    product_embedding: np.ndarray,
-    candidate_embedding: np.ndarray,
+    product: str, candidate: str, product_embedding: np.ndarray, candidate_embedding: np.ndarray
 ) -> np.ndarray:
     product_embedding = np.asarray(product_embedding, dtype=np.float32)
     candidate_embedding = np.asarray(candidate_embedding, dtype=np.float32)
@@ -363,13 +345,9 @@ def core_scalar_rows(
     for candidate, candidate_embedding in zip(candidates, candidate_embeddings):
         reactant = np.asarray(candidate_embedding, dtype=np.float32)
         reactant_mean = reactant.mean(axis=0)
-        reactant_norm = reactant / (
-            np.linalg.norm(reactant, axis=1, keepdims=True) + 1e-10
-        )
+        reactant_norm = reactant / (np.linalg.norm(reactant, axis=1, keepdims=True) + 1e-10)
         similarity = product_norm @ reactant_norm.T
-        atom_set = float(
-            0.5 * (similarity.max(axis=1).mean() + similarity.max(axis=0).mean())
-        )
+        atom_set = float(0.5 * (similarity.max(axis=1).mean() + similarity.max(axis=0).mean()))
         reaction_vector = product_mean - reactant_mean
         rows.append(
             [

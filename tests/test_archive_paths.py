@@ -11,7 +11,15 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
-@pytest.mark.parametrize('name,group', [('N3_S1.zip','N3'), ('N3_S2.receipt.json','N3'), ('N3_S4_merged.zip','N3_S4'), ('N4.zip','N4')])
+@pytest.mark.parametrize(
+    'name,group',
+    [
+        ('N3_S1.zip', 'N3'),
+        ('N3_S2.receipt.json', 'N3'),
+        ('N3_S4_merged.zip', 'N3_S4'),
+        ('N4.zip', 'N4'),
+    ],
+)
 def test_organized_and_legacy_locations(tmp_path, name, group):
     with pytest.raises(FileNotFoundError):
         module.imported_archive(tmp_path, name)

@@ -32,8 +32,13 @@ def transformed_shard(matrix: np.ndarray, ranks: np.ndarray, transform: str) -> 
 
     source = np.asarray(matrix, dtype=np.float32)
     groups = np.asarray(ranks)
-    if (source.ndim != 2 or source.shape[1] != 9 or groups.shape != (len(source),)
-            or transform not in TRANSFORMS or not np.isfinite(source).all()):
+    if (
+        source.ndim != 2
+        or source.shape[1] != 9
+        or groups.shape != (len(source),)
+        or transform not in TRANSFORMS
+        or not np.isfinite(source).all()
+    ):
         raise ValueError("Malformed frozen nine-column source shard/transform.")
     if np.any(groups[1:] < groups[:-1]):
         raise ValueError("Product ranks are not grouped in ascending order.")
@@ -51,15 +56,21 @@ def build_shard(args: argparse.Namespace) -> dict:
     started = time.perf_counter()
     require_approval(args.approval_record, args.analysis_plan, __file__, PROTOCOL_ID)
     raw = _load(args.raw_feature_freeze)
-    if (raw.get("protocol_id") != RANKING_PROTOCOL_ID or not raw.get("complete")
-            or raw.get("pool_name") != args.pool_name
-            or not 0 <= args.shard_index < int(raw["shard_count"])):
+    if (
+        raw.get("protocol_id") != RANKING_PROTOCOL_ID
+        or not raw.get("complete")
+        or raw.get("pool_name") != args.pool_name
+        or not 0 <= args.shard_index < int(raw["shard_count"])
+    ):
         raise ValueError("Wrong frozen WS-E source feature shard.")
-    source_manifest_path = resolve_frozen(raw["shard_manifests"][args.shard_index],
-                                           Path(args.raw_feature_freeze).parent / "shards")
+    source_manifest_path = resolve_frozen(
+        raw["shard_manifests"][args.shard_index], Path(args.raw_feature_freeze).parent / "shards"
+    )
     source_manifest = _load(source_manifest_path)
-    if (source_manifest.get("pool_name") != args.pool_name
-            or source_manifest.get("shard_index") != args.shard_index):
+    if (
+        source_manifest.get("pool_name") != args.pool_name
+        or source_manifest.get("shard_index") != args.shard_index
+    ):
         raise ValueError("N3 source feature shard order/pool differs.")
     source_npz = resolve_frozen(source_manifest["output"], source_manifest_path.parent)
     with np.load(source_npz, allow_pickle=False) as arrays:
@@ -75,16 +86,22 @@ def build_shard(args: argparse.Namespace) -> dict:
         raise FileExistsError("N3 transformed feature shard already exists.")
     atomic_npz(output, product_rank=ranks, candidate_sha256=digests, features=features)
     result = {
-        "schema_version": 1, "record_kind": "dd_n3_transformed_feature_shard",
-        "protocol_id": RANKING_PROTOCOL_ID, "selection_protocol_id": PROTOCOL_ID,
-        "pool_name": args.pool_name, "prior_transform": args.transform,
+        "schema_version": 1,
+        "record_kind": "dd_n3_transformed_feature_shard",
+        "protocol_id": RANKING_PROTOCOL_ID,
+        "selection_protocol_id": PROTOCOL_ID,
+        "pool_name": args.pool_name,
+        "prior_transform": args.transform,
         "product_rank_start": int(source_manifest["product_rank_start"]),
         "product_rank_stop": int(source_manifest["product_rank_stop"]),
-        "candidate_rows": len(ranks), "shard_index": args.shard_index,
+        "candidate_rows": len(ranks),
+        "shard_index": args.shard_index,
         "shard_count": int(raw["shard_count"]),
         "single_intended_change": "transform prior column within each first-ten candidate list",
-        "input": fingerprint(source_npz), "output": fingerprint(output),
-        "test_references_loaded": False, "runtime_seconds": time.perf_counter() - started,
+        "input": fingerprint(source_npz),
+        "output": fingerprint(output),
+        "test_references_loaded": False,
+        "runtime_seconds": time.perf_counter() - started,
     }
     atomic_json(manifest_path, result)
     return result
@@ -105,10 +122,12 @@ def freeze(args: argparse.Namespace) -> dict:
     for shard_index in range(int(raw["shard_count"])):
         path = root / "shards" / f"shard_{shard_index:03d}_of_{raw['shard_count']:03d}.json"
         record = _load(path)
-        if (record.get("selection_protocol_id") != PROTOCOL_ID
-                or record.get("pool_name") != args.pool_name
-                or record.get("prior_transform") != args.transform
-                or int(record["product_rank_start"]) != previous_stop):
+        if (
+            record.get("selection_protocol_id") != PROTOCOL_ID
+            or record.get("pool_name") != args.pool_name
+            or record.get("prior_transform") != args.transform
+            or int(record["product_rank_start"]) != previous_stop
+        ):
             raise ValueError("N3 transformed shard gap/protocol mismatch.")
         resolve_frozen(record["output"], path.parent)
         previous_stop = int(record["product_rank_stop"])
@@ -117,22 +136,30 @@ def freeze(args: argparse.Namespace) -> dict:
     if previous_stop != int(raw["product_count"]) or candidate_rows != int(raw["candidate_rows"]):
         raise ValueError("N3 transformed features do not cover the frozen source.")
     result = {
-        "schema_version": 1, "record_kind": "dd_n3_transformed_feature_freeze",
-        "protocol_id": RANKING_PROTOCOL_ID, "selection_protocol_id": PROTOCOL_ID,
-        "pool_name": args.pool_name, "prior_transform": args.transform,
-        "product_count": previous_stop, "candidate_rows": candidate_rows,
-        "candidate_cap": 10, "feature_names": raw["feature_names"],
+        "schema_version": 1,
+        "record_kind": "dd_n3_transformed_feature_freeze",
+        "protocol_id": RANKING_PROTOCOL_ID,
+        "selection_protocol_id": PROTOCOL_ID,
+        "pool_name": args.pool_name,
+        "prior_transform": args.transform,
+        "product_count": previous_stop,
+        "candidate_rows": candidate_rows,
+        "candidate_cap": 10,
+        "feature_names": raw["feature_names"],
         "baseline_columns": raw["baseline_columns"],
         "augmented_columns": raw["augmented_columns"],
         "source_indicators_in_both_arms": True,
         "single_intended_arm_change": raw["single_intended_arm_change"],
-        "shard_count": int(raw["shard_count"]), "shard_manifests": records,
+        "shard_count": int(raw["shard_count"]),
+        "shard_manifests": records,
         "pool_index_manifest": raw["pool_index_manifest"],
         "source_feature_freeze": fingerprint(args.raw_feature_freeze),
         "approval": fingerprint(args.approval_record),
-        "test_partition_loaded": False, "test_references_loaded": False,
+        "test_partition_loaded": False,
+        "test_references_loaded": False,
         "environment": {"python": platform.python_version(), "numpy": np.__version__},
-        "complete": True, "runtime_seconds": time.perf_counter() - started,
+        "complete": True,
+        "runtime_seconds": time.perf_counter() - started,
     }
     atomic_json(root / "manifest.json", result)
     return result

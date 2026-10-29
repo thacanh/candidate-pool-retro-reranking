@@ -58,7 +58,9 @@ def benjamini_hochberg(p_values) -> np.ndarray:
         raise ValueError("BH requires a non-empty vector of probabilities.")
     order = np.argsort(values, kind="stable")
     ranked = values[order]
-    adjusted = np.minimum.accumulate((ranked * len(values) / np.arange(1, len(values) + 1))[::-1])[::-1]
+    adjusted = np.minimum.accumulate((ranked * len(values) / np.arange(1, len(values) + 1))[::-1])[
+        ::-1
+    ]
     result = np.empty_like(adjusted)
     result[order] = np.minimum(adjusted, 1.0)
     return result
@@ -92,10 +94,7 @@ def clustered_sign_flip(
 
 
 def product_cluster_bootstrap(
-    differences: np.ndarray,
-    clusters: np.ndarray,
-    n_draws: int,
-    seed: int,
+    differences: np.ndarray, clusters: np.ndarray, n_draws: int, seed: int
 ) -> dict:
     values = np.asarray(differences, dtype=np.float64).mean(axis=0)
     clusters = np.asarray(clusters, dtype=object)
@@ -147,8 +146,14 @@ def _load_pair(prediction_dir: Path, seed: int) -> pd.DataFrame:
     left = pd.read_csv(baseline_path)
     right = pd.read_csv(augmented_path)
     required = {
-        "reaction_id", "reaction_class", "product_smiles", "ground_truth",
-        "reranked_hit@1", "reranked_rr", "reranked_rank", "reranked_candidates_json",
+        "reaction_id",
+        "reaction_class",
+        "product_smiles",
+        "ground_truth",
+        "reranked_hit@1",
+        "reranked_rr",
+        "reranked_rank",
+        "reranked_candidates_json",
         "baseline_candidates_json",
     }
     for path, frame in ((baseline_path, left), (augmented_path, right)):
@@ -157,23 +162,39 @@ def _load_pair(prediction_dir: Path, seed: int) -> pd.DataFrame:
         if frame["reaction_id"].duplicated().any() or len(frame) == 0:
             raise RuntimeError(f"Prediction reactions are empty or duplicated: {path}")
     identity = [
-        "reaction_id", "reaction_class", "product_smiles", "ground_truth",
+        "reaction_id",
+        "reaction_class",
+        "product_smiles",
+        "ground_truth",
         "baseline_candidates_json",
     ]
     if len(left) != len(right) or not left[identity].equals(right[identity]):
         raise RuntimeError(f"Baseline/augmented prediction pairing failed for seed {seed}.")
     result = left[identity].copy()
     for label, frame in (("baseline", left), ("augmented", right)):
-        for column in ("reranked_hit@1", "reranked_rr", "reranked_rank", "reranked_candidates_json"):
+        for column in (
+            "reranked_hit@1",
+            "reranked_rr",
+            "reranked_rank",
+            "reranked_candidates_json",
+        ):
             result[f"{label}_{column}"] = frame[column].to_numpy()
     return result
 
 
-def load_prediction_matrices(prediction_dir: str | Path, seeds) -> tuple[dict, dict[int, pd.DataFrame]]:
+def load_prediction_matrices(
+    prediction_dir: str | Path, seeds
+) -> tuple[dict, dict[int, pd.DataFrame]]:
     prediction_dir = Path(prediction_dir).resolve()
     aligned = {int(seed): _load_pair(prediction_dir, int(seed)) for seed in seeds}
     reference = aligned[int(seeds[0])]
-    identity = ["reaction_id", "reaction_class", "product_smiles", "ground_truth", "baseline_candidates_json"]
+    identity = [
+        "reaction_id",
+        "reaction_class",
+        "product_smiles",
+        "ground_truth",
+        "baseline_candidates_json",
+    ]
     for seed, frame in aligned.items():
         if not reference[identity].equals(frame[identity]):
             raise RuntimeError(f"Cross-seed reaction pairing failed for seed {seed}.")
@@ -186,9 +207,14 @@ def load_prediction_matrices(prediction_dir: str | Path, seeds) -> tuple[dict, d
     return matrices, aligned
 
 
-def build_class_tests(matrices: dict, reference: pd.DataFrame, n_bootstrap: int, n_flips: int) -> pd.DataFrame:
+def build_class_tests(
+    matrices: dict, reference: pd.DataFrame, n_bootstrap: int, n_flips: int
+) -> pd.DataFrame:
     classes = reference["reaction_class"].to_numpy(int)
-    clusters_all = np.asarray([canonicalize_smiles(value) or str(value) for value in reference["product_smiles"]], dtype=object)
+    clusters_all = np.asarray(
+        [canonicalize_smiles(value) or str(value) for value in reference["product_smiles"]],
+        dtype=object,
+    )
     top1 = matrices["reranked_hit@1"]["augmented"] - matrices["reranked_hit@1"]["baseline"]
     mrr = matrices["reranked_rr"]["augmented"] - matrices["reranked_rr"]["baseline"]
     rows = []
@@ -196,19 +222,27 @@ def build_class_tests(matrices: dict, reference: pd.DataFrame, n_bootstrap: int,
         mask = classes == reaction_class
         if not mask.any():
             raise RuntimeError(f"Prespecified reaction class {reaction_class} is absent.")
-        top_ci = product_cluster_bootstrap(top1[:, mask], clusters_all[mask], n_bootstrap, BOOTSTRAP_SEED + reaction_class)
-        mrr_ci = product_cluster_bootstrap(mrr[:, mask], clusters_all[mask], n_bootstrap, BOOTSTRAP_SEED + 100 + reaction_class)
-        rows.append({
-            "reaction_class": reaction_class,
-            "n_reactions": int(mask.sum()),
-            "top1_effect": top_ci["effect"],
-            "top1_ci95_low": top_ci["ci95_low"],
-            "top1_ci95_high": top_ci["ci95_high"],
-            "top1_raw_p": clustered_sign_flip(top1[:, mask], clusters_all[mask], n_flips, TOP1_FAMILY_SEED),
-            "mrr_effect": mrr_ci["effect"],
-            "mrr_ci95_low": mrr_ci["ci95_low"],
-            "mrr_ci95_high": mrr_ci["ci95_high"],
-        })
+        top_ci = product_cluster_bootstrap(
+            top1[:, mask], clusters_all[mask], n_bootstrap, BOOTSTRAP_SEED + reaction_class
+        )
+        mrr_ci = product_cluster_bootstrap(
+            mrr[:, mask], clusters_all[mask], n_bootstrap, BOOTSTRAP_SEED + 100 + reaction_class
+        )
+        rows.append(
+            {
+                "reaction_class": reaction_class,
+                "n_reactions": int(mask.sum()),
+                "top1_effect": top_ci["effect"],
+                "top1_ci95_low": top_ci["ci95_low"],
+                "top1_ci95_high": top_ci["ci95_high"],
+                "top1_raw_p": clustered_sign_flip(
+                    top1[:, mask], clusters_all[mask], n_flips, TOP1_FAMILY_SEED
+                ),
+                "mrr_effect": mrr_ci["effect"],
+                "mrr_ci95_low": mrr_ci["ci95_low"],
+                "mrr_ci95_high": mrr_ci["ci95_high"],
+            }
+        )
     frame = pd.DataFrame(rows)
     frame["top1_bh_q"] = benjamini_hochberg(frame["top1_raw_p"])
     frame["top1_bh_significant_q05"] = frame["top1_bh_q"] <= 0.05
@@ -222,11 +256,15 @@ def build_net_flips(matrices: dict, seeds) -> pd.DataFrame:
     for index, seed in enumerate(seeds):
         promoted = int(np.sum((baseline[index] == 0) & (augmented[index] == 1)))
         degraded = int(np.sum((baseline[index] == 1) & (augmented[index] == 0)))
-        rows.append({
-            "seed": int(seed), "improved": promoted, "degraded": degraded,
-            "unchanged": int(len(baseline[index]) - promoted - degraded),
-            "net_flips": promoted - degraded,
-        })
+        rows.append(
+            {
+                "seed": int(seed),
+                "improved": promoted,
+                "degraded": degraded,
+                "unchanged": int(len(baseline[index]) - promoted - degraded),
+                "net_flips": promoted - degraded,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -244,11 +282,19 @@ def candidate_descriptors(candidate: str, product: str) -> tuple[float, ...]:
     if product_heavy < 1:
         raise RuntimeError("Product has no heavy atoms.")
     ratio = candidate_mol.GetNumHeavyAtoms() / product_heavy
-    candidate_fp = AllChem.GetMorganFingerprintAsBitVect(candidate_mol, 2, nBits=2048, useChirality=False)
-    product_fp = AllChem.GetMorganFingerprintAsBitVect(product_mol, 2, nBits=2048, useChirality=False)
+    candidate_fp = AllChem.GetMorganFingerprintAsBitVect(
+        candidate_mol, 2, nBits=2048, useChirality=False
+    )
+    product_fp = AllChem.GetMorganFingerprintAsBitVect(
+        product_mol, 2, nBits=2048, useChirality=False
+    )
     tanimoto = DataStructs.TanimotoSimilarity(candidate_fp, product_fp)
-    ring_change = rdMolDescriptors.CalcNumRings(candidate_mol) - rdMolDescriptors.CalcNumRings(product_mol)
-    rotatable = rdMolDescriptors.CalcNumRotatableBonds(candidate_mol, rdMolDescriptors.NumRotatableBondsOptions.Strict)
+    ring_change = rdMolDescriptors.CalcNumRings(candidate_mol) - rdMolDescriptors.CalcNumRings(
+        product_mol
+    )
+    rotatable = rdMolDescriptors.CalcNumRotatableBonds(
+        candidate_mol, rdMolDescriptors.NumRotatableBondsOptions.Strict
+    )
     return float(fragments), float(ratio), float(tanimoto), float(ring_change), float(rotatable)
 
 
@@ -275,14 +321,16 @@ def build_h2_observations(matrices: dict, aligned: dict[int, pd.DataFrame], seed
             augmented_desc = np.asarray(candidate_descriptors(augmented_candidate, product))
             descriptor_deltas.append(augmented_desc - baseline_desc)
         values = np.mean(descriptor_deltas, axis=0)
-        rows.append({
-            "reaction_id": int(reference.iloc[row_index]["reaction_id"]),
-            "canonical_product": canonicalize_smiles(product) or product,
-            "reaction_class": int(reference.iloc[row_index]["reaction_class"]),
-            "mean_reference_rank_delta": float(mean_rank_delta[row_index]),
-            "promoted": int(mean_rank_delta[row_index] > 0),
-            **{name: float(value) for name, value in zip(CONTINUOUS_PREDICTORS, values)},
-        })
+        rows.append(
+            {
+                "reaction_id": int(reference.iloc[row_index]["reaction_id"]),
+                "canonical_product": canonicalize_smiles(product) or product,
+                "reaction_class": int(reference.iloc[row_index]["reaction_class"]),
+                "mean_reference_rank_delta": float(mean_rank_delta[row_index]),
+                "promoted": int(mean_rank_delta[row_index] > 0),
+                **{name: float(value) for name, value in zip(CONTINUOUS_PREDICTORS, values)},
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -291,14 +339,17 @@ def descriptor_distributions(observations: pd.DataFrame) -> pd.DataFrame:
     for predictor in CONTINUOUS_PREDICTORS:
         for outcome, group in observations.groupby("promoted"):
             values = group[predictor].to_numpy(float)
-            rows.append({
-                "predictor": predictor,
-                "outcome": "promoted" if int(outcome) else "degraded",
-                "n": len(values), "mean": float(values.mean()),
-                "median": float(np.median(values)),
-                "q25": float(np.quantile(values, 0.25)),
-                "q75": float(np.quantile(values, 0.75)),
-            })
+            rows.append(
+                {
+                    "predictor": predictor,
+                    "outcome": "promoted" if int(outcome) else "degraded",
+                    "n": len(values),
+                    "mean": float(values.mean()),
+                    "median": float(np.median(values)),
+                    "q25": float(np.quantile(values, 0.25)),
+                    "q75": float(np.quantile(values, 0.75)),
+                }
+            )
     return pd.DataFrame(rows)
 
 
@@ -355,8 +406,10 @@ def logistic_bootstrap(
         counts = frame["promoted"].value_counts().to_dict()
         if counts.get(0, 0) < 20 or counts.get(1, 0) < 20:
             return pd.DataFrame(), {
-                "status": "not_fitted", "reason": "class 3 has fewer than 20 observations in an outcome",
-                "n_degraded": int(counts.get(0, 0)), "n_promoted": int(counts.get(1, 0)),
+                "status": "not_fitted",
+                "reason": "class 3 has fewer than 20 observations in an outcome",
+                "n_degraded": int(counts.get(0, 0)),
+                "n_promoted": int(counts.get(1, 0)),
             }
         predictors = ["delta_rotatable_bonds"]
     else:
@@ -389,7 +442,11 @@ def logistic_bootstrap(
         rows = np.concatenate([indices[index] for index in sampled])
         bootstrap_frame = frame.iloc[rows]
         try:
-            estimate = _fit_logit(bootstrap_frame, predictors).params.reindex(coefficient_names).to_numpy(float)
+            estimate = (
+                _fit_logit(bootstrap_frame, predictors)
+                .params.reindex(coefficient_names)
+                .to_numpy(float)
+            )
             if np.isfinite(estimate).all():
                 draws.append(estimate)
             else:
@@ -403,19 +460,27 @@ def logistic_bootstrap(
     result_rows = []
     for index, name in enumerate(coefficient_names):
         coefficient = float(fitted.params[name])
-        result_rows.append({
-            "model": "class3_flexibility" if class3_only else "all_class",
-            "term": name, "coefficient": coefficient,
-            "coefficient_ci95_low": float(low[index]), "coefficient_ci95_high": float(high[index]),
-            "odds_ratio": float(np.exp(np.clip(coefficient, -700, 700))),
-            "odds_ratio_ci95_low": float(np.exp(np.clip(low[index], -700, 700))),
-            "odds_ratio_ci95_high": float(np.exp(np.clip(high[index], -700, 700))),
-        })
+        result_rows.append(
+            {
+                "model": "class3_flexibility" if class3_only else "all_class",
+                "term": name,
+                "coefficient": coefficient,
+                "coefficient_ci95_low": float(low[index]),
+                "coefficient_ci95_high": float(high[index]),
+                "odds_ratio": float(np.exp(np.clip(coefficient, -700, 700))),
+                "odds_ratio_ci95_low": float(np.exp(np.clip(low[index], -700, 700))),
+                "odds_ratio_ci95_high": float(np.exp(np.clip(high[index], -700, 700))),
+            }
+        )
     audit = {
-        "status": "fitted", "n_observations": len(frame),
-        "n_product_clusters": len(unique), "predictors": predictors,
-        "standardization": scaling, "bootstrap_success": len(draws),
-        "bootstrap_failed_or_separated": failed, "bootstrap_seed": seed,
+        "status": "fitted",
+        "n_observations": len(frame),
+        "n_product_clusters": len(unique),
+        "predictors": predictors,
+        "standardization": scaling,
+        "bootstrap_success": len(draws),
+        "bootstrap_failed_or_separated": failed,
+        "bootstrap_seed": seed,
         "n_bootstrap_requested": n_bootstrap,
         "interpretation": "descriptive and post hoc; conditional on reactions with changed mean reference rank",
     }
@@ -432,7 +497,10 @@ def run_analysis(args) -> dict:
     output.mkdir(parents=True, exist_ok=True)
     matrices, aligned = load_prediction_matrices(args.prediction_dir, seeds)
     reference = aligned[seeds[0]]
-    clusters = np.asarray([canonicalize_smiles(value) or str(value) for value in reference["product_smiles"]], dtype=object)
+    clusters = np.asarray(
+        [canonicalize_smiles(value) or str(value) for value in reference["product_smiles"]],
+        dtype=object,
+    )
     top1_delta = matrices["reranked_hit@1"]["augmented"] - matrices["reranked_hit@1"]["baseline"]
     mrr_delta = matrices["reranked_rr"]["augmented"] - matrices["reranked_rr"]["baseline"]
     g1 = {
@@ -477,16 +545,24 @@ def run_analysis(args) -> dict:
             if any(f"_{seed}.csv" in path.name for seed in seeds)
         },
         "g2_family": "exactly classes 1--10 conditional Top-1; BH q=0.05",
-        "class3_survives_bh_q05": bool(classes.loc[classes["reaction_class"] == 3, "top1_bh_significant_q05"].iloc[0]),
+        "class3_survives_bh_q05": bool(
+            classes.loc[classes["reaction_class"] == 3, "top1_bh_significant_q05"].iloc[0]
+        ),
         "net_flip_totals": {
-            "improved": int(flips["improved"].sum()), "degraded": int(flips["degraded"].sum()),
-            "unchanged": int(flips["unchanged"].sum()), "net": int(flips["net_flips"].sum()),
+            "improved": int(flips["improved"].sum()),
+            "degraded": int(flips["degraded"].sum()),
+            "unchanged": int(flips["unchanged"].sum()),
+            "net": int(flips["net_flips"].sum()),
         },
         "h2_all_class": all_audit,
         "h2_class3": class3_audit,
         "generated_files": [
-            "g1_seed_marginal.json", "g2_class_tests.csv", "g3_net_flips.csv",
-            "h2_observations.csv", "h1_descriptor_distributions.csv", "h2_logistic_models.csv",
+            "g1_seed_marginal.json",
+            "g2_class_tests.csv",
+            "g3_net_flips.csv",
+            "h2_observations.csv",
+            "h1_descriptor_distributions.csv",
+            "h2_logistic_models.csv",
             "h1_descriptor_distributions.png",
         ],
     }

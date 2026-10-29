@@ -89,9 +89,7 @@ def iter_candidate_queries(path: str | Path) -> Iterator[CandidateQuery]:
                 candidate_winners[candidate_key] = (candidate, prior)
 
     for query_index, (product_key, candidate_winners) in enumerate(pools.items()):
-        winners = sorted(
-            candidate_winners.items(), key=lambda item: item[1][1], reverse=True
-        )
+        winners = sorted(candidate_winners.items(), key=lambda item: item[1][1], reverse=True)
         yield CandidateQuery(
             query_id=f"query-{query_index:08d}",
             product_smiles=product_key,
@@ -114,9 +112,7 @@ def _atomic_write_json(path: Path, payload: dict) -> None:
 
 
 def _write_feature_shard(
-    output_dir: Path,
-    shard_index: int,
-    query_rows: Sequence[tuple[CandidateQuery, np.ndarray]],
+    output_dir: Path, shard_index: int, query_rows: Sequence[tuple[CandidateQuery, np.ndarray]]
 ) -> dict:
     filename = f"features-{shard_index:05d}.npz"
     path = output_dir / filename
@@ -229,10 +225,7 @@ def build_feature_shards(
         "feature_names": list(FULL_FEATURE_NAMES),
         "encoder_batch_size": encoder_batch_size,
         "queries_per_shard": queries_per_shard,
-        "query_range": {
-            "start_inclusive": query_start_index,
-            "stop_exclusive": query_stop_index,
-        },
+        "query_range": {"start_inclusive": query_start_index, "stop_exclusive": query_stop_index},
         "parallelization": "independent_query_scoped_worker_partition",
         "global_atom_cache": False,
         "candidate_normalization": {
@@ -322,9 +315,7 @@ def build_feature_shards(
     flush_pending()
     total_completed = int(manifest["completed_query_count"])
     expected_range_count = (
-        query_stop_index - query_start_index
-        if query_stop_index is not None
-        else None
+        query_stop_index - query_start_index if query_stop_index is not None else None
     )
     if expected_range_count is not None and total_completed > expected_range_count:
         raise ValueError("Partition completed-query count exceeds its frozen range.")
@@ -339,9 +330,7 @@ def build_feature_shards(
         _atomic_write_json(manifest_path, manifest)
         raise ValueError("Candidate query stream ended before the frozen range stop.")
     range_complete = (
-        total_completed == expected_range_count
-        if expected_range_count is not None
-        else exhausted
+        total_completed == expected_range_count if expected_range_count is not None else exhausted
     )
     manifest["status"] = "complete" if range_complete else "partial"
     manifest["last_run_seconds"] = time.perf_counter() - started
@@ -370,8 +359,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--grover-checkpoint")
     parser.add_argument("--grover-backend-factory")
     parser.add_argument(
-        "--grover-atom-state-choice",
-        choices=("atom_from_atom", "atom_from_bond", "concatenation"),
+        "--grover-atom-state-choice", choices=("atom_from_atom", "atom_from_bond", "concatenation")
     )
     return parser.parse_args()
 
@@ -385,9 +373,7 @@ def main() -> None:
         protocol_id = "C-MORGAN-ATOM"
     else:
         if args.grover_atom_state_choice is None:
-            raise SystemExit(
-                "--grover-atom-state-choice is required for GROVER."
-            )
+            raise SystemExit("--grover-atom-state-choice is required for GROVER.")
         if args.grover_atom_state_choice != "concatenation":
             raise SystemExit(
                 "The approved C1a protocol is frozen to GROVER concatenation; "

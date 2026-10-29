@@ -39,9 +39,9 @@ def file_sha256(path: str | Path) -> str:
 
 
 def canonical_fingerprint(record: Mapping) -> str:
-    encoded = json.dumps(
-        record, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    ).encode("utf-8")
+    encoded = json.dumps(record, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
+        "utf-8"
+    )
     return "sha256:" + hashlib.sha256(encoded).hexdigest()
 
 
@@ -68,10 +68,7 @@ class ProjectedRanker:
                 super().__init__()
                 self.product_projection = nn.Linear(POOLED_DIM, PROJECTION_DIM)
                 self.reactant_projection = nn.Linear(POOLED_DIM, PROJECTION_DIM)
-                layers: list[nn.Module] = [
-                    nn.Linear(HEAD_INPUT_DIM, hidden_width),
-                    nn.ReLU(),
-                ]
+                layers: list[nn.Module] = [nn.Linear(HEAD_INPUT_DIM, hidden_width), nn.ReLU()]
                 if dropout > 0:
                     layers.append(nn.Dropout(dropout))
                 layers.append(nn.Linear(hidden_width, 1))
@@ -126,7 +123,11 @@ class ProjectionNormalizer:
         self.std = np.asarray(self.std, dtype=np.float32)
         if self.mean.shape != (RAW_INPUT_DIM,) or self.std.shape != (RAW_INPUT_DIM,):
             raise ValueError("C2 normalizer has the wrong dimensionality.")
-        if np.any(self.std < 1e-6) or not np.isfinite(self.mean).all() or not np.isfinite(self.std).all():
+        if (
+            np.any(self.std < 1e-6)
+            or not np.isfinite(self.mean).all()
+            or not np.isfinite(self.std).all()
+        ):
             raise ValueError("C2 normalizer is invalid.")
 
     def transform(self, values: np.ndarray) -> np.ndarray:
@@ -158,8 +159,12 @@ def validate_projected_selection(bundle: Mapping, *, require_complete: bool = Tr
     for item in train:
         _validate_product(item)
     required = {
-        "eval_pwc", "eval_ground_truths", "eval_metadata", "base_features",
-        "product_embeddings", "reactant_embeddings",
+        "eval_pwc",
+        "eval_ground_truths",
+        "eval_metadata",
+        "base_features",
+        "product_embeddings",
+        "reactant_embeddings",
     }
     if not required.issubset(validation):
         raise ValueError("C2 validation payload is incomplete.")
@@ -171,13 +176,20 @@ def validate_projected_selection(bundle: Mapping, *, require_complete: bool = Tr
         raise ValueError("C2 validation payload is misaligned.")
     if any(str(row.get("source_split")) != "valid" for row in validation["eval_metadata"]):
         raise PermissionError("C2 selection contains a non-validation reaction.")
-    for index, ((_, candidates), base, product, reactants) in enumerate(zip(
-        validation["eval_pwc"], validation["base_features"],
-        validation["product_embeddings"], validation["reactant_embeddings"]
-    )):
+    for index, ((_, candidates), base, product, reactants) in enumerate(
+        zip(
+            validation["eval_pwc"],
+            validation["base_features"],
+            validation["product_embeddings"],
+            validation["reactant_embeddings"],
+        )
+    ):
         if np.asarray(base).shape != (len(candidates), BASE_DIM):
             raise ValueError(f"Validation base rows are misaligned at reaction {index}.")
-        if np.asarray(product).shape != (POOLED_DIM,) or np.asarray(reactants).shape != (len(candidates), POOLED_DIM):
+        if np.asarray(product).shape != (POOLED_DIM,) or np.asarray(reactants).shape != (
+            len(candidates),
+            POOLED_DIM,
+        ):
             raise ValueError(f"Validation pooled rows are misaligned at reaction {index}.")
 
 
@@ -196,7 +208,9 @@ def _validate_product(item: Mapping) -> None:
         raise ValueError("C2 training labels are invalid.")
 
 
-def make_pair_indices(train_products: Sequence[Mapping], seed: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def make_pair_indices(
+    train_products: Sequence[Mapping], seed: int
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Match D1 seeded random negative sampling without materializing features."""
 
     rng = random.Random(int(seed))
@@ -258,7 +272,8 @@ def materialize_validation(validation: Mapping) -> tuple[np.ndarray, tuple[int, 
     result = np.empty((offsets[-1], RAW_INPUT_DIM), dtype=np.float32)
     for index, (start, stop) in enumerate(zip(offsets[:-1], offsets[1:])):
         result[start:stop, :BASE_DIM] = validation["base_features"][index]
-        result[start:stop, BASE_DIM : BASE_DIM + POOLED_DIM] = validation["product_embeddings"][index]
+        result[start:stop, BASE_DIM : BASE_DIM + POOLED_DIM] = validation["product_embeddings"][
+            index
+        ]
         result[start:stop, BASE_DIM + POOLED_DIM :] = validation["reactant_embeddings"][index]
     return result, offsets
-

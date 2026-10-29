@@ -71,11 +71,7 @@ def file_sha256(path: str | Path, chunk_size: int = 1024 * 1024) -> str:
 def file_fingerprint(path: str | Path, include_sha256: bool = True) -> dict:
     path = Path(path)
     stat = path.stat()
-    result = {
-        "path": str(path.resolve()),
-        "size_bytes": stat.st_size,
-        "mtime_ns": stat.st_mtime_ns,
-    }
+    result = {"path": str(path.resolve()), "size_bytes": stat.st_size, "mtime_ns": stat.st_mtime_ns}
     if include_sha256:
         result["sha256"] = file_sha256(path)
     return result
@@ -100,8 +96,7 @@ class ReactionRecord:
 
 
 def load_reactions(
-    source_csv: str | Path,
-    metadata_csv: Optional[str | Path] = None,
+    source_csv: str | Path, metadata_csv: Optional[str | Path] = None
 ) -> List[ReactionRecord]:
     """Load reaction rows while retaining the official source split and class."""
     frame = pd.read_csv(source_csv)
@@ -118,9 +113,7 @@ def load_reactions(
     if metadata_csv is not None:
         metadata = pd.read_csv(metadata_csv)
         if "reaction_id" not in metadata.columns or "reaction_class" not in metadata.columns:
-            raise ValueError(
-                "Metadata CSV must contain reaction_id and reaction_class columns."
-            )
+            raise ValueError("Metadata CSV must contain reaction_id and reaction_class columns.")
         if metadata["reaction_id"].duplicated().any():
             raise ValueError("reaction_id is not unique in metadata CSV.")
         keep = ["reaction_id", "reaction_class"]
@@ -256,8 +249,7 @@ def compute_coverage(
             dtype=np.int32,
         )
         counts = np.asarray(
-            [len(pools.get(reaction.product_key, [])) for reaction in subset],
-            dtype=np.int32,
+            [len(pools.get(reaction.product_key, [])) for reaction in subset], dtype=np.int32
         )
         row = {
             "source_split": split,
@@ -285,9 +277,7 @@ def _extract_training_feature_payload(
 ) -> Tuple[List[dict], dict]:
     """Extract the shared training features and return their audit counts."""
     non_train_products = {
-        reaction.product_key
-        for reaction in reactions
-        if reaction.source_split != train_split
+        reaction.product_key for reaction in reactions if reaction.source_split != train_split
     }
 
     train_ground_truths: Dict[str, set[str]] = {}
@@ -299,9 +289,7 @@ def _extract_training_feature_payload(
         if exclude_cross_split_train_products and reaction.product_key in non_train_products:
             n_train_overlap_excluded += 1
             continue
-        train_ground_truths.setdefault(reaction.product_key, set()).add(
-            reaction.ground_truth_key
-        )
+        train_ground_truths.setdefault(reaction.product_key, set()).add(reaction.ground_truth_key)
         train_source_smiles.setdefault(reaction.product_key, reaction.product_smiles)
 
     train_products: List[dict] = []
@@ -365,9 +353,7 @@ def _extract_evaluation_feature_payload(
     returned metadata retains both the source reaction ID and source split.
     """
 
-    eval_reactions = [
-        reaction for reaction in reactions if reaction.source_split == eval_split
-    ]
+    eval_reactions = [reaction for reaction in reactions if reaction.source_split == eval_split]
     eval_feature_by_product: Dict[str, np.ndarray] = {}
     eval_pwc: List[Tuple[str, List[dict]]] = []
     eval_ground_truths: List[str] = []
@@ -377,11 +363,7 @@ def _extract_evaluation_feature_payload(
     covered_product_keys: set[str] = set()
     uncovered_product_keys: set[str] = set()
 
-    for reaction in tqdm(
-        eval_reactions,
-        desc=f"Extracting {eval_split} features",
-        unit="reaction",
-    ):
+    for reaction in tqdm(eval_reactions, desc=f"Extracting {eval_split} features", unit="reaction"):
         pool = pools.get(reaction.product_key, [])
         rank = candidate_rank(reaction, pool)
         if rank == 0:
@@ -392,27 +374,23 @@ def _extract_evaluation_feature_payload(
         if reaction.product_key not in eval_feature_by_product:
             candidates = [str(candidate["smiles"]) for candidate in pool]
             priors = [float(candidate["prior"]) for candidate in pool]
-            eval_feature_by_product[reaction.product_key] = (
-                feature_extractor.extract_features_batch(
-                    product_smiles=reaction.product_smiles,
-                    candidates=candidates,
-                    priors=priors,
-                    ranks=list(range(len(candidates))),
-                ).astype(np.float32)
+            eval_feature_by_product[
+                reaction.product_key
+            ] = feature_extractor.extract_features_batch(
+                product_smiles=reaction.product_smiles,
+                candidates=candidates,
+                priors=priors,
+                ranks=list(range(len(candidates))),
+            ).astype(
+                np.float32
             )
         clean_pool = [
-            {"smiles": candidate["smiles"], "prior": candidate["prior"]}
-            for candidate in pool
+            {"smiles": candidate["smiles"], "prior": candidate["prior"]} for candidate in pool
         ]
         eval_pwc.append((reaction.product_smiles, clean_pool))
         eval_ground_truths.append(reaction.ground_truth)
         metadata = reaction.metadata()
-        metadata.update(
-            {
-                "candidate_count": len(pool),
-                "coverage_rank": rank,
-            }
-        )
+        metadata.update({"candidate_count": len(pool), "coverage_rank": rank})
         eval_metadata.append(metadata)
         eval_features.append(eval_feature_by_product[reaction.product_key])
 
@@ -432,9 +410,7 @@ def _extract_evaluation_feature_payload(
         "unique_products_total": len(all_product_keys),
         "unique_products_covered": len(covered_product_keys),
         "unique_products_with_uncovered_reactions": len(uncovered_product_keys),
-        "unique_products_fully_uncovered": len(
-            all_product_keys.difference(covered_product_keys)
-        ),
+        "unique_products_fully_uncovered": len(all_product_keys.difference(covered_product_keys)),
     }
     return payload, audit
 
@@ -455,13 +431,9 @@ def _legacy_audit(
         "eval_split": eval_split,
         "exclude_cross_split_train_products": exclude_cross_split_train_products,
         "train_products": train_audit["train_products"],
-        "train_overlap_reactions_excluded": train_audit[
-            "train_overlap_reactions_excluded"
-        ],
+        "train_overlap_reactions_excluded": train_audit["train_overlap_reactions_excluded"],
         "train_products_uncovered": train_audit["train_products_uncovered"],
-        "train_products_without_negative": train_audit[
-            "train_products_without_negative"
-        ],
+        "train_products_without_negative": train_audit["train_products_without_negative"],
         "eval_reactions_total": eval_audit["reactions_total"],
         "eval_reactions_covered": eval_audit["reactions_covered"],
         "eval_reactions_uncovered": eval_audit["reactions_uncovered"],
@@ -485,17 +457,10 @@ def build_official_feature_cache(
     :func:`build_official_split_feature_bundle` instead.
     """
     train_products, train_audit = _extract_training_feature_payload(
-        reactions,
-        pools,
-        feature_extractor,
-        train_split,
-        exclude_cross_split_train_products,
+        reactions, pools, feature_extractor, train_split, exclude_cross_split_train_products
     )
     eval_payload, eval_audit = _extract_evaluation_feature_payload(
-        reactions,
-        pools,
-        feature_extractor,
-        eval_split,
+        reactions, pools, feature_extractor, eval_split
     )
 
     audit = _legacy_audit(
@@ -539,17 +504,10 @@ def build_official_split_feature_bundle(
         raise ValueError("train and validation split names must be distinct")
 
     train_products, train_audit = _extract_training_feature_payload(
-        reactions,
-        pools,
-        feature_extractor,
-        train_split,
-        exclude_cross_split_train_products,
+        reactions, pools, feature_extractor, train_split, exclude_cross_split_train_products
     )
     validation_payload, validation_audit = _extract_evaluation_feature_payload(
-        reactions,
-        pools,
-        feature_extractor,
-        validation_split,
+        reactions, pools, feature_extractor, validation_split
     )
 
     return {
@@ -561,27 +519,17 @@ def build_official_split_feature_bundle(
         "exclude_cross_split_train_products": exclude_cross_split_train_products,
         "train_products": train_products,
         "validation_payload": validation_payload,
-        "audit": {
-            "train": train_audit,
-            "validation": validation_audit,
-        },
+        "audit": {"train": train_audit, "validation": validation_audit},
     }
 
 
 def _validated_selection_freeze_record(record: dict) -> dict:
     """Require explicit evidence that model selection has been frozen."""
     if not isinstance(record, dict):
-        raise PermissionError(
-            "Post-selection test extraction requires a frozen-selection record."
-        )
-    fingerprint_fields = (
-        "selected_config_fingerprint",
-        "checkpoint_fingerprint",
-    )
+        raise PermissionError("Post-selection test extraction requires a frozen-selection record.")
+    fingerprint_fields = ("selected_config_fingerprint", "checkpoint_fingerprint")
     fingerprint_pattern = re.compile(r"sha256:[0-9a-fA-F]{64}")
-    fingerprints = [
-        str(record.get(field, "")).strip() for field in fingerprint_fields
-    ]
+    fingerprints = [str(record.get(field, "")).strip() for field in fingerprint_fields]
     if not any(fingerprint_pattern.fullmatch(value) for value in fingerprints):
         raise PermissionError(
             "Post-selection test extraction requires a selected configuration "
@@ -615,10 +563,7 @@ def attach_post_selection_test_payload(
         raise ValueError("A post-selection test payload is already attached.")
 
     test_payload, test_audit = _extract_evaluation_feature_payload(
-        reactions,
-        pools,
-        feature_extractor,
-        test_split,
+        reactions, pools, feature_extractor, test_split
     )
     result = dict(selection_bundle)
     result["audit"] = dict(selection_bundle["audit"])
@@ -631,10 +576,7 @@ def attach_post_selection_test_payload(
     return result
 
 
-def selection_feature_cache_view(
-    bundle: dict,
-    selection_split: Optional[str] = None,
-) -> dict:
+def selection_feature_cache_view(bundle: dict, selection_split: Optional[str] = None) -> dict:
     """Return a validation-only legacy-shaped cache for model selection.
 
     The explicit split guard fails closed if selection code requests the test
@@ -698,18 +640,11 @@ def make_pairwise_dataset(
                     random_count = max_neg_per_pos - hard_count
                     hard = sorted(negatives)[:hard_count]
                     remaining = [index for index in negatives if index not in set(hard)]
-                    selected = hard + rng.sample(
-                        remaining, min(random_count, len(remaining))
-                    )
+                    selected = hard + rng.sample(remaining, min(random_count, len(remaining)))
                 else:
                     selected = rng.sample(negatives, max_neg_per_pos)
             for negative_index in selected:
-                pairs.append(
-                    (
-                        features[positive_index].copy(),
-                        features[negative_index].copy(),
-                    )
-                )
+                pairs.append((features[positive_index].copy(), features[negative_index].copy()))
     if not pairs:
         raise ValueError("No pairwise training samples could be constructed.")
     logger.info("Constructed %d training pairs for seed %d.", len(pairs), seed)

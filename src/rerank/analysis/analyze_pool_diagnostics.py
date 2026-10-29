@@ -26,10 +26,7 @@ from rdkit import Chem, DataStructs
 from rdkit.Chem import rdFingerprintGenerator
 from scipy.stats import kendalltau, rankdata, spearmanr
 
-from rerank.analysis.analyze_predictions import (
-    clustered_sign_flip,
-    product_cluster_bootstrap,
-)
+from rerank.analysis.analyze_predictions import clustered_sign_flip, product_cluster_bootstrap
 from rerank.analysis.analyze_transfer_study import (
     D5_SEEDS,
     POOL_ORDER,
@@ -133,11 +130,7 @@ def _environment() -> dict:
     packages = {}
     for name in ("numpy", "scipy", "rdkit"):
         packages[name] = importlib.metadata.version(name)
-    return {
-        "python": sys.version,
-        "platform": platform.platform(),
-        "packages": packages,
-    }
+    return {"python": sys.version, "platform": platform.platform(), "packages": packages}
 
 
 def _load_json(path: str | Path) -> dict:
@@ -146,9 +139,8 @@ def _load_json(path: str | Path) -> dict:
 
 def _verify_file(path: str | Path, expected: Mapping, label: str) -> dict:
     actual = file_fingerprint(path)
-    if (
-        actual["sha256"] != str(expected.get("sha256"))
-        or int(actual["size_bytes"]) != int(expected.get("size_bytes", -1))
+    if actual["sha256"] != str(expected.get("sha256")) or int(actual["size_bytes"]) != int(
+        expected.get("size_bytes", -1)
     ):
         raise ValueError(f"{label} differs from its frozen fingerprint: {path}")
     return actual
@@ -162,9 +154,8 @@ def _resolve_frozen_file(expected: Mapping, fallback: str | Path, label: str) ->
             continue
         checked.add(candidate)
         actual = file_fingerprint(candidate)
-        if (
-            actual["sha256"] == str(expected.get("sha256"))
-            and int(actual["size_bytes"]) == int(expected.get("size_bytes", -1))
+        if actual["sha256"] == str(expected.get("sha256")) and int(actual["size_bytes"]) == int(
+            expected.get("size_bytes", -1)
         ):
             return candidate, actual
     raise ValueError(f"Cannot resolve the frozen {label} by SHA-256 and size.")
@@ -182,16 +173,13 @@ def _anchor_prediction_fingerprints(root: str | Path) -> dict[str, dict]:
 def _reaction_effects(prediction_root: str | Path) -> tuple[list[dict], np.ndarray, np.ndarray]:
     reference, baseline, augmented = _load_anchor_matrices(prediction_root)
     baseline_ranks = np.asarray(
-        [[int(row["reranked_rank"]) for row in seed_rows] for seed_rows in baseline],
-        dtype=np.int16,
+        [[int(row["reranked_rank"]) for row in seed_rows] for seed_rows in baseline], dtype=np.int16
     )
     augmented_ranks = np.asarray(
         [[int(row["reranked_rank"]) for row in seed_rows] for seed_rows in augmented],
         dtype=np.int16,
     )
-    top1 = (augmented_ranks == 1).astype(np.float64) - (
-        baseline_ranks == 1
-    ).astype(np.float64)
+    top1 = (augmented_ranks == 1).astype(np.float64) - (baseline_ranks == 1).astype(np.float64)
     mrr = 1.0 / augmented_ranks.astype(np.float64) - 1.0 / baseline_ranks.astype(np.float64)
     return reference, top1, mrr
 
@@ -210,10 +198,7 @@ def _between_group_statistic(values: np.ndarray, labels: np.ndarray) -> float:
 
 
 def _omnibus_permutation(
-    values: np.ndarray,
-    labels: np.ndarray,
-    permutations: int,
-    rng_seed: int,
+    values: np.ndarray, labels: np.ndarray, permutations: int, rng_seed: int
 ) -> tuple[float, float]:
     observed = _between_group_statistic(values, labels)
     rng = np.random.default_rng(rng_seed)
@@ -224,7 +209,9 @@ def _omnibus_permutation(
     return observed, float((extreme + 1) / (permutations + 1))
 
 
-def _mean_contrast(values: np.ndarray, labels: np.ndarray, left: str, right: Sequence[str]) -> float:
+def _mean_contrast(
+    values: np.ndarray, labels: np.ndarray, left: str, right: Sequence[str]
+) -> float:
     left_values = values[labels == left]
     right_values = values[np.isin(labels, tuple(right))]
     if not len(left_values) or not len(right_values):
@@ -324,7 +311,8 @@ def run_m1(args: argparse.Namespace) -> dict:
     for metric_index, (metric, values) in enumerate((("top1", top1), ("mrr", mrr))):
         seed = args.permutation_seed + metric_index
         for scope, included in (
-            (("all_five_bins", M1_BIN_ORDER), ("non_singleton_bins", M1_NON_SINGLETON))
+            ("all_five_bins", M1_BIN_ORDER),
+            ("non_singleton_bins", M1_NON_SINGLETON),
         ):
             mask = np.isin(labels, included)
             statistic, p_value = _omnibus_permutation(
@@ -341,12 +329,7 @@ def run_m1(args: argparse.Namespace) -> dict:
                 }
             )
         effect, p_value = _contrast_permutation(
-            values,
-            labels,
-            "4-6",
-            ("2-3", "7-9", "10"),
-            args.permutations,
-            seed,
+            values, labels, "4-6", ("2-3", "7-9", "10"), args.permutations, seed
         )
         low, high = _contrast_bootstrap(
             values,
@@ -371,12 +354,7 @@ def run_m1(args: argparse.Namespace) -> dict:
         raw_rows = []
         for other in ("2-3", "7-9", "10"):
             pair_effect, pair_p = _contrast_permutation(
-                values,
-                labels,
-                "4-6",
-                (other,),
-                args.permutations,
-                seed,
+                values, labels, "4-6", (other,), args.permutations, seed
             )
             raw_rows.append(
                 {
@@ -443,9 +421,7 @@ def run_m1(args: argparse.Namespace) -> dict:
 
 
 def _stream_top10_pool(
-    path: str | Path,
-    target_products: set[str],
-    expected_protocol_id: str | None = None,
+    path: str | Path, target_products: set[str], expected_protocol_id: str | None = None
 ) -> dict[str, list[dict]]:
     result: dict[str, list[dict]] = defaultdict(list)
     last_raw_product = None
@@ -474,7 +450,10 @@ def _stream_top10_pool(
             if identity in {item["identity"] for item in result[last_product]}:
                 raise ValueError(f"Canonical duplicate within a frozen candidate list: {path}")
             expected_rank = len(result[last_product]) + 1
-            if expected_protocol_id is not None and int(row.get("candidate_rank", 0)) != expected_rank:
+            if (
+                expected_protocol_id is not None
+                and int(row.get("candidate_rank", 0)) != expected_rank
+            ):
                 raise ValueError(f"Pool candidate ranks are not contiguous from one: {path}")
             result[last_product].append(
                 {"identity": identity, "prior": float(row.get("prior", 0.0))}
@@ -549,9 +528,7 @@ def _historical_top10(reference: Sequence[Mapping], target_ids: set[int]) -> dic
     return result
 
 
-_MORGAN = rdFingerprintGenerator.GetMorganGenerator(
-    radius=2, fpSize=2048, includeChirality=True
-)
+_MORGAN = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=2048, includeChirality=True)
 
 
 @lru_cache(maxsize=300_000)
@@ -568,7 +545,9 @@ def _normalized_entropy(priors: Sequence[float]) -> float | None:
         return None
     probabilities = values / values.sum()
     positive = probabilities > 0.0
-    return float(-np.sum(probabilities[positive] * np.log(probabilities[positive])) / np.log(len(values)))
+    return float(
+        -np.sum(probabilities[positive] * np.log(probabilities[positive])) / np.log(len(values))
+    )
 
 
 def _order_concordance(reference: Sequence[str], current: Sequence[str]) -> float | None:
@@ -579,8 +558,7 @@ def _order_concordance(reference: Sequence[str], current: Sequence[str]) -> floa
     right = {value: index for index, value in enumerate(current)}
     ordered = sorted(common, key=left.__getitem__)
     value = kendalltau(
-        [left[item] for item in ordered],
-        [right[item] for item in ordered],
+        [left[item] for item in ordered], [right[item] for item in ordered]
     ).statistic
     return None if value is None or not math.isfinite(float(value)) else float(value)
 
@@ -636,13 +614,14 @@ def _safe_spearman(left: Iterable[float], right: Iterable[float]) -> tuple[int, 
 
 def _quartile_rows(rows: list[dict], pool: str, feature: str, metric: str) -> list[dict]:
     selected = [
-        row for row in rows
-        if row[feature] is not None and math.isfinite(float(row[feature]))
+        row for row in rows if row[feature] is not None and math.isfinite(float(row[feature]))
     ]
     values = np.asarray([float(row[feature]) for row in selected], dtype=np.float64)
     if len(values) < 4 or len(np.unique(values)) < 2:
         return []
-    quartiles = np.clip(np.ceil(4.0 * rankdata(values, method="average") / len(values)), 1, 4).astype(int)
+    quartiles = np.clip(
+        np.ceil(4.0 * rankdata(values, method="average") / len(values)), 1, 4
+    ).astype(int)
     result = []
     for quartile in range(1, 5):
         mask = quartiles == quartile
@@ -770,24 +749,26 @@ def _validate_k1_chain(
         selection["inputs"]["feature_freeze"]["path"],
         f"{pool} feature freeze",
     )
-    if (
-        feature_actual["sha256"] != selection["inputs"]["feature_freeze"]["sha256"]
-        or int(feature_actual["size_bytes"])
-        != int(selection["inputs"]["feature_freeze"]["size_bytes"])
-    ):
+    if feature_actual["sha256"] != selection["inputs"]["feature_freeze"]["sha256"] or int(
+        feature_actual["size_bytes"]
+    ) != int(selection["inputs"]["feature_freeze"]["size_bytes"]):
         raise ValueError(f"Frozen K1 {pool} selection and test use different feature freezes.")
-    return manifest, records, {
-        "test_manifest": file_fingerprint(path),
-        "predictions": manifest["predictions"],
-        "model_freeze": model_actual,
-        "selection_manifest": selection_actual,
-        "feature_freeze": feature_actual,
-        "feature_freeze_path": str(feature_path.resolve()),
-        "pool": pool_actual,
-        "source_csv": source_actual,
-        "metadata_csv": metadata_actual,
-        "covered_reactions": covered_count,
-    }
+    return (
+        manifest,
+        records,
+        {
+            "test_manifest": file_fingerprint(path),
+            "predictions": manifest["predictions"],
+            "model_freeze": model_actual,
+            "selection_manifest": selection_actual,
+            "feature_freeze": feature_actual,
+            "feature_freeze_path": str(feature_path.resolve()),
+            "pool": pool_actual,
+            "source_csv": source_actual,
+            "metadata_csv": metadata_actual,
+            "covered_reactions": covered_count,
+        },
+    )
 
 
 def _l1_external_links(
@@ -798,9 +779,7 @@ def _l1_external_links(
     l1_manifest = _load_json(l1_manifest_path)
     if l1_manifest.get("protocol_id") != "dd-rxn-ebm-score-diagnostic-v1":
         raise ValueError("L1 diagnostic belongs to the wrong protocol.")
-    l1_actual = _verify_file(
-        l1_path, l1_manifest["outputs"]["per_list"], "L1 per-list diagnostics"
-    )
+    l1_actual = _verify_file(l1_path, l1_manifest["outputs"]["per_list"], "L1 per-list diagnostics")
 
     d5_manifest_path = Path(d5_root) / "test_results" / "manifest.json"
     d5_manifest = _load_json(d5_manifest_path)
@@ -811,9 +790,7 @@ def _l1_external_links(
     ):
         raise ValueError("D5 official-test manifest failed its frozen protocol gate.")
     _verify_file(
-        d5_manifest_path,
-        l1_manifest["inputs"]["d5_test_manifest"],
-        "D5 manifest bound into L1",
+        d5_manifest_path, l1_manifest["inputs"]["d5_test_manifest"], "D5 manifest bound into L1"
     )
 
     diagnostics = _read_csv(l1_path)
@@ -823,7 +800,9 @@ def _l1_external_links(
         by_reaction[reaction_id]["l1_score_sd"].append(float(row["external_score_population_sd"]))
         by_reaction[reaction_id]["l1_score_range"].append(float(row["external_score_range"]))
         if str(row["spearman_defined"]).lower() == "true" and row["spearman_external_vs_prior"]:
-            by_reaction[reaction_id]["l1_spearman_vs_prior"].append(float(row["spearman_external_vs_prior"]))
+            by_reaction[reaction_id]["l1_spearman_vs_prior"].append(
+                float(row["spearman_external_vs_prior"])
+            )
     outcomes: dict[int, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
     prediction_inputs = {}
     for seed in D5_SEEDS:
@@ -850,10 +829,7 @@ def _l1_external_links(
                     key: float(np.mean(values)) if values else None
                     for key, values in by_reaction[reaction_id].items()
                 },
-                **{
-                    key: float(np.mean(values))
-                    for key, values in outcomes[reaction_id].items()
-                },
+                **{key: float(np.mean(values)) for key, values in outcomes[reaction_id].items()},
             }
         )
     links = []
@@ -863,19 +839,18 @@ def _l1_external_links(
                 [row.get(feature) for row in rows], [row[outcome] for row in rows]
             )
             links.append(
-                {
-                    "feature": feature,
-                    "outcome": outcome,
-                    "n_reactions": n,
-                    "spearman_rho": rho,
-                }
+                {"feature": feature, "outcome": outcome, "n_reactions": n, "spearman_rho": rho}
             )
-    return rows, links, {
-        "l1_manifest": file_fingerprint(l1_manifest_path),
-        "l1_per_list_diagnostics": l1_actual,
-        "d5_test_manifest": file_fingerprint(d5_manifest_path),
-        "d5_predictions": prediction_inputs,
-    }
+    return (
+        rows,
+        links,
+        {
+            "l1_manifest": file_fingerprint(l1_manifest_path),
+            "l1_per_list_diagnostics": l1_actual,
+            "d5_test_manifest": file_fingerprint(d5_manifest_path),
+            "d5_predictions": prediction_inputs,
+        },
+    )
 
 
 def run_m2(args: argparse.Namespace) -> dict:
@@ -959,7 +934,9 @@ def run_m2(args: argparse.Namespace) -> dict:
             candidates = pools[pool][reaction.product_key]
             identities = [row["identity"] for row in candidates]
             if reaction.ground_truth_key not in identities:
-                raise ValueError(f"M2 {pool} list does not contain its recorded reference reactants.")
+                raise ValueError(
+                    f"M2 {pool} list does not contain its recorded reference reactants."
+                )
             if pool == "historical_cap10":
                 frozen = reference_by_id[reaction_id][1]
                 frozen_count = int(frozen["candidate_count"])
@@ -977,7 +954,9 @@ def run_m2(args: argparse.Namespace) -> dict:
                     "reaction_id": reaction_id,
                     "canonical_product": reaction.product_key,
                     "pool": pool,
-                    **_list_descriptors(candidates, historical_candidates, reaction.ground_truth_key),
+                    **_list_descriptors(
+                        candidates, historical_candidates, reaction.ground_truth_key
+                    ),
                     **effects[pool][reaction_id],
                 }
             )
@@ -1061,9 +1040,7 @@ def run_m2(args: argparse.Namespace) -> dict:
                         "spearman_rho": rho,
                     }
                 )
-                transfer_quartile_rows.extend(
-                    _quartile_rows(selected, pool, feature, metric)
-                )
+                transfer_quartile_rows.extend(_quartile_rows(selected, pool, feature, metric))
 
     transfer_summary_rows = []
     for pool in POOL_ORDER[1:]:
@@ -1104,8 +1081,7 @@ def run_m2(args: argparse.Namespace) -> dict:
     own_coverage = {
         "historical_cap10": len(reference_by_id),
         **{
-            pool: int(expanded_manifests[pool]["test_reactions_covered"])
-            for pool in POOL_ORDER[1:]
+            pool: int(expanded_manifests[pool]["test_reactions_covered"]) for pool in POOL_ORDER[1:]
         },
     }
     coverage_rows = [
@@ -1140,9 +1116,7 @@ def run_m2(args: argparse.Namespace) -> dict:
         ]
     )
 
-    l1_rows, l1_links, l1_d5_inputs = _l1_external_links(
-        args.l1_diagnostics, args.d5_root
-    )
+    l1_rows, l1_links, l1_d5_inputs = _l1_external_links(args.l1_diagnostics, args.d5_root)
     output.mkdir(parents=True, exist_ok=True)
     _write_csv(output / "m2_reaction_pool_descriptors.csv", descriptor_rows)
     _write_csv(output / "m2_pool_summary.csv", summary_rows)
@@ -1183,9 +1157,7 @@ def run_m2(args: argparse.Namespace) -> dict:
             "claim_status": "exploratory_post_hoc",
         },
         "inputs": {
-            "anchor_prediction_files": _anchor_prediction_fingerprints(
-                args.anchor_prediction_root
-            ),
+            "anchor_prediction_files": _anchor_prediction_fingerprints(args.anchor_prediction_root),
             "k1_frozen_chains": expanded_inputs,
             "candidate_pools": pool_inputs,
             "source_csv": file_fingerprint(args.source_csv),
@@ -1239,17 +1211,14 @@ def _transfer_inference(
     if vector.ndim != 1 or len(vector) != len(clusters) or not len(vector):
         raise ValueError("M2b values and product clusters must be aligned and non-empty.")
     if not np.all(np.isfinite(vector)) or len(set(clusters.tolist())) != len(clusters):
-        raise ValueError("M2b requires finite values and one unique canonical product per reaction.")
+        raise ValueError(
+            "M2b requires finite values and one unique canonical product per reaction."
+        )
     interval = product_cluster_bootstrap(
         vector[None, :], clusters, bootstrap_samples, bootstrap_seed
     )
-    p_value = clustered_sign_flip(
-        vector[None, :], clusters, permutations, permutation_seed
-    )
-    return {
-        **interval,
-        "paired_sign_flip_p_two_sided": p_value,
-    }
+    p_value = clustered_sign_flip(vector[None, :], clusters, permutations, permutation_seed)
+    return {**interval, "paired_sign_flip_p_two_sided": p_value}
 
 
 def run_m2b(args: argparse.Namespace) -> dict:
@@ -1286,9 +1255,7 @@ def run_m2b(args: argparse.Namespace) -> dict:
     result_rows = []
     for pool_index, pool in enumerate(POOL_ORDER[1:]):
         selected = sorted(by_pool[pool], key=lambda row: int(row["reaction_id"]))
-        identity = [
-            (int(row["reaction_id"]), str(row["canonical_product"])) for row in selected
-        ]
+        identity = [(int(row["reaction_id"]), str(row["canonical_product"])) for row in selected]
         if len(selected) != 3814 or len(set(identity)) != 3814:
             raise ValueError(f"M2b {pool} does not contain 3,814 unique reaction/product pairs.")
         if expected_identity is None:
@@ -1323,9 +1290,7 @@ def run_m2b(args: argparse.Namespace) -> dict:
                     "mean_transfer_loss": inference["effect"],
                     "product_cluster_ci95_low": inference["ci95_low"],
                     "product_cluster_ci95_high": inference["ci95_high"],
-                    "paired_sign_flip_p_two_sided": inference[
-                        "paired_sign_flip_p_two_sided"
-                    ],
+                    "paired_sign_flip_p_two_sided": inference["paired_sign_flip_p_two_sided"],
                     "interval_relation_to_zero": relation,
                     "bootstrap_samples": args.bootstrap_samples,
                     "bootstrap_rng_seed": args.bootstrap_seed + offset,
@@ -1410,7 +1375,9 @@ def parse_args() -> argparse.Namespace:
     m2b.add_argument("--permutation-seed", type=int, default=2060)
     args = parser.parse_args()
     if args.command == "m2" and (len(args.k1_manifest) != 3 or len(args.pool_jsonl) != 3):
-        parser.error("m2 needs exactly three K1 manifests and three pool JSONLs in AiZ, LocalRetro, merged order")
+        parser.error(
+            "m2 needs exactly three K1 manifests and three pool JSONLs in AiZ, LocalRetro, merged order"
+        )
     return args
 
 

@@ -13,9 +13,7 @@ from rerank.experiments.run_salt_sensitivity import (
 
 
 def test_salt_removal_preserves_stereo_and_surviving_fragments() -> None:
-    cleaned, status, original_count, surviving_count = salt_remove(
-        "Cl.F[C@H](Br)I.CCO"
-    )
+    cleaned, status, original_count, surviving_count = salt_remove("Cl.F[C@H](Br)I.CCO")
 
     assert status == "changed"
     assert original_count == 3
@@ -60,10 +58,7 @@ def test_transform_changes_only_salt_affected_row_and_preserves_prior() -> None:
         key: np.full((max(1, len(key) % 4 + 1), 512), index + 1, dtype=np.float32)
         for index, key in enumerate(sorted(keys))
     }
-    candidates = [
-        {"smiles": salted, "prior": 0.75},
-        {"smiles": "CCN", "prior": 0.25},
-    ]
+    candidates = [{"smiles": salted, "prior": 0.75}, {"smiles": "CCN", "prior": 0.25}]
     embeddings[canonical_smiles("CCN")] = np.full((3, 512), 9, dtype=np.float32)
     original = np.vstack(
         [

@@ -16,7 +16,10 @@ from typing import Any
 
 import numpy as np
 
-from rerank.analysis.analyze_controlled_study import clustered_bootstrap, paired_cluster_permutation_test
+from rerank.analysis.analyze_controlled_study import (
+    clustered_bootstrap,
+    paired_cluster_permutation_test,
+)
 from rerank.study_data import file_fingerprint, load_reactions
 from rerank.pool_streaming import RANKING_PROTOCOL_ID, atomic_json
 
@@ -87,9 +90,7 @@ def analyze_pool(
         "scopes": {},
     }
     for scope_index, scope in enumerate(SCOPES):
-        mask = np.asarray(
-            [bool(record["covered"]) for record in records], dtype=bool
-        )
+        mask = np.asarray([bool(record["covered"]) for record in records], dtype=bool)
         if scope == "end_to_end":
             mask[:] = True
         clusters = all_clusters[mask]
@@ -119,9 +120,7 @@ def analyze_pool(
             )
             differences = augmented - baseline
             rng = np.random.default_rng(rng_seed + 100 * scope_index + 10 * metric_index)
-            point, low, high = clustered_bootstrap(
-                differences, clusters, n_bootstrap, rng
-            )
+            point, low, high = clustered_bootstrap(differences, clusters, n_bootstrap, rng)
             permutation_rng = np.random.default_rng(
                 rng_seed + 10_000 + 100 * scope_index + 10 * metric_index
             )
@@ -252,9 +251,7 @@ def run_analysis(args: argparse.Namespace) -> dict[str, Any]:
             "paired_statistics": file_fingerprint(statistics_json),
         },
         "test_partition_loaded_from_frozen_results_only": True,
-        "pool_assessments": {
-            pool: pool_statistics[pool]["top1_assessment"] for pool in POOLS
-        },
+        "pool_assessments": {pool: pool_statistics[pool]["top1_assessment"] for pool in POOLS},
     }
     atomic_json(output_dir / "manifest.json", analysis_manifest)
     return analysis_manifest

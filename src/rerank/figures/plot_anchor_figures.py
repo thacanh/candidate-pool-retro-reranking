@@ -116,11 +116,19 @@ def figure_design(output_dir: Path, background_path: Path, *, with_png: bool) ->
         ("Outcomes", "Round trip; stereo\nSalts; classes; flips"),
     ]
     for x, (title, body) in zip(centers, top):
-        ax.text(x, 0.725, title, ha="center", va="center", fontsize=6.7, fontweight="bold", color=INK)
-        ax.text(x, 0.605, body, ha="center", va="center", fontsize=5.15, linespacing=1.18, color=INK)
+        ax.text(
+            x, 0.725, title, ha="center", va="center", fontsize=6.7, fontweight="bold", color=INK
+        )
+        ax.text(
+            x, 0.605, body, ha="center", va="center", fontsize=5.15, linespacing=1.18, color=INK
+        )
     for x, (title, body) in zip(centers, bottom):
-        ax.text(x, 0.265, title, ha="center", va="center", fontsize=6.25, fontweight="bold", color=INK)
-        ax.text(x, 0.145, body, ha="center", va="center", fontsize=4.95, linespacing=1.18, color=INK)
+        ax.text(
+            x, 0.265, title, ha="center", va="center", fontsize=6.25, fontweight="bold", color=INK
+        )
+        ax.text(
+            x, 0.145, body, ha="center", va="center", fontsize=4.95, linespacing=1.18, color=INK
+        )
 
     save_figure(fig, output_dir, "figure1_revision_design", with_png=with_png)
 
@@ -129,10 +137,7 @@ def figure_primary(
     system: pd.DataFrame, effects: pd.DataFrame, output_dir: Path, *, with_png: bool
 ) -> None:
     fig, (ax1, ax2) = plt.subplots(
-        1,
-        2,
-        figsize=(FULL_WIDTH_IN, 3.85),
-        gridspec_kw={"width_ratios": [1.04, 1.0]},
+        1, 2, figsize=(FULL_WIDTH_IN, 3.85), gridspec_kw={"width_ratios": [1.04, 1.0]}
     )
 
     systems = ["candidate_prior", "prior_2d", "prior_2d_unimol"]
@@ -140,25 +145,61 @@ def figure_primary(
     colors = [GREY, BLUE, TEAL]
     x = np.arange(len(systems))
     width = 0.34
-    for offset, metric, label, hatch in [(-width / 2, "top1", "Top-1", ""), (width / 2, "mrr", "MRR", "//")]:
+    for offset, metric, label, hatch in [
+        (-width / 2, "top1", "Top-1", ""),
+        (width / 2, "mrr", "MRR", "//"),
+    ]:
         values = [
-            float(one(system, analysis_id="D5", system="candidate_prior", metric=metric, scope="within_pool").estimate),
-            float(one(system, analysis_id="D1", system="prior_2d", metric=metric, scope="within_pool").estimate),
-            float(one(system, analysis_id="D1", system="prior_2d_unimol", metric=metric, scope="within_pool").estimate),
+            float(
+                one(
+                    system,
+                    analysis_id="D5",
+                    system="candidate_prior",
+                    metric=metric,
+                    scope="within_pool",
+                ).estimate
+            ),
+            float(
+                one(
+                    system, analysis_id="D1", system="prior_2d", metric=metric, scope="within_pool"
+                ).estimate
+            ),
+            float(
+                one(
+                    system,
+                    analysis_id="D1",
+                    system="prior_2d_unimol",
+                    metric=metric,
+                    scope="within_pool",
+                ).estimate
+            ),
         ]
-        bars = ax1.bar(x + offset, np.asarray(values) * 100, width, label=label, color=colors, edgecolor="white", linewidth=0.8, hatch=hatch)
+        bars = ax1.bar(
+            x + offset,
+            np.asarray(values) * 100,
+            width,
+            label=label,
+            color=colors,
+            edgecolor="white",
+            linewidth=0.8,
+            hatch=hatch,
+        )
         for bar, value in zip(bars, values):
-            ax1.text(bar.get_x() + bar.get_width() / 2, value * 100 + 0.35, f"{value*100:.2f}", ha="center", va="bottom", fontsize=8.0, rotation=90)
+            ax1.text(
+                bar.get_x() + bar.get_width() / 2,
+                value * 100 + 0.35,
+                f"{value*100:.2f}",
+                ha="center",
+                va="bottom",
+                fontsize=8.0,
+                rotation=90,
+            )
     ax1.set_xticks(x, labels)
     ax1.set_ylim(72, 87.5)
     ax1.set_ylabel("Within-pool metric (%)")
     ax1.set_title("Validation-selected models (5-seed estimates)", pad=12)
     ax1.legend(
-        loc="upper center",
-        bbox_to_anchor=(0.5, -0.20),
-        ncol=2,
-        frameon=False,
-        handlelength=2.6,
+        loc="upper center", bbox_to_anchor=(0.5, -0.20), ncol=2, frameon=False, handlelength=2.6
     )
     ax1.grid(axis="y", color=LIGHT_GREY, linewidth=0.7)
     ax1.spines[["top", "right"]].set_visible(False)
@@ -166,15 +207,46 @@ def figure_primary(
 
     rows: list[tuple[str, pd.Series, str, str]] = []
     for metric, display in [("top1", "Top-1"), ("mrr", "MRR")]:
-        rows.append((display, one(effects, analysis_id="G1", scope="product_only", metric=metric), "Product-cluster CI", BLUE))
-        rows.append((display, one(effects, analysis_id="G1", scope="seed_marginal", metric=metric), "Seed-marginal CI", TEAL))
+        rows.append(
+            (
+                display,
+                one(effects, analysis_id="G1", scope="product_only", metric=metric),
+                "Product-cluster CI",
+                BLUE,
+            )
+        )
+        rows.append(
+            (
+                display,
+                one(effects, analysis_id="G1", scope="seed_marginal", metric=metric),
+                "Seed-marginal CI",
+                TEAL,
+            )
+        )
     y = np.asarray([3.15, 2.75, 1.65, 1.25])
     for yi, (metric_label, row, ci_label, color) in zip(y, rows):
         estimate = float(row.effect) * 100
         low = float(row.ci95_low) * 100
         high = float(row.ci95_high) * 100
-        ax2.errorbar(estimate, yi, xerr=[[estimate - low], [high - estimate]], fmt="o", ms=5.5, color=color, ecolor=color, capsize=3, lw=1.4)
-        ax2.text(high + 0.08, yi, f"{estimate:+.2f} [{low:+.2f}, {high:+.2f}]", va="center", fontsize=8.0, color=INK)
+        ax2.errorbar(
+            estimate,
+            yi,
+            xerr=[[estimate - low], [high - estimate]],
+            fmt="o",
+            ms=5.5,
+            color=color,
+            ecolor=color,
+            capsize=3,
+            lw=1.4,
+        )
+        ax2.text(
+            high + 0.08,
+            yi,
+            f"{estimate:+.2f} [{low:+.2f}, {high:+.2f}]",
+            va="center",
+            fontsize=8.0,
+            color=INK,
+        )
     ax2.axvline(0, color="#98A2B3", lw=1, ls="--")
     ax2.set_yticks([2.95, 1.45], ["Top-1", "MRR"])
     ax2.set_ylim(0.75, 3.65)
@@ -187,11 +259,7 @@ def figure_primary(
     ax2.scatter([], [], color=BLUE, label="Product-cluster CI")
     ax2.scatter([], [], color=TEAL, label="Seed-marginal CI")
     ax2.legend(
-        loc="upper center",
-        bbox_to_anchor=(0.5, -0.20),
-        ncol=2,
-        frameon=False,
-        columnspacing=1.2,
+        loc="upper center", bbox_to_anchor=(0.5, -0.20), ncol=2, frameon=False, columnspacing=1.2
     )
     panel_label(ax2, "B")
 
@@ -213,7 +281,17 @@ def forest(
         est = float(row.effect) * 100
         low = float(row.ci95_low) * 100
         high = float(row.ci95_high) * 100
-        ax.errorbar(est, yi, xerr=[[est - low], [high - est]], fmt="o", color=color, ecolor=color, ms=4.7, capsize=2.5, lw=1.2)
+        ax.errorbar(
+            est,
+            yi,
+            xerr=[[est - low], [high - est]],
+            fmt="o",
+            color=color,
+            ecolor=color,
+            ms=4.7,
+            capsize=2.5,
+            lw=1.2,
+        )
     ax.axvline(0, color="#98A2B3", lw=0.9, ls="--")
     ax.set_yticks(y, [r[0] for r in rows])
     ax.set_xlim(*xlim)
@@ -231,19 +309,40 @@ def figure_robustness(
     ax = axes[0, 0]
     b_rows = [
         ("5×5 single-conformer", one(effects, analysis_id="B2", metric="top1")),
-        ("10-conformer average vs 2D", one(effects, analysis_id="B3", comparison="b3_minus_2d", metric="top1")),
-        ("Average vs single conformer", one(effects, analysis_id="B3", comparison="b3_minus_single_conformer", metric="top1")),
+        (
+            "10-conformer average vs 2D",
+            one(effects, analysis_id="B3", comparison="b3_minus_2d", metric="top1"),
+        ),
+        (
+            "Average vs single conformer",
+            one(effects, analysis_id="B3", comparison="b3_minus_single_conformer", metric="top1"),
+        ),
     ]
     forest(ax, b_rows, "Conformer robustness", (-0.55, 1.45), [TEAL, TEAL, GREY])
     panel_label(ax, "A")
 
     ax = axes[0, 1]
     c_rows = [
-        ("Morgan – 2D", one(effects, analysis_id="C1", comparison="morgan_minus_2d", metric="top1")),
-        ("GROVER – 2D", one(effects, analysis_id="C1", comparison="grover_minus_2d", metric="top1")),
-        ("Uni-Mol – 2D", one(effects, analysis_id="C1", comparison="unimol_minus_2d", metric="top1")),
-        ("Uni-Mol – GROVER", one(effects, analysis_id="C1", comparison="unimol_minus_grover", metric="top1")),
-        ("Uni-Mol – Morgan", one(effects, analysis_id="C1", comparison="unimol_minus_morgan", metric="top1")),
+        (
+            "Morgan – 2D",
+            one(effects, analysis_id="C1", comparison="morgan_minus_2d", metric="top1"),
+        ),
+        (
+            "GROVER – 2D",
+            one(effects, analysis_id="C1", comparison="grover_minus_2d", metric="top1"),
+        ),
+        (
+            "Uni-Mol – 2D",
+            one(effects, analysis_id="C1", comparison="unimol_minus_2d", metric="top1"),
+        ),
+        (
+            "Uni-Mol – GROVER",
+            one(effects, analysis_id="C1", comparison="unimol_minus_grover", metric="top1"),
+        ),
+        (
+            "Uni-Mol – Morgan",
+            one(effects, analysis_id="C1", comparison="unimol_minus_morgan", metric="top1"),
+        ),
     ]
     forest(ax, c_rows, "Encoder attribution", (-0.65, 1.45), [ORANGE, PURPLE, TEAL, GREY, GREY])
     panel_label(ax, "B")
@@ -252,11 +351,30 @@ def figure_robustness(
     pool_names = ["AiZynthFinder", "LocalRetro", "Merged union"]
     pool_prefixes = ["aizynthfinder_only", "localretro_only", "merged"]
     pool_colors = [BLUE, ORANGE, PURPLE]
-    coverage = [float(one(system, analysis_id="E-POOLS", system=f"{p}_baseline", metric="top1", scope="within_pool").coverage) * 100 for p in pool_prefixes]
+    coverage = [
+        float(
+            one(
+                system,
+                analysis_id="E-POOLS",
+                system=f"{p}_baseline",
+                metric="top1",
+                scope="within_pool",
+            ).coverage
+        )
+        * 100
+        for p in pool_prefixes
+    ]
     x = np.arange(3)
     bars = ax.bar(x, coverage, color=pool_colors, width=0.58)
     for bar, value in zip(bars, coverage):
-        ax.text(bar.get_x() + bar.get_width() / 2, value + 0.55, f"{value:.1f}%", ha="center", va="bottom", fontsize=8.0)
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            value + 0.55,
+            f"{value:.1f}%",
+            ha="center",
+            va="bottom",
+            fontsize=8.0,
+        )
     ax.set_ylim(75, 100)
     ax.set_ylabel("Test-product coverage (%)")
     ax.set_xticks(x, ["AiZynth", "LocalRetro", "Merged"])
@@ -265,9 +383,25 @@ def figure_robustness(
     ax.spines[["top", "right"]].set_visible(False)
     ax2 = ax.twinx()
     for xi, p, color in zip(x, pool_prefixes, pool_colors):
-        row = one(effects, analysis_id="E-POOLS", comparison=f"{p}_augmented_minus_baseline", metric="top1", scope="within_pool")
+        row = one(
+            effects,
+            analysis_id="E-POOLS",
+            comparison=f"{p}_augmented_minus_baseline",
+            metric="top1",
+            scope="within_pool",
+        )
         est, low, high = [float(row[c]) * 100 for c in ["effect", "ci95_low", "ci95_high"]]
-        ax2.errorbar(xi, est, yerr=[[est - low], [high - est]], fmt="D", color=INK, ecolor=INK, ms=4.3, capsize=2.5, lw=1.1)
+        ax2.errorbar(
+            xi,
+            est,
+            yerr=[[est - low], [high - est]],
+            fmt="D",
+            color=INK,
+            ecolor=INK,
+            ms=4.3,
+            capsize=2.5,
+            lw=1.1,
+        )
     ax2.axhline(0, color="#98A2B3", lw=0.8, ls="--")
     ax2.set_ylim(-1.4, 1.4)
     ax2.set_ylabel("Within-pool Top-1 effect (pp)", color=INK)
@@ -279,10 +413,24 @@ def figure_robustness(
         ("Exact-match Top-1", one(effects, analysis_id="F1", metric="exact_match_top1")),
         ("Round-trip beam-1", one(effects, analysis_id="F1", metric="roundtrip_beam1")),
         ("Round-trip beam-5", one(effects, analysis_id="F1", metric="roundtrip_beam5")),
-        ("Chirality sensitivity", one(effects, analysis_id="F2", comparison="augmented_true_minus_false", metric="top1")),
-        ("Salt sensitivity", one(effects, analysis_id="F3", comparison="augmented_salt_minus_current", metric="top1")),
+        (
+            "Chirality sensitivity",
+            one(effects, analysis_id="F2", comparison="augmented_true_minus_false", metric="top1"),
+        ),
+        (
+            "Salt sensitivity",
+            one(
+                effects, analysis_id="F3", comparison="augmented_salt_minus_current", metric="top1"
+            ),
+        ),
     ]
-    forest(ax, outcome_rows, "Outcome and chemistry sensitivities", (-0.45, 1.4), [TEAL, TEAL, GREY, ORANGE, PURPLE])
+    forest(
+        ax,
+        outcome_rows,
+        "Outcome and chemistry sensitivities",
+        (-0.45, 1.4),
+        [TEAL, TEAL, GREY, ORANGE, PURPLE],
+    )
     ax.set_xlabel("Effect (percentage points)")
     panel_label(ax, "D")
 
@@ -294,15 +442,14 @@ def figure_classes(
     effects: pd.DataFrame, counts: pd.DataFrame, output_dir: Path, *, with_png: bool
 ) -> None:
     fig, (ax1, ax2) = plt.subplots(
-        1,
-        2,
-        figsize=(FULL_WIDTH_IN, 4.35),
-        gridspec_kw={"width_ratios": [1.32, 0.9]},
+        1, 2, figsize=(FULL_WIDTH_IN, 4.35), gridspec_kw={"width_ratios": [1.32, 0.9]}
     )
     rows = []
     colors = []
     for cls in range(1, 11):
-        row = one(effects, analysis_id="G2", comparison=f"class_{cls}_augmented_minus_2d", metric="top1")
+        row = one(
+            effects, analysis_id="G2", comparison=f"class_{cls}_augmented_minus_2d", metric="top1"
+        )
         n = int(row.n_reactions)
         label = f"Class {cls}{'*' if cls == 3 else ''}  (n={n})"
         rows.append((label, row))
@@ -321,14 +468,15 @@ def figure_classes(
     colors = [TEAL, RED, LIGHT_GREY]
     total = sum(values)
     wedges, _ = ax2.pie(
-        values,
-        startangle=90,
-        colors=colors,
-        wedgeprops={"width": 0.36, "edgecolor": "white"},
+        values, startangle=90, colors=colors, wedgeprops={"width": 0.36, "edgecolor": "white"}
     )
-    ax2.text(0, 0.09, f"{total:,}", ha="center", va="center", fontsize=15, fontweight="bold", color=INK)
+    ax2.text(
+        0, 0.09, f"{total:,}", ha="center", va="center", fontsize=15, fontweight="bold", color=INK
+    )
     ax2.text(0, -0.12, "seed × reaction\npairs", ha="center", va="center", fontsize=8.0, color=GREY)
-    legend_labels = [f"{label}: {value:,} ({value/total*100:.1f}%)" for label, value in zip(labels, values)]
+    legend_labels = [
+        f"{label}: {value:,} ({value/total*100:.1f}%)" for label, value in zip(labels, values)
+    ]
     ax2.legend(
         wedges,
         legend_labels,
@@ -354,7 +502,9 @@ def figure_classes(
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--ledger-dir", type=Path, default=Path("outputs/jcheminform_revision/numerical_freeze_v2"))
+    parser.add_argument(
+        "--ledger-dir", type=Path, default=Path("outputs/jcheminform_revision/numerical_freeze_v2")
+    )
     parser.add_argument(
         "--output-dir",
         type=Path,

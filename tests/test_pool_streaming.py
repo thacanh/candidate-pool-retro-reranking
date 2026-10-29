@@ -28,13 +28,17 @@ from rerank.pool_streaming import (
     FEATURE_PROTOCOL_ID,
     read_product_records,
 )
-from rerank.experiments.run_pool_ranking import evaluate_test, fit_validation, join_shard, prepare_selection
+from rerank.experiments.run_pool_ranking import (
+    evaluate_test,
+    fit_validation,
+    join_shard,
+    prepare_selection,
+)
 
 
 def _write_jsonl(path: Path, records: list[dict]) -> None:
     path.write_text(
-        "".join(json.dumps(record, sort_keys=True) + "\n" for record in records),
-        encoding="utf-8",
+        "".join(json.dumps(record, sort_keys=True) + "\n" for record in records), encoding="utf-8"
     )
 
 
@@ -84,23 +88,11 @@ def test_pool_index_supports_missing_products_and_random_access(tmp_path: Path) 
 
 def test_source_indicators_are_matched_and_only_unimol_columns_differ() -> None:
     records = [
-        {
-            "prior": 0.75,
-            "source_aizynthfinder": 1,
-            "source_localretro": 0,
-        },
-        {
-            "prior": 0.50,
-            "source_aizynthfinder": 1,
-            "source_localretro": 1,
-        },
+        {"prior": 0.75, "source_aizynthfinder": 1, "source_localretro": 0},
+        {"prior": 0.50, "source_aizynthfinder": 1, "source_localretro": 1},
     ]
     core = np.asarray(
-        [
-            [0.1, 0.2, 3.0, 0.4, 2.0, 1.1],
-            [0.5, 0.6, 7.0, 0.8, 1.0, 0.9],
-        ],
-        dtype=np.float32,
+        [[0.1, 0.2, 3.0, 0.4, 2.0, 1.1], [0.5, 0.6, 7.0, 0.8, 1.0, 0.9]], dtype=np.float32
     )
     full = full_feature_matrix(records, core)
     baseline = arm_view(full, "baseline")
@@ -146,10 +138,7 @@ def test_pool_join_reuses_merged_scalars_by_candidate_identity(tmp_path: Path) -
     merged_index_manifest = tmp_path / "merged_index.json"
     subset_index = tmp_path / "subset_index.npz"
     subset_index_manifest = tmp_path / "subset_index.json"
-    _write_jsonl(
-        products,
-        [{"product_rank": 0, "product": "CC", "canonical_product": "CC"}],
-    )
+    _write_jsonl(products, [{"product_rank": 0, "product": "CC", "canonical_product": "CC"}])
     base = {
         "protocol_id": POOL_PROTOCOL_ID,
         "product": "CC",
@@ -161,10 +150,7 @@ def test_pool_join_reuses_merged_scalars_by_candidate_identity(tmp_path: Path) -
         {**base, "reactant": "C.N", "candidate_rank": 2, "prior": 0.5},
     ]
     _write_jsonl(merged, records)
-    _write_jsonl(
-        subset,
-        [{**records[1], "reactant": "N.C", "candidate_rank": 1, "prior": 1.0}],
-    )
+    _write_jsonl(subset, [{**records[1], "reactant": "N.C", "candidate_rank": 1, "prior": 1.0}])
     build_pool_index(merged, products, merged_index, merged_index_manifest)
     build_pool_index(subset, products, subset_index, subset_index_manifest)
 
@@ -176,8 +162,7 @@ def test_pool_join_reuses_merged_scalars_by_candidate_identity(tmp_path: Path) -
             raw_identity_digest("C.C") + raw_identity_digest("C.N"), dtype=np.uint8
         ).reshape(2, 32),
         core_features=np.asarray(
-            [[0.1, 0.2, 0.3, 0.4, 2.0, 1.0], [0.5, 0.6, 0.7, 0.8, 2.0, 1.1]],
-            dtype=np.float32,
+            [[0.1, 0.2, 0.3, 0.4, 2.0, 1.0], [0.5, 0.6, 0.7, 0.8, 2.0, 1.1]], dtype=np.float32
         ),
     )
     scalar_manifest = tmp_path / "scalar.json"
@@ -230,15 +215,12 @@ def test_pool_join_reuses_merged_scalars_by_candidate_identity(tmp_path: Path) -
     joined = np.load(output, allow_pickle=False)
     assert joined["features"].shape == (1, 9)
     np.testing.assert_allclose(
-        joined["features"][0, 1:7],
-        np.asarray([0.5, 0.6, 0.7, 0.8, 2.0, 1.1], dtype=np.float32),
+        joined["features"][0, 1:7], np.asarray([0.5, 0.6, 0.7, 0.8, 2.0, 1.1], dtype=np.float32)
     )
     assert joined["features"][0, 0] == 1.0
 
 
-def test_selection_builds_seed_pairs_and_does_not_load_test_ground_truth(
-    tmp_path: Path,
-) -> None:
+def test_selection_builds_seed_pairs_and_does_not_load_test_ground_truth(tmp_path: Path) -> None:
     products = tmp_path / "products.jsonl"
     pool = tmp_path / "pool.jsonl"
     index = tmp_path / "index.npz"
@@ -275,8 +257,7 @@ def test_selection_builds_seed_pairs_and_does_not_load_test_ground_truth(
         feature_npz,
         product_rank=np.repeat(np.arange(3, dtype=np.int32), 2),
         candidate_sha256=np.frombuffer(
-            b"".join(identity_digest(record["reactant"]) for record in records),
-            dtype=np.uint8,
+            b"".join(identity_digest(record["reactant"]) for record in records), dtype=np.uint8
         ).reshape(6, 32),
         features=feature_rows,
     )
@@ -302,17 +283,14 @@ def test_selection_builds_seed_pairs_and_does_not_load_test_ground_truth(
     )
     source = tmp_path / "source.csv"
     source.write_text(
-        "reactants_smiles,products_smiles,set\n"
-        "C.C,CC,train\n"
-        "C.O,CO,valid\n"
+        "reactants_smiles,products_smiles,set\n" "C.C,CC,train\n" "C.O,CO,valid\n"
         # Invalid test reference would fail if selection canonicalized it.
         "definitely_not_smiles,CN,test\n",
         encoding="utf-8",
     )
     metadata = tmp_path / "metadata.csv"
     metadata.write_text(
-        "reaction_id,reaction_class,source_split\n"
-        "0,1,train\n1,2,valid\n2,3,test\n",
+        "reaction_id,reaction_class,source_split\n" "0,1,train\n1,2,valid\n2,3,test\n",
         encoding="utf-8",
     )
     output_root = tmp_path / "selection"
@@ -363,13 +341,7 @@ def test_validation_fit_uses_frozen_config_without_test(tmp_path: Path, monkeypa
             "validation": fingerprint(valid),
         },
     )
-    config = {
-        "index": 62,
-        "hidden_width": 8,
-        "dropout": 0.0,
-        "learning_rate": 0.001,
-        "margin": 0.1,
-    }
+    config = {"index": 62, "hidden_width": 8, "dropout": 0.0, "learning_rate": 0.001, "margin": 0.1}
     primary = tmp_path / "primary.json"
     atomic_json(
         primary,

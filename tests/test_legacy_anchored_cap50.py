@@ -7,10 +7,7 @@ from rerank.data.build_legacy_anchored_cap50 import build_legacy_anchored_pool
 
 
 def _write_jsonl(path: Path, records: list[dict]) -> None:
-    path.write_text(
-        "".join(json.dumps(record) + "\n" for record in records),
-        encoding="utf-8",
-    )
+    path.write_text("".join(json.dumps(record) + "\n" for record in records), encoding="utf-8")
 
 
 def _inputs(tmp_path: Path, *, omit_anchor: bool = False) -> tuple[Path, Path, Path]:
@@ -41,8 +38,7 @@ def _inputs(tmp_path: Path, *, omit_anchor: bool = False) -> tuple[Path, Path, P
         ]
     _write_jsonl(regenerated, regenerated_records)
     failed.write_text(
-        json.dumps({"passed": False, "discrepancy_product_count": 2}),
-        encoding="utf-8",
+        json.dumps({"passed": False, "discrepancy_product_count": 2}), encoding="utf-8"
     )
     return legacy, regenerated, failed
 
@@ -135,9 +131,7 @@ def test_reports_cross_boundary_prior_inversion_without_moving_anchor(tmp_path: 
     assert validation["counts"]["products_with_cross_boundary_raw_prior_inversion"] == 1
     output_records = [
         json.loads(line)
-        for line in (output / "candidates_cap50_legacy_anchored.jsonl")
-        .read_text()
-        .splitlines()
+        for line in (output / "candidates_cap50_legacy_anchored.jsonl").read_text().splitlines()
     ]
     ethanol = [record for record in output_records if record["product"] == "CCO"]
     assert [record["reactant"] for record in ethanol[:2]] == ["C.O", "CC.O"]

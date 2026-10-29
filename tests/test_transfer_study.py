@@ -43,7 +43,16 @@ def test_truncation_preserves_frozen_prefix_without_resorting():
 
 def test_transfer_study_bins_are_exhaustive_for_cap10():
     assert [_candidate_bin(value) for value in range(1, 11)] == [
-        "1", "2-3", "2-3", "4-6", "4-6", "4-6", "7-9", "7-9", "7-9", "10"
+        "1",
+        "2-3",
+        "2-3",
+        "4-6",
+        "4-6",
+        "4-6",
+        "7-9",
+        "7-9",
+        "7-9",
+        "10",
     ]
 
 
@@ -72,7 +81,16 @@ def test_l1_distribution_summary_is_population_based_and_null_safe():
         "max": None,
     }
     assert [_rank_bin(value) for value in range(1, 11)] == [
-        "1", "2", "3", "4-5", "4-5", "6-10", "6-10", "6-10", "6-10", "6-10"
+        "1",
+        "2",
+        "3",
+        "4-5",
+        "4-5",
+        "6-10",
+        "6-10",
+        "6-10",
+        "6-10",
+        "6-10",
     ]
 
 

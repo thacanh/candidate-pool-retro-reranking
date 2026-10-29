@@ -70,7 +70,10 @@ def assert_selection_baseline_identity(primary: dict, control: dict) -> dict:
     """Require identical train/valid ordering, candidates and four 2D columns."""
     if primary.get("representation_provenance", {}).get("kind") != "indexed_conformer":
         raise RuntimeError("Primary bundle is not an indexed Uni-Mol conformer.")
-    if control.get("representation_provenance", {}).get("kind") != "encoder_control_without_conformer":
+    if (
+        control.get("representation_provenance", {}).get("kind")
+        != "encoder_control_without_conformer"
+    ):
         raise RuntimeError("Control bundle lacks no-conformer encoder provenance.")
     primary_train = primary["train_products"]
     control_train = control["train_products"]
@@ -100,8 +103,10 @@ def assert_selection_baseline_identity(primary: dict, control: dict) -> dict:
         raise RuntimeError("Official-validation reaction counts differ.")
     for index, ((lp, lc), (rp, rc), lf, rf) in enumerate(
         zip(
-            left_valid["eval_pwc"], right_valid["eval_pwc"],
-            left_valid["eval_features"], right_valid["eval_features"],
+            left_valid["eval_pwc"],
+            right_valid["eval_pwc"],
+            left_valid["eval_features"],
+            right_valid["eval_features"],
         )
     ):
         if str(lp) != str(rp) or _candidate_identity(lc) != _candidate_identity(rc):
@@ -123,8 +128,10 @@ def assert_test_baseline_identity(primary_payload: dict, control_payload: dict) 
         raise RuntimeError("Official-test reaction counts differ.")
     for index, ((lp, lc), (rp, rc), lf, rf) in enumerate(
         zip(
-            primary_payload["eval_pwc"], control_payload["eval_pwc"],
-            primary_payload["eval_features"], control_payload["eval_features"],
+            primary_payload["eval_pwc"],
+            control_payload["eval_pwc"],
+            primary_payload["eval_features"],
+            control_payload["eval_features"],
         )
     ):
         if str(lp) != str(rp) or _candidate_identity(lc) != _candidate_identity(rc):
@@ -150,7 +157,10 @@ def _trial_path(root: Path, seed: int) -> Path:
 def run_fit(args) -> None:
     primary_freeze = validate_selection_freeze(args.primary_selection_freeze)
     primary_bundle = load_selection_bundle(args.primary_selection_bundle)
-    if "sha256:" + file_sha256(args.primary_selection_bundle) != primary_freeze["selection_bundle_sha256"]:
+    if (
+        "sha256:" + file_sha256(args.primary_selection_bundle)
+        != primary_freeze["selection_bundle_sha256"]
+    ):
         raise RuntimeError("Primary selection bundle does not belong to its freeze.")
     control_bundle = load_selection_bundle(args.control_selection_bundle)
     pairing = assert_selection_baseline_identity(primary_bundle, control_bundle)
@@ -163,8 +173,7 @@ def run_fit(args) -> None:
         result_path = _trial_path(root, seed)
         if result_path.exists():
             _validate_trial(
-                root, seed, config,
-                "sha256:" + file_sha256(args.control_selection_bundle),
+                root, seed, config, "sha256:" + file_sha256(args.control_selection_bundle)
             )
             continue
         run_dir = result_path.parent
@@ -177,8 +186,14 @@ def run_fit(args) -> None:
         run_dir.mkdir(parents=True, exist_ok=True)
         started = time.perf_counter()
         trained = train_validation_trial(
-            cache, config, seed, device, checkpoint, normalizer,
-            max_epochs=MAX_EPOCHS, patience=PATIENCE,
+            cache,
+            config,
+            seed,
+            device,
+            checkpoint,
+            normalizer,
+            max_epochs=MAX_EPOCHS,
+            patience=PATIENCE,
             min_improvement=MIN_IMPROVEMENT,
         )
         trial = {
@@ -194,7 +209,8 @@ def run_fit(args) -> None:
             "normalizer_relpath": normalizer.relative_to(root).as_posix(),
             "normalizer_sha256": "sha256:" + file_sha256(normalizer),
             "primary_selection_fingerprint": primary_freeze["selection_fingerprint"],
-            "control_selection_bundle_sha256": "sha256:" + file_sha256(args.control_selection_bundle),
+            "control_selection_bundle_sha256": "sha256:"
+            + file_sha256(args.control_selection_bundle),
             "representation_provenance": control_bundle["representation_provenance"],
             "baseline_pairing_gate": pairing,
             "test_partition_loaded": False,
@@ -222,7 +238,10 @@ def _validate_trial(root: Path, seed: int, config: GridConfig, bundle_sha: str) 
         ("normalizer_relpath", "normalizer_sha256"),
     ):
         artifact = (root / trial[rel_key]).resolve()
-        if not artifact.is_relative_to(root) or "sha256:" + file_sha256(artifact) != trial[hash_key]:
+        if (
+            not artifact.is_relative_to(root)
+            or "sha256:" + file_sha256(artifact) != trial[hash_key]
+        ):
             raise RuntimeError(f"Encoder-control artifact checksum failed: {artifact}")
     return trial
 
@@ -244,7 +263,9 @@ def run_freeze(args) -> None:
         "primary_selected_config_fingerprint": config_fingerprint(config),
         "prior_transform": primary["selected_prior_transform"],
         "control_selection_bundle": file_fingerprint(args.control_selection_bundle),
-        "retained_control_train_test_cache_sha256": bundle["input_fingerprints"]["retained_train_test_cache"]["sha256"],
+        "retained_control_train_test_cache_sha256": bundle["input_fingerprints"][
+            "retained_train_test_cache"
+        ]["sha256"],
         "representation_provenance": bundle["representation_provenance"],
         "selected_control": {"trials": trials},
         "seeds": list(SEEDS),
@@ -287,20 +308,23 @@ def run_evaluate(args) -> None:
         raise PermissionError("Control and primary freezes do not match.")
     # Both test-bearing files are opened only after both freezes validate.
     control_payload = _load_test_payload(
-        args.control_train_test_cache,
-        freeze["retained_control_train_test_cache_sha256"],
+        args.control_train_test_cache, freeze["retained_control_train_test_cache_sha256"]
     )
     primary_payload = _load_test_payload(
-        args.primary_train_test_cache,
-        primary["retained_train_test_cache_sha256"],
+        args.primary_train_test_cache, primary["retained_train_test_cache_sha256"]
     )
     pairing = assert_test_baseline_identity(primary_payload, control_payload)
     result_dir = require_clean_evaluation_result_dir(args.result_dir)
     root = Path(args.output_root).resolve()
     device = resolve_device(args.device)
     metrics = _score_test_arm(
-        control_payload, freeze["selected_control"], freeze["prior_transform"],
-        "augmented", root, result_dir / "predictions", device,
+        control_payload,
+        freeze["selected_control"],
+        freeze["prior_transform"],
+        "augmented",
+        root,
+        result_dir / "predictions",
+        device,
     )
     manifest = {
         "manifest_kind": "encoder_control_post_freeze_test_evaluation",

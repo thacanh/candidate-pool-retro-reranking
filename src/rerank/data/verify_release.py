@@ -6,8 +6,17 @@ import hashlib
 import json
 from pathlib import Path, PurePosixPath
 
-IGNORED_PARTS = {'.git', '__pycache__', '.pytest_cache', '.ipynb_checkpoints',
-                 '.venv', 'venv', 'build', 'dist', 'figures_rebuilt'}
+IGNORED_PARTS = {
+    '.git',
+    '__pycache__',
+    '.pytest_cache',
+    '.ipynb_checkpoints',
+    '.venv',
+    'venv',
+    'build',
+    'dist',
+    'figures_rebuilt',
+}
 
 
 def sha256(path: Path) -> str:
@@ -22,7 +31,8 @@ def payload_files(root: Path) -> set[str]:
     return {
         p.relative_to(root).as_posix()
         for p in root.rglob('*')
-        if p.is_file() and not any(
+        if p.is_file()
+        and not any(
             part in IGNORED_PARTS or part.endswith('.egg-info') or part.startswith('.pytest_tmp')
             for part in p.relative_to(root).parts
         )
@@ -38,9 +48,15 @@ def verify(root: Path) -> dict:
         expected, name = line.split('  ', 1)
         relative = PurePosixPath(name)
         path = root / name
-        if (relative.is_absolute() or '..' in relative.parts or '\\' in name or ':' in name
-                or name in expected_paths or path.is_symlink()
-                or not path.resolve().is_relative_to(root)):
+        if (
+            relative.is_absolute()
+            or '..' in relative.parts
+            or '\\' in name
+            or ':' in name
+            or name in expected_paths
+            or path.is_symlink()
+            or not path.resolve().is_relative_to(root)
+        ):
             raise ValueError(f'Unsafe or duplicate ledger path: {name}')
         if sha256(path) != expected:
             raise ValueError(f'Changed file: {name}')

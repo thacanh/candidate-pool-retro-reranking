@@ -87,7 +87,9 @@ def test_selection_subset_keeps_only_prespecified_seeds(tmp_path: Path) -> None:
         "pool_name": "merged",
         "candidate_cap": 10,
         "seeds": list(range(42, 62)),
-        "train_pairs": {str(seed): {"path": f"pair-{seed}", "sha256": "x"} for seed in range(42, 62)},
+        "train_pairs": {
+            str(seed): {"path": f"pair-{seed}", "sha256": "x"} for seed in range(42, 62)
+        },
         "train_audit": {str(seed): {"pairs": 1} for seed in range(42, 62)},
         "test_partition_loaded": False,
         "test_ground_truth_loaded": False,
@@ -123,12 +125,7 @@ def test_imported_trial_keeps_artifacts_read_only_and_verified(tmp_path: Path) -
         },
     )
     imported = shared._imported_trial(
-        source_path,
-        "aizynthfinder_only",
-        "baseline_selected",
-        "baseline",
-        42,
-        approval,
+        source_path, "aizynthfinder_only", "baseline_selected", "baseline", 42, approval
     )
     assert imported["imported_existing_trial"] is True
     assert imported["protocol_id"] == shared.PROTOCOL_ID
@@ -137,10 +134,5 @@ def test_imported_trial_keeps_artifacts_read_only_and_verified(tmp_path: Path) -
     checkpoint.write_bytes(b"changed")
     with pytest.raises(RuntimeError, match="byte size changed"):
         shared._imported_trial(
-            source_path,
-            "aizynthfinder_only",
-            "baseline_selected",
-            "baseline",
-            42,
-            approval,
+            source_path, "aizynthfinder_only", "baseline_selected", "baseline", 42, approval
         )

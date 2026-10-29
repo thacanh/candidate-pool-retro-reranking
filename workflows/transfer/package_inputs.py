@@ -31,7 +31,9 @@ K1 = "outputs/digital_discovery_round_jk/k1"
 POOLS = "outputs/jcheminform_revision/candidate_pools/ws_e_three_pools_filtered_v2"
 INDEX = "outputs/jcheminform_revision/ws_e_streaming/index"
 MORGAN = "outputs/jcheminform_revision/encoder_controls/morgan_atom"
-COMMON_COHORT = "outputs/digital_discovery_round_jk/reanalysis/m2_pool_shift/m2_transfer_loss_reactions.csv"
+COMMON_COHORT = (
+    "outputs/digital_discovery_round_jk/reanalysis/m2_pool_shift/m2_transfer_loss_reactions.csv"
+)
 
 
 def _sha(path: Path) -> str:
@@ -65,15 +67,21 @@ def selected_files(root: Path, job: str) -> list[Path]:
     paths = list(COMMON)
     paths.extend((f"{PRIMARY}/g1_20seed", f"{PRIMARY}/freeze/model_selection.json"))
     if job in {"N2", "N3"}:
-        paths.append("outputs/jcheminform_revision/conformers/seed_42/features/official_3d_prior_schema1.pkl")
+        paths.append(
+            "outputs/jcheminform_revision/conformers/seed_42/features/official_3d_prior_schema1.pkl"
+        )
     if job == "N2":
         aiz = f"{K1}/aizynthfinder_only"
-        paths.extend((f"{aiz}/models", f"{aiz}/test_results",
-                      f"{aiz}/selection/manifest.json",
-                      f"{FEATURES}/aizynthfinder_only"))
+        paths.extend(
+            (
+                f"{aiz}/models",
+                f"{aiz}/test_results",
+                f"{aiz}/selection/manifest.json",
+                f"{FEATURES}/aizynthfinder_only",
+            )
+        )
     if job == "N3":
-        paths.extend((f"{PRIMARY}/selection/train_valid_only.pkl", K1, FEATURES,
-                      POOLS, INDEX))
+        paths.extend((f"{PRIMARY}/selection/train_valid_only.pkl", K1, FEATURES, POOLS, INDEX))
         paths.append("docs/reproducibility.md")
     if job == "N4":
         paths.extend((FEATURES, POOLS, INDEX, MORGAN))
@@ -81,16 +89,20 @@ def selected_files(root: Path, job: str) -> list[Path]:
     files = []
     for target in paths:
         files.extend(_include(root, target))
-    files.extend(path for path in (root / "src" / "rerank").rglob("*.py")
-                 if not path.is_symlink())
+    files.extend(path for path in (root / "src" / "rerank").rglob("*.py") if not path.is_symlink())
     scripts = (
-        "workflows/transfer/package_inputs.py", "workflows/transfer/archive_results.py",
-        "workflows/transfer/record_execution_plan.py", "workflows/transfer/setup.sh",
+        "workflows/transfer/package_inputs.py",
+        "workflows/transfer/archive_results.py",
+        "workflows/transfer/record_execution_plan.py",
+        "workflows/transfer/setup.sh",
         "workflows/transfer/manage_jobs.sh",
-        "workflows/transfer/check_prior_inputs.py", "workflows/transfer/run_prior_comparison.py",
+        "workflows/transfer/check_prior_inputs.py",
+        "workflows/transfer/run_prior_comparison.py",
         "workflows/transfer/check_morgan_inputs.py",
-        "workflows/transfer/run_cross_inference.sh", "workflows/transfer/run_prior_selection.sh",
-        "workflows/transfer/run_morgan_comparison.sh", "workflows/transfer/run_prior_selection.py",
+        "workflows/transfer/run_cross_inference.sh",
+        "workflows/transfer/run_prior_selection.sh",
+        "workflows/transfer/run_morgan_comparison.sh",
+        "workflows/transfer/run_prior_selection.py",
         "workflows/transfer/run_morgan_comparison.py",
     )
     for target in scripts:
@@ -107,13 +119,17 @@ def selected_files(root: Path, job: str) -> list[Path]:
 def inventory(root: Path, job: str) -> tuple[list[Path], dict]:
     files = selected_files(root, job)
     manifest = {
-        "schema_version": 1, "record_kind": "dd_isolated_remote_input_bundle",
-        "job": job, "scientific_experiment_executed": False,
+        "schema_version": 1,
+        "record_kind": "dd_isolated_remote_input_bundle",
+        "job": job,
+        "scientific_experiment_executed": False,
         "approval_note": "The included job-specific authorization record is checked against the exact plan and runner bytes at execution; it does not claim a supervisor signature.",
         "files": {
             path.relative_to(root).as_posix(): {
-                "size_bytes": path.stat().st_size, "sha256": _sha(path)
-            } for path in files
+                "size_bytes": path.stat().st_size,
+                "sha256": _sha(path),
+            }
+            for path in files
         },
     }
     return files, manifest
@@ -134,17 +150,25 @@ def pack(root: Path, job: str, output: Path) -> dict:
     if partial.exists():
         raise FileExistsError(f"Existing partial ZIP requires inspection: {partial}")
     try:
-        with zipfile.ZipFile(partial, "w", compression=zipfile.ZIP_DEFLATED,
-                             compresslevel=6, allowZip64=True) as archive:
-            archive.writestr("BUNDLE_INPUTS.json", json.dumps(manifest, sort_keys=True, indent=2) + "\n")
+        with zipfile.ZipFile(
+            partial, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6, allowZip64=True
+        ) as archive:
+            archive.writestr(
+                "BUNDLE_INPUTS.json", json.dumps(manifest, sort_keys=True, indent=2) + "\n"
+            )
             for path in files:
                 archive.write(path, path.relative_to(root).as_posix())
         verify(partial)
         os.link(partial, output)
     finally:
         partial.unlink(missing_ok=True)
-    return {"job": job, "archive": str(output.resolve()), "sha256": _sha(output),
-            "size_bytes": output.stat().st_size, "files": len(files)}
+    return {
+        "job": job,
+        "archive": str(output.resolve()),
+        "sha256": _sha(output),
+        "size_bytes": output.stat().st_size,
+        "files": len(files),
+    }
 
 
 def verify(archive_path: Path) -> dict:
@@ -166,8 +190,12 @@ def verify(archive_path: Path) -> dict:
                     digest.update(block)
             if size != record["size_bytes"] or digest.hexdigest() != record["sha256"]:
                 raise ValueError(f"Remote ZIP member differs: {name}")
-    return {"status": "verified", "job": manifest["job"],
-            "files": len(manifest["files"]), "archive_sha256": _sha(archive_path)}
+    return {
+        "status": "verified",
+        "job": manifest["job"],
+        "files": len(manifest["files"]),
+        "archive_sha256": _sha(archive_path),
+    }
 
 
 def verify_extracted(root: Path, manifest_path: Path) -> dict:
@@ -199,8 +227,11 @@ def main() -> None:
     args = parser.parse_args()
     if args.command == "inventory":
         _, body = inventory(Path(args.root).resolve(), args.job)
-        answer = {"job": args.job, "files": len(body["files"]),
-                  "size_bytes": sum(row["size_bytes"] for row in body["files"].values())}
+        answer = {
+            "job": args.job,
+            "files": len(body["files"]),
+            "size_bytes": sum(row["size_bytes"] for row in body["files"].values()),
+        }
     elif args.command == "pack":
         answer = pack(Path(args.root).resolve(), args.job, Path(args.output).resolve())
     elif args.command == "verify":

@@ -16,21 +16,30 @@ def _args(tmp_path: Path) -> Namespace:
     result = tmp_path / "N2"
     result.mkdir()
     (result / "manifest.json").write_text(
-        json.dumps({
-            "status": "complete",
-            "protocol_id": PROTOCOL,
-            "comparator": "frozen diagonal cells",
-            "single_intended_change": "frozen model on the other pool",
-        }), encoding="utf-8"
+        json.dumps(
+            {
+                "status": "complete",
+                "protocol_id": PROTOCOL,
+                "comparator": "frozen diagonal cells",
+                "single_intended_change": "frozen model on the other pool",
+            }
+        ),
+        encoding="utf-8",
     )
     (result / "effects.csv").write_text("effect\n0\n", encoding="utf-8")
     approval = tmp_path / "approval.json"
-    approval.write_text(json.dumps({"status": "approved", "approved_protocol_ids": [PROTOCOL]}),
-                        encoding="utf-8")
-    return Namespace(stage="N2", protocol_id=PROTOCOL, result_dir=str(result),
-                     archive_dir=str(tmp_path / "archives"),
-                     approval_record=str(approval), required=["effects.csv"],
-                     log_file=None)
+    approval.write_text(
+        json.dumps({"status": "approved", "approved_protocol_ids": [PROTOCOL]}), encoding="utf-8"
+    )
+    return Namespace(
+        stage="N2",
+        protocol_id=PROTOCOL,
+        result_dir=str(result),
+        archive_dir=str(tmp_path / "archives"),
+        approval_record=str(approval),
+        required=["effects.csv"],
+        log_file=None,
+    )
 
 
 def test_complete_stage_is_archived_then_verified(tmp_path: Path) -> None:
@@ -55,9 +64,16 @@ def test_incomplete_or_unapproved_stage_cannot_be_archived(tmp_path: Path) -> No
 
     manifest["status"] = "complete"
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
-    Path(args.approval_record).write_text(json.dumps({"status": "approved",
-        "blocked_protocol_ids": {PROTOCOL: "pending"},
-        "approved_protocol_ids": [PROTOCOL]}), encoding="utf-8")
+    Path(args.approval_record).write_text(
+        json.dumps(
+            {
+                "status": "approved",
+                "blocked_protocol_ids": {PROTOCOL: "pending"},
+                "approved_protocol_ids": [PROTOCOL],
+            }
+        ),
+        encoding="utf-8",
+    )
     with pytest.raises(PermissionError, match="blocked"):
         archive_stage(args)
 

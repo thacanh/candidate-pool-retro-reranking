@@ -66,9 +66,12 @@ def enumerate_grid() -> tuple[LightGBMConfig, ...]:
 
 
 def config_fingerprint(config: LightGBMConfig) -> str:
-    return "sha256:" + hashlib.sha256(
-        json.dumps(asdict(config), sort_keys=True, separators=(",", ":")).encode()
-    ).hexdigest()
+    return (
+        "sha256:"
+        + hashlib.sha256(
+            json.dumps(asdict(config), sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+    )
 
 
 def _labels_from_indices(n: int, indices) -> np.ndarray:
@@ -173,12 +176,17 @@ def _train_one(arrays: dict, config: LightGBMConfig, model_path: Path) -> dict:
         raise RuntimeError("D4 requires the pinned lightgbm==4.6.0 environment.") from exc
 
     train = lgb.Dataset(
-        arrays["train_x"], label=arrays["train_y"],
-        group=arrays["train_groups"], free_raw_data=False,
+        arrays["train_x"],
+        label=arrays["train_y"],
+        group=arrays["train_groups"],
+        free_raw_data=False,
     )
     valid = lgb.Dataset(
-        arrays["valid_x"], label=arrays["valid_y"],
-        group=arrays["valid_groups"], reference=train, free_raw_data=False,
+        arrays["valid_x"],
+        label=arrays["valid_y"],
+        group=arrays["valid_groups"],
+        reference=train,
+        free_raw_data=False,
     )
     labels = arrays["valid_y"]
     groups = arrays["valid_groups"]
@@ -212,9 +220,7 @@ def _train_one(arrays: dict, config: LightGBMConfig, model_path: Path) -> dict:
         valid_names=["official_valid"],
         feval=metric,
         callbacks=[
-            lgb.early_stopping(
-                EARLY_STOPPING_ROUNDS, first_metric_only=True, verbose=False
-            )
+            lgb.early_stopping(EARLY_STOPPING_ROUNDS, first_metric_only=True, verbose=False)
         ],
     )
     model_path.parent.mkdir(parents=True, exist_ok=True)
@@ -312,7 +318,10 @@ def run_freeze(args) -> None:
     root = Path(args.output_root).resolve()
     baseline = _collect(root, "baseline", bundle_sha, prior["freeze_fingerprint"])
     augmented = _collect(root, "augmented", bundle_sha, prior["freeze_fingerprint"])
-    if baseline["selected"]["query_group_fingerprint"] != augmented["selected"]["query_group_fingerprint"]:
+    if (
+        baseline["selected"]["query_group_fingerprint"]
+        != augmented["selected"]["query_group_fingerprint"]
+    ):
         raise RuntimeError("D4 arms do not have identical query groups and labels.")
     record = {
         "record_kind": "lightgbm_selection_freeze",
@@ -320,7 +329,9 @@ def run_freeze(args) -> None:
         "comparator": "four-input deterministic LambdaMART",
         "single_intended_change": "add three Uni-Mol-derived scalar features",
         "selection_bundle_sha256": bundle_sha,
-        "retained_train_test_cache_sha256": bundle["input_fingerprints"]["retained_train_test_cache"]["sha256"],
+        "retained_train_test_cache_sha256": bundle["input_fingerprints"][
+            "retained_train_test_cache"
+        ]["sha256"],
         "prior_transform": prior["selected_prior_transform"],
         "prior_freeze_fingerprint": prior["freeze_fingerprint"],
         "query_group_fingerprint": baseline["selected"]["query_group_fingerprint"],
@@ -354,7 +365,9 @@ def _score_payload(payload: dict, trial: dict, arm: str, transform: str, root: P
     import lightgbm as lgb
 
     model_path = (root / trial["model_relpath"]).resolve()
-    if not model_path.is_relative_to(root) or trial["model_sha256"] != "sha256:" + file_sha256(model_path):
+    if not model_path.is_relative_to(root) or trial["model_sha256"] != "sha256:" + file_sha256(
+        model_path
+    ):
         raise RuntimeError("Frozen D4 model checksum failed.")
     booster = lgb.Booster(model_file=str(model_path))
     columns = BASELINE_COLUMNS if arm == "baseline" else AUGMENTED_COLUMNS
@@ -374,9 +387,12 @@ def _score_payload(payload: dict, trial: dict, arm: str, transform: str, root: P
         reaction_metadata=payload["eval_metadata"],
     )
     return {
-        "top1": evaluation.reranked_accuracy[1], "top3": evaluation.reranked_accuracy[3],
-        "top5": evaluation.reranked_accuracy[5], "top10": evaluation.reranked_accuracy[10],
-        "mrr": evaluation.reranked_mrr, "n_test_reactions": evaluation.n_products,
+        "top1": evaluation.reranked_accuracy[1],
+        "top3": evaluation.reranked_accuracy[3],
+        "top5": evaluation.reranked_accuracy[5],
+        "top10": evaluation.reranked_accuracy[10],
+        "mrr": evaluation.reranked_mrr,
+        "n_test_reactions": evaluation.n_products,
     }
 
 
@@ -394,12 +410,20 @@ def run_evaluate(args) -> None:
     predictions.mkdir(parents=True)
     root = Path(args.output_root).resolve()
     baseline = _score_payload(
-        payload, freeze["selected_baseline"], "baseline", freeze["prior_transform"],
-        root, predictions / "baseline.csv",
+        payload,
+        freeze["selected_baseline"],
+        "baseline",
+        freeze["prior_transform"],
+        root,
+        predictions / "baseline.csv",
     )
     augmented = _score_payload(
-        payload, freeze["selected_augmented"], "augmented", freeze["prior_transform"],
-        root, predictions / "augmented.csv",
+        payload,
+        freeze["selected_augmented"],
+        "augmented",
+        freeze["prior_transform"],
+        root,
+        predictions / "augmented.csv",
     )
     manifest = {
         "manifest_kind": "lightgbm_post_freeze_test_evaluation",
