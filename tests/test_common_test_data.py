@@ -22,10 +22,6 @@ def test_export_matches_recorded_hashes():
         data = (DATA / name).read_bytes()
         assert len(data) == record['size_bytes']
         assert hashlib.sha256(data).hexdigest() == record['sha256']
-    for line in (DATA / 'checksums.sha256').read_text().splitlines():
-        expected, name = line.split('  ', 1)
-        assert Path(name).name == name
-        assert hashlib.sha256((DATA / name).read_bytes()).hexdigest() == expected
 
 
 def test_every_reaction_has_four_covered_ordered_lists():

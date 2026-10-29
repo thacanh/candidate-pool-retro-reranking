@@ -31,7 +31,7 @@ import numpy as np
 import pandas as pd
 from rdkit import Chem
 
-from rerank.data.prepare_localretro_current_dataset import (
+from rerank.data.prepare_localretro_dataset import (
     atomic_json,
     atomic_jsonl,
     canonical_fragments,

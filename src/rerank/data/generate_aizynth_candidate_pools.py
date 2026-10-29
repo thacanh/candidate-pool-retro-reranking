@@ -42,7 +42,7 @@ DEFAULT_ASSETS = (
     "modelchem/uspto_ringbreaker_templates.csv.gz",
     "modelchem/uspto_filter_model.onnx",
     "modelchem/zinc_stock.hdf5",
-    "aizynth_jobs/requirements-aizynth-linux-py310.lock",
+    "workflows/aizynthfinder/requirements-aizynth-linux-py310.lock",
 )
 
 _WORKER_POLICY: Any = None

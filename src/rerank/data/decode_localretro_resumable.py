@@ -31,7 +31,7 @@ from typing import Any, Mapping
 import pandas as pd
 from rdkit import Chem
 
-from rerank.data.prepare_localretro_current_dataset import atomic_json, fingerprint, sha256_file
+from rerank.data.prepare_localretro_dataset import atomic_json, fingerprint, sha256_file
 from rerank.experiments.run_localretro import (
     DATASET_NAME,
     LOCALRETRO_COMMIT,

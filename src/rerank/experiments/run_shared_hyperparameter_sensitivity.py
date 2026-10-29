@@ -42,8 +42,8 @@ from rerank.tuning import (
     transform_feature_matrix,
 )
 from rerank.study_data import load_reactions
-from rerank.ws_e_streaming import atomic_json, fingerprint, sha256_file, utc_now
-from rerank.experiments import run_ws_e_ranking as ws_e
+from rerank.pool_streaming import atomic_json, fingerprint, sha256_file, utc_now
+from rerank.experiments import run_pool_ranking as ws_e
 
 
 PROTOCOL_ID = "dd-shared-hyperparameter-feature-only-v1"
@@ -142,7 +142,7 @@ def create_approval(root: Path, commit: str) -> dict[str, Any]:
         "analysis_plan": root / "docs/analysis_plan.md",
         "runner": Path(__file__).resolve(),
         "tests": root / "tests/test_shared_hyperparameter_sensitivity.py",
-        "ws_e_runner": root / "src/rerank/experiments/run_ws_e_ranking.py",
+        "ws_e_runner": root / "src/rerank/experiments/run_pool_ranking.py",
         "revision_tuning": root / "src/rerank/tuning.py",
         "analysis_statistics": root / "src/rerank/analysis/analyze_predictions.py",
         "study_data": root / "src/rerank/study_data.py",
@@ -193,7 +193,7 @@ def create_analysis_patch_approval(root: Path, commit: str) -> dict[str, Any]:
     base = _load_base_approval(root)
     paths = {
         "corrected_runner": Path(__file__).resolve(),
-        "patch_tests": root / "tests/test_shared_hyperparameter_analysis_patch.py",
+        "patch_tests": root / "tests/test_shared_hyperparameter_analysis.py",
         "source_csv": root / "data/uspto_smiles.csv",
         "metadata_csv": root / "data/uspto_reaction_metadata.csv",
     }

@@ -4,8 +4,8 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from rerank.data.build_ws_e_candidate_pools import build_three_pools, normalized_rank
-from rerank.data.prepare_localretro_current_dataset import (
+from rerank.data.build_transfer_candidate_pools import build_three_pools, normalized_rank
+from rerank.data.prepare_localretro_dataset import (
     PROTOCOL_ID as MAPPING_PROTOCOL,
     _mapped_paths,
     compile_mapping,

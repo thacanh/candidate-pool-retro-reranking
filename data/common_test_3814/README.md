@@ -18,7 +18,8 @@ the number 3,814 does not count individual candidates.
   seed (42--61). It reports the reference rank under the candidate prior,
   the prior+2D baseline, and the prior+2D+Uni-Mol scalar-feature ranker.
 - `manifest.json`: source fingerprints, export settings and validation counts.
-- `checksums.sha256`: transport hashes for all files above and this README.
+
+File hashes are covered by the repository's top-level `checksums.sha256`.
 
 The pool names are `historical_cap10`, `aizynthfinder_only`, `localretro_only`
 and `merged`. All lists are capped at ten. Alternative pools were originally

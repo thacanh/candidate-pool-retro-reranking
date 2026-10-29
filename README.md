@@ -1,17 +1,12 @@
 # Candidate-pool dependence in retrosynthesis reranking
 
-Code for comparing reaction-candidate rerankers on fixed candidate pools.
-The models combine candidate priors, 2D features and optional
-representation-derived features. Evaluation separates reference coverage,
-ranking within covered pools and end-to-end accuracy.
-
-The experiments use the 50,037-reaction Chemformer distribution of USPTO-50K:
-40,029 training, 5,004 validation and 5,004 test reactions. See
-[dataset provenance](docs/dataset_source_audit.md) for the source and checksums.
+Code and data for comparing reaction-candidate rerankers across candidate pools.
+The experiments separate reference coverage, ranking within covered pools,
+and end-to-end accuracy.
 
 ## Install
 
-Python 3.10 is the validated version.
+Use Python 3.10. The core environment is pinned in `environment.yml`.
 
 ```bash
 git clone https://github.com/thacanh/candidate-pool-retro-reranking.git
@@ -21,67 +16,51 @@ conda activate candidate-pool-retro-reranking
 python -m pip install -e .
 ```
 
-AiZynthFinder, LocalRetro, GROVER, Chemformer and RXN-EBM use separate
-environments. Their source and model identities are recorded in
-`data/provenance/` and the relevant experiment modules.
+## Inspect the candidate pools
 
-## Contents
+[`data/common_test_3814/`](data/common_test_3814/) contains 3,814 official-test
+reactions covered by all four cap-10 pools: historical, AiZynthFinder,
+LocalRetro and merged. It includes ordered candidates and reference ranks
+for 20 paired seeds.
 
-| Path | Contents |
+```bash
+python scripts/inspect_candidates.py
+python scripts/inspect_candidates.py --reaction-id 45033 --seed 42
+```
+
+The files are unpacked and readable with standard Python. This is a
+coverage-selected evaluation subset; it must not be used to train a ranker.
+
+## Rebuild the figures
+
+```bash
+python -m rerank.figures.plot_figures --repo-root . --output-dir figures_rebuilt
+```
+
+For style changes, open `notebooks/rebuild_data_figures.ipynb`.
+These plots use the included summaries and do not rerun models.
+
+## Repository layout
+
+| Folder | Contents |
 | --- | --- |
-| `src/rerank/` | Features, ranker training, evaluation and analysis |
-| `tests/` | Unit and protocol checks |
-| `outputs/historical_anchor/` | Frozen historical numerical summaries |
-| `outputs/transfer_analysis/` | Transfer analyses and final-round summaries |
-| `notebooks/rebuild_data_figures.ipynb` | Editable plots using saved summaries |
-| `data/provenance/` | Dataset, generator and model source records |
-| [`data/common_test_3814/`](data/common_test_3814/) | 3,814 common test reactions, four candidate pools and reference ranks |
-| `docs/analysis_plan.md` | Experiment definitions and decision rules |
+| `src/rerank/` | Features, models, training, evaluation and analysis |
+| `data/` | Shared test cohort and source provenance |
+| `outputs/` | Frozen numerical summaries |
+| `scripts/` | Candidate inspection and reporting tools |
+| `workflows/` | Optional candidate-generation and training workflows |
+| `tests/` | Unit, protocol and data checks |
+| `docs/` | Reproduction guide, dataset audit and original analysis plan |
 
-The repository currently includes code and compact results. Full training
-inputs, third-party weights, trained model checkpoints and embedding caches
-are distributed separately. The included summary tables suffice to rebuild
-the numerical plots, but do not replace the inputs needed to train a model.
+## Run a new comparison
 
-The 3,814-reaction comparison cohort is the intersection of reference-covered
-official-test reactions across four cap-10 pools: historical, AiZynthFinder,
-LocalRetro and merged. Each reaction has a separate candidate list in each
-pool. [The data folder](data/common_test_3814/README.md) contains these lists,
-recorded reactants and reference ranks across 20 paired seeds. It is about
-32 MiB uncompressed and needs no archive extraction. This is an evaluation
-subset, not a training set; train/validation inputs are supplied separately.
+Use the same candidate lists, official splits and paired seeds. Fit
+preprocessing on training data and choose settings on validation data.
+Full train/validation inputs, embedding caches and model weights are supplied
+separately; cloning this repository is not enough to rerun every experiment.
 
-## Rebuild plots
-
-```bash
-python -m rerank.figures.plot_digital_discovery_figures \
-  --repo-root . --output-dir figures_rebuilt
-```
-
-Open `notebooks/rebuild_data_figures.ipynb` to change plot styles.
-These commands use saved results; they do not retrain models.
-
-## Check the downloaded files
-
-```bash
-python -m rerank.data.build_public_release --verify .
-python -m pytest -q tests/test_public_release.py tests/test_common_test_data.py
-```
-
-The full research test suite also exercises workflows requiring the separately
-supplied data and models.
-
-## Run a new embedding comparison
-
-Start from the same candidate lists and official splits. Fit preprocessing on
-training data, choose settings on validation data and evaluate paired models
-with the same seeds and metrics. Report candidate coverage separately from
-ranking performance.
-
-Training and evaluation modules are under `src/rerank/experiments/`.
-Use their `--help` options for required inputs. To reuse the frozen experiments,
-request the corresponding candidate pools and train/validation inputs;
-cloning this repository alone is not sufficient.
+See [reproduction instructions](docs/reproducibility.md) for entry points,
+required inputs and optional file-integrity checks.
 
 ## License
 

@@ -8,6 +8,8 @@ version = "0.1.0"
 description = "Controlled evaluation of representation-assisted retrosynthesis candidate reranking"
 readme = "README.md"
 requires-python = ">=3.10,<3.12"
+license = {file = "LICENSE"}
+keywords = ["retrosynthesis", "reranking", "molecular-representations"]
 dependencies = [
   "numpy==1.26.4",
   "pandas==1.5.3",
@@ -26,6 +28,10 @@ analysis = [
 ]
 unimol = ["unimol-tools==0.1.3"]
 test = ["pytest==8.3.3"]
+
+[project.urls]
+Repository = "https://github.com/thacanh/candidate-pool-retro-reranking"
+Issues = "https://github.com/thacanh/candidate-pool-retro-reranking/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

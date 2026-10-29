@@ -15,4 +15,4 @@ copies with local user-path prefixes removed, not byte-identical originals.
 path-only transformation. Original scientific artifacts remain unchanged.
 
 Raw reactions, candidate-level prediction archives, checkpoints, and embedding
-caches are intentionally excluded from Git. See `docs/public_release.md`.
+caches are intentionally excluded from Git. See `docs/reproducibility.md`.

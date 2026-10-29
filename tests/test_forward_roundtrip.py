@@ -8,7 +8,7 @@ import pytest
 import torch
 
 import rerank.experiments.run_forward_roundtrip as f1
-from chemformer_jobs import migrate_checkpoint as migration
+from workflows.chemformer import migrate_checkpoint as migration
 
 
 def _prediction_frame(*, augmented: bool) -> pd.DataFrame:

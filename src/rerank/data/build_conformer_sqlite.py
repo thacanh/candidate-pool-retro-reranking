@@ -221,7 +221,7 @@ class SeededUniMolBackend:
         if use_cuda and not torch.cuda.is_available():
             raise RuntimeError(
                 "CUDA was selected but this PyTorch build/driver cannot use CUDA. "
-                "Run CHECK_MACHINE.cmd or select --device cpu."
+                "Run check_environment.cmd or select --device cpu."
             )
         if use_cuda:
             torch.cuda.manual_seed_all(self.seed)

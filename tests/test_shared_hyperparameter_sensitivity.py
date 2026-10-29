@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 from rerank.experiments import run_shared_hyperparameter_sensitivity as shared
-from rerank.ws_e_streaming import fingerprint
+from rerank.pool_streaming import fingerprint
 
 
 def _json(path: Path, payload: dict) -> None:
@@ -19,7 +19,7 @@ def _approval_root(tmp_path: Path) -> Path:
     for relative in (
         "docs/analysis_plan.md",
         "tests/test_shared_hyperparameter_sensitivity.py",
-        "src/rerank/experiments/run_ws_e_ranking.py",
+        "src/rerank/experiments/run_pool_ranking.py",
         "src/rerank/tuning.py",
         "src/rerank/analysis/analyze_predictions.py",
         "src/rerank/study_data.py",

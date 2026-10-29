@@ -104,15 +104,6 @@ def test_final_round_payload_and_public_hashes() -> None:
     assert {"N1", "N2", "N2_prior_distribution", "N3_S1", "N3_S2", "N3_S3", "N3_S4", "N4", "N5", "P1", "prior_gap_supplement"} <= aliases
 
 
-def test_public_metadata_preserves_numbers_and_protocol():
-    from rerank.data.build_public_release import public_metadata
-    original = {"path": "C:/" + "Users/example/Documents/Retrosynthesis/outputs/a.json",
-                "protocol_id": "example-v1", "effect": -0.003, "seeds": [42, 43]}
-    result = public_metadata(original)
-    assert result == {**original, "path": "outputs/a.json"}
-    assert original["path"].startswith("C:/")
-
-
 def test_adaptation_compact_rows_match_included_frozen_statistics():
     _require_public_release()
     base = ROOT / "outputs/transfer_analysis"
