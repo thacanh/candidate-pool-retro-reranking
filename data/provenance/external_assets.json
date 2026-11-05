@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "recorded_date": "2026-08-09",
-  "purpose": "Prespecified external identities for Journal of Cheminformatics revision infrastructure",
+  "purpose": "Pinned source identities for the frozen evaluation protocols",
   "assets": {
     "unimol_tools_sdist": {
       "package": "unimol-tools",

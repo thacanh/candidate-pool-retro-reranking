@@ -4,17 +4,17 @@
   "coverage": 0.9160671462829736,
   "created_at_utc": "2026-09-23T21:58:09.918031+00:00",
   "feature_freeze": {
-    "path": "/workspace/dd_s4_finish/outputs/dd_final_round/N3_S2/merged/rank/features/manifest.json",
+    "path": "ranker_features/prior_reselection/merged/rank/features/manifest.json",
     "sha256": "ef647ac297017bbcfb83ca116f9b40969e6ced617e7db6f12c8345ec25811308",
     "size_bytes": 16865
   },
   "metadata_csv": {
-    "path": "/workspace/dd_s4_finish/data/uspto_reaction_metadata.csv",
+    "path": "benchmark_inputs/dataset/uspto_reaction_metadata.csv",
     "sha256": "c9f3c5f01e64cc9192f20f9889694b85d83986f4e991d2ee5bb52b5db8e08e52",
     "size_bytes": 734709
   },
   "model_freeze": {
-    "path": "/workspace/dd_s4_finish/results/merged/models/freeze.json",
+    "path": "external-artifact:ab8a0acdd6a0/freeze.json",
     "sha256": "2a7b39e12a9970abc68c3d02b0d067c1e8c85cc04bfade72d44abd9ec2e83add",
     "size_bytes": 11105
   },
@@ -986,7 +986,7 @@
   },
   "pool_name": "merged",
   "predictions": {
-    "path": "/workspace/dd_s4_finish/results/merged/test_results/reaction_ranks.jsonl",
+    "path": "external-artifact:5fb2ae0f6f68/reaction_ranks.jsonl",
     "sha256": "26fa19c501e4e0de02cf792475fdf11fbe3ee6b38f7f6a01a927bc4238f74a21",
     "size_bytes": 5977177
   },
@@ -1018,7 +1018,7 @@
   "record_kind": "ws_e_official_test_results",
   "schema_version": 1,
   "source_csv": {
-    "path": "/workspace/dd_s4_finish/data/uspto_smiles.csv",
+    "path": "benchmark_inputs/dataset/uspto_smiles.csv",
     "sha256": "688c5b8ea7c3269b53ae15ffca9ec98f51fd29ea3fc25edc8fa66cabe9042d6a",
     "size_bytes": 5269731
   },

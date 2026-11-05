@@ -151,7 +151,7 @@ def main():
         test_scoring_during_packaging=False,
         authorization={
             'basis': 'repository_owner_instruction',
-            'quote': 'ok tiếp đi',
+            'record': 'Historical execution authorization retained in original provenance.',
             'date': '2026-09-24',
         },
         settings={

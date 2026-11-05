@@ -4,8 +4,6 @@
     "sha256": "6f103513d0d6e791b14e3f4a4520a53c17905af7c4fe7de59515b0b5a6d92745",
     "size_bytes": 76072
   },
-  "approval_date": "2026-09-27",
-  "approval_quote": "th\u1ebf c\u1ee9 ch\u1ea1y \u0111i",
   "bootstrap_draws": 10000,
   "boundary_rule": "ties at cutpoint go to lower bin; no tie splitting",
   "counts": {

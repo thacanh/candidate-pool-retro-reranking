@@ -1,9 +1,4 @@
 {
-  "approval": {
-    "path": "docs/dd_remote_approval.json",
-    "sha256": "c2920d4f1f23d9581f82242a707117947e6be67cb297fc0a092c98d1194ae919",
-    "size_bytes": 1528
-  },
   "comparator": "frozen historical/AiZ 20-seed diagonal cells on 3,814 common reactions",
   "diagonal_rank_reproduction": "exact_except_audited_identical_input_ties",
   "diagonal_tie_audit": [

@@ -1,21 +1,7 @@
 {
-  "schema_version": 2,
-  "package": "candidate-pool-retro-reranking",
-  "version": "0.1.0",
-  "status": "development",
-  "updated_at_utc": "2026-10-29T04:23:58.282207+00:00",
-  "checksum_file": "checksums.sha256",
-  "payload_file_count": 320,
-  "payload_size_bytes": 43715319,
-  "common_test_cohort": {
-    "path": "data/common_test_3814",
-    "reactions": 3814,
-    "candidate_pools": 4,
-    "split": "test"
-  },
-  "excluded": [
-    "full train/validation inputs",
-    "model weights and embedding caches",
-    "manuscript"
-  ]
+  "schema_version": 1,
+  "repository": "https://github.com/thacanh/candidate-pool-retro-reranking",
+  "derived_from_commit": "a9072ec",
+  "scope": "code and compact numerical data; heavy artifacts archived separately",
+  "public_copy_changes": "Administrative conversation literals omitted; numerical operations unchanged."
 }

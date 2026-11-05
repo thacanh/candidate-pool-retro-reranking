@@ -50,14 +50,15 @@ These plots use the included summaries and do not rerun models.
 | `scripts/` | Candidate inspection and reporting tools |
 | `workflows/` | Optional candidate-generation and training workflows |
 | `tests/` | Unit, protocol and data checks |
-| `docs/` | Reproduction guide, dataset audit and original analysis plan |
+| `docs/` | Reproduction guide and dataset source audit |
 
 ## Run a new comparison
 
 Use the same candidate lists, official splits and paired seeds. Fit
 preprocessing on training data and choose settings on validation data.
-Full train/validation inputs, embedding caches and model weights are supplied
-separately; cloning this repository is not enough to rerun every experiment.
+**Full experimental details and artifacts**, including train/validation inputs,
+feature caches, selected checkpoints and frozen predictions, are supplied
+separately. Cloning this repository is not enough to rerun every experiment.
 
 See [reproduction instructions](docs/reproducibility.md) for entry points,
 required inputs and optional file-integrity checks.

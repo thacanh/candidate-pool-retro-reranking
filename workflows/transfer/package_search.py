@@ -86,7 +86,7 @@ def main():
         'authorization': {
             'date': '2026-09-24',
             'basis': 'repository_owner_instruction',
-            'quote': 'làm có khó k, nếu k quá khó thì triển khai luôn cũng được',
+            'record': 'Historical execution authorization retained in original provenance.',
             'supervisor_signature_present': False,
             'scope': 'S4 staged implementation; validation search first, no automatic official-test evaluation',
         },

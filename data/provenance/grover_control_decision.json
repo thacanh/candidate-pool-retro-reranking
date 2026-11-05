@@ -22,7 +22,13 @@
     "retain_scalar_shards": true
   },
   "matched_ranker": {
-    "training_seeds": [42, 43, 44, 45, 46],
+    "training_seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
     "reuse_primary_prior_transform": true,
     "reuse_primary_augmented_hyperparameters": true,
     "ranker_input_dimension": 7,

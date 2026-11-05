@@ -28,7 +28,10 @@
     "called_during_candidate_generation": false
   },
   "generation_behavior": {
-    "selected_expansion_policies": ["uspto", "ringbreaker"],
+    "selected_expansion_policies": [
+      "uspto",
+      "ringbreaker"
+    ],
     "maximum_actions_visited_per_product": 50,
     "maximum_outcomes_stored_per_product": 10,
     "candidate_prior": "expansion-policy action prior; shared by multiple outcomes from the same action",

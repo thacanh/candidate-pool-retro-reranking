@@ -2,11 +2,11 @@
   "artifacts": [
     {
       "public_path": "outputs/transfer_analysis/final_round/N1/manifest.json",
-      "sha256": "b1fe43ced5f7af242e4e494e38e00e581df9b3d990ca3f74dd3e4cea582112a0",
-      "size_bytes": 20179,
+      "sha256": "8368d6a27236eb438fe00c388f3a47e53a097e7604d46ada84e3ba892bf033d6",
+      "size_bytes": 18055,
       "source_path": "outputs/digital_discovery_final_round/n1_matched_list_joint_sensitivity_v2/manifest.json",
       "source_sha256": "53ceb516e2ea8f4795e0b853092a20c10e5b5f0b86d1b75011ba650d23ff4927",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N1/n1_cohorts.csv",
@@ -34,11 +34,11 @@
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N5/manifest.json",
-      "sha256": "2215b79bf4aed7ba2069e2fc7cf5d5611ea52dd5820303467e293761d7eea914",
-      "size_bytes": 5090,
+      "sha256": "dbb7ef91d582e06e63123dd052a36d55d276156fa20ea2b084cf9da32ce2fddc",
+      "size_bytes": 3015,
       "source_path": "outputs/digital_discovery_final_round/n5_crossed_transfer/manifest.json",
       "source_sha256": "7d9a3af38905f44391006119f65e857293093905013b57bb92f1183f942a3d1a",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N5/n5_crossed_transfer_intervals.csv",
@@ -82,11 +82,11 @@
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N2/manifest.json",
-      "sha256": "30320baa5f891e4b3447305c11daa4be9e4c31257370a399016111ad8218b5df",
-      "size_bytes": 23198,
+      "sha256": "73653183860b8c990d3c812f9b773abdd13359845009e8b0553977f1ba0f732f",
+      "size_bytes": 23023,
       "source_path": "outputs/dd_final_round/N2/manifest.json",
       "source_sha256": "4fc715565113c260a8fa7bf5019f251cf6fd261d9d1442eb21dbe077081f0193",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N2_prior_distribution/manifest.json",
@@ -130,19 +130,19 @@
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/prior_gap_supplement/design_freeze.json",
-      "sha256": "58c42343ae95bc54c2eea48333b6dae5fb4233724eb3149da57dc4c533de2e72",
-      "size_bytes": 1418,
+      "sha256": "5d43a080f80bf0f3c477c1f1d88c105061edd637aff3b86e0e3b734f8c9e595e",
+      "size_bytes": 1325,
       "source_path": "outputs/dd_final_round/prior_gap_supplement_v1/design_freeze.json",
       "source_sha256": "b426e050e16b54316dc7aed323fffeec8caee4f6c8cfbebb33842d2d62ac81dd",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/prior_gap_supplement/manifest.json",
-      "sha256": "ffc7d1d5db11d8fe60c3614e3f400f393050c2f71b1be387eb18fcdc7d9c5a13",
-      "size_bytes": 23678,
+      "sha256": "93fa0e31f426ec12d133a95ab94cd810bc899070c7d38dc73ef90b95f324696f",
+      "size_bytes": 19647,
       "source_path": "outputs/dd_final_round/prior_gap_supplement_v1/manifest.json",
       "source_sha256": "8cc3d46d66a8cb1d34476babaebba3fa99dcb85c3c4fe854a35e2278094d18f0",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/prior_gap_supplement/prior_gap_contrasts.csv",
@@ -170,19 +170,19 @@
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N3_S1/manifest.json",
-      "sha256": "76a5f45b99c024379347036ca4a6312202a4965b9215c7bed598a69b97a87bcd",
-      "size_bytes": 138440,
+      "sha256": "23caf519cfc309c8111bb8895cd51f3cae7ab3868e40a7496d86aadff0b480a7",
+      "size_bytes": 138041,
       "source_path": "outputs/dd_final_round/N3_S1/manifest.json",
       "source_sha256": "be53d960313a07b5ff32aa7c06ad5080da29b8bd713d832c166083208363a56c",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N3_S2/choice_freeze.json",
-      "sha256": "2f192e3b50f1a57722441af233dd83a5f61f7f63db8de13248cc2e4f1248c6dd",
-      "size_bytes": 21260,
+      "sha256": "e244805315ed72ae0ac2d9760e26d2a1076c536ec83abc4b96030db4c2fea514",
+      "size_bytes": 18185,
       "source_path": "outputs/dd_final_round/N3_S2/choice_freeze.json",
       "source_sha256": "f9f2efe5f7f765571ff4882fdaac65ca71eb7fdb3738e8d1a97539c89190129f",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N3_S3/transfer_effects.csv",
@@ -210,51 +210,51 @@
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N3_S4/localretro_only/statistics.json",
-      "sha256": "de943bdcea77e0ee01b2bfd4b7554beca8c9127451ebdbed503e684e074d3f8a",
-      "size_bytes": 3058,
+      "sha256": "9a00dcea66ba7ffadcdca07ad3c8b92b95644326ce509f34a7d50a49d1c401df",
+      "size_bytes": 3028,
       "source_path": "outputs/dd_final_round/N3_S4_final/localretro_only/statistics.json",
       "source_sha256": "3842a5008050ffebca0ba70b6dc33535fd2a48a8efb1b6ae7695f8a89ad2abd2",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N3_S4/localretro_only/models/freeze.json",
-      "sha256": "f45fbfee4cb75e0625fb7ee27f7eb4eecc94996a92be3e9e0e396623a174e238",
-      "size_bytes": 11752,
+      "sha256": "cf46c7ce340e4971b6913d1e49c6b3e57ab8fdee387e690d1078bf8a17802a5c",
+      "size_bytes": 9610,
       "source_path": "outputs/dd_final_round/N3_S4_final/localretro_only/models/freeze.json",
       "source_sha256": "1e6884e5b051418303754249fc73cfe1f6b549125b75b445f44c2b34aa353565",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N3_S4/localretro_only/test_results/manifest.json",
-      "sha256": "4f9fc8165bcec8d348c08b2cc1bd35dbdfe70d229a13b942fb5c72a7fe481181",
-      "size_bytes": 31243,
+      "sha256": "5bd63d46130f8ba93fe8fc5b708e54de34a86978486655ad264c24e9e9e3b8ab",
+      "size_bytes": 31162,
       "source_path": "outputs/dd_final_round/N3_S4_final/localretro_only/test_results/manifest.json",
       "source_sha256": "3ae2fe1af1d5c67d75d878f76205046df382fde33f0fa6ce4e89c98d3f1e95b4",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N3_S4/merged/statistics.json",
-      "sha256": "85a14ae7416a117920fc435411a1d736867fc199cb7cf09420a19a722467f83d",
-      "size_bytes": 3002,
+      "sha256": "139ed86e41ad96a5291bf5b90ef1fb4a45ed80c874d276bda7b1598c8912c185",
+      "size_bytes": 2981,
       "source_path": "outputs/dd_final_round/N3_S4_final/merged/statistics.json",
       "source_sha256": "bf9b512095effa8a51d94771e1d9738696ad2a0ab524ddd7f503d95c9a4f3d39",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N3_S4/merged/models/freeze.json",
-      "sha256": "98b9dc213a4269687ccb57d9ebd09133377762cb9efc9c90cde2fb4a3ee96864",
-      "size_bytes": 11372,
+      "sha256": "c8d088e8a9eee19f537b25d8654892daad1728d9b0caf46ba10c689d16756ef5",
+      "size_bytes": 9608,
       "source_path": "outputs/dd_final_round/N3_S4_final/merged/models/freeze.json",
       "source_sha256": "2a7b39e12a9970abc68c3d02b0d067c1e8c85cc04bfade72d44abd9ec2e83add",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     },
     {
       "public_path": "outputs/transfer_analysis/final_round/N3_S4/merged/test_results/manifest.json",
-      "sha256": "323b6c84b8cb7193a096be05dbfdd352237e2d9a93bc7753e349c754a132f4c0",
-      "size_bytes": 31193,
+      "sha256": "07c9123da1a7cb3639aa85b10b19f2270119b0fd4e40b933b62ba23a38f494c6",
+      "size_bytes": 31130,
       "source_path": "outputs/dd_final_round/N3_S4_final/merged/test_results/manifest.json",
       "source_sha256": "b259d2b7bdf47f79c1cd0310a115c253a1dbbcb1b2e9347846c58c27e3713d65",
-      "transformation": "JSON serialization and local path-prefix redaction only; scientific values unchanged"
+      "transformation": "public metadata copy"
     }
   ],
   "schema_version": 1,

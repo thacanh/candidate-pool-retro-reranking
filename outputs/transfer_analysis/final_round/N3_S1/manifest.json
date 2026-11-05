@@ -1,9 +1,4 @@
 {
-  "approval": {
-    "path": "/workspace/dd_n3/docs/dd_remote_approval.json",
-    "sha256": "4928226ca0f1369b9272bd42fa5cbe2e1d6dd9bab0824c9c605708bc343ca485",
-    "size_bytes": 3125
-  },
   "comparator": "frozen learned ranking versus frozen raw prior on four candidate pools",
   "environment": {
     "device": "cpu",
@@ -13,32 +8,32 @@
   },
   "inputs": {
     "historical_cache": {
-      "path": "/workspace/dd_n3/outputs/jcheminform_revision/conformers/seed_42/features/official_3d_prior_schema1.pkl",
+      "path": "ranker_features/primary/historical/official_3d_prior_schema1.npz",
       "sha256": "9b3bf77dd1d721fb7b32b44b0a1be9511cd62a110ed271da34357d5f0de9319e",
       "size_bytes": 48454998
     },
     "historical_freeze": {
-      "path": "/workspace/dd_n3/outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/freeze.json",
+      "path": "selected_models/primary/historical/freeze.json",
       "sha256": "91d8f4f10d01c3a86631b53cdb264bed059f8727ef9d5223444de02ab4ce2de5",
       "size_bytes": 602151
     },
     "historical_selection_bundle": {
-      "path": "/workspace/dd_n3/outputs/jcheminform_revision/tuned_primary/conformer_seed_42/selection/train_valid_only.pkl",
+      "path": "ranker_features/primary/historical/train_valid_only.npz",
       "sha256": "0ca95b00c90faea69e85d55aca1f85464028fa95c47e12abd4b159a355072b30",
       "size_bytes": 48714232
     },
     "metadata_csv": {
-      "path": "/workspace/dd_n3/data/uspto_reaction_metadata.csv",
+      "path": "benchmark_inputs/dataset/uspto_reaction_metadata.csv",
       "sha256": "c9f3c5f01e64cc9192f20f9889694b85d83986f4e991d2ee5bb52b5db8e08e52",
       "size_bytes": 734709
     },
     "products_jsonl": {
-      "path": "/workspace/dd_n3/outputs/jcheminform_revision/candidate_pools/ws_e_three_pools_filtered_v2/products.jsonl",
+      "path": "benchmark_inputs/pools/products.jsonl",
       "sha256": "c462bb557271ab4d24fbe12c355d058b4f8ff3cddd573d33c1752a17c698be07",
       "size_bytes": 7466712
     },
     "source_csv": {
-      "path": "/workspace/dd_n3/data/uspto_smiles.csv",
+      "path": "benchmark_inputs/dataset/uspto_smiles.csv",
       "sha256": "688c5b8ea7c3269b53ae15ffca9ec98f51fd29ea3fc25edc8fa66cabe9042d6a",
       "size_bytes": 5269731
     }

@@ -4,17 +4,17 @@
   "coverage": 0.8916866506794564,
   "created_at_utc": "2026-09-23T21:56:49.711455+00:00",
   "feature_freeze": {
-    "path": "/workspace/dd_s4_finish/outputs/dd_final_round/N3_S2/localretro_only/log/features/manifest.json",
+    "path": "ranker_features/prior_reselection/localretro_only/log/features/manifest.json",
     "sha256": "c799aae1f3ae21757541ed346a3aaebeb8477f6f494ebef18254b8888a466dae",
     "size_bytes": 17403
   },
   "metadata_csv": {
-    "path": "/workspace/dd_s4_finish/data/uspto_reaction_metadata.csv",
+    "path": "benchmark_inputs/dataset/uspto_reaction_metadata.csv",
     "sha256": "c9f3c5f01e64cc9192f20f9889694b85d83986f4e991d2ee5bb52b5db8e08e52",
     "size_bytes": 734709
   },
   "model_freeze": {
-    "path": "/workspace/dd_s4_finish/results/localretro_only/models/freeze.json",
+    "path": "external-artifact:675766ac8a4e/freeze.json",
     "sha256": "1e6884e5b051418303754249fc73cfe1f6b549125b75b445f44c2b34aa353565",
     "size_bytes": 11485
   },
@@ -986,7 +986,7 @@
   },
   "pool_name": "localretro_only",
   "predictions": {
-    "path": "/workspace/dd_s4_finish/results/localretro_only/test_results/reaction_ranks.jsonl",
+    "path": "external-artifact:a18fdfbb6099/reaction_ranks.jsonl",
     "sha256": "6e466c89b897b88143118aa92a8ad3e3db7f478a77080ca1e46c7c2e0cc3454b",
     "size_bytes": 5883763
   },
@@ -1018,7 +1018,7 @@
   "record_kind": "ws_e_official_test_results",
   "schema_version": 1,
   "source_csv": {
-    "path": "/workspace/dd_s4_finish/data/uspto_smiles.csv",
+    "path": "benchmark_inputs/dataset/uspto_smiles.csv",
     "sha256": "688c5b8ea7c3269b53ae15ffca9ec98f51fd29ea3fc25edc8fa66cabe9042d6a",
     "size_bytes": 5269731
   },

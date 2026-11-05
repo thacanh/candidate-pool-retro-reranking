@@ -1,41 +1,4 @@
 {
-  "approval": {
-    "analysis_plan": {
-      "mtime_ns": 1790104719036332300,
-      "path": "docs/analysis_plan.md",
-      "sha256": "4d1e907dba8edade37157781f80b06a056efd953f8552295dc89a1c05bd42cb4",
-      "size_bytes": 72916
-    },
-    "analysis_plan_path": "docs/analysis_plan.md",
-    "analysis_plan_sha256": "4d1e907dba8edade37157781f80b06a056efd953f8552295dc89a1c05bd42cb4",
-    "approval_date": "2026-09-22",
-    "approval_quote": "b\u1ea1n c\u1ee9 th\u1ea5y c\u00e1i n\u00e0o h\u1ee3p l\u00fd nh\u1ea5t m\u00e0 s\u1eeda cho t\u00f4i",
-    "approved_protocol_ids": [
-      "dd-n1-matched-list-joint-sensitivity-v2",
-      "dd-n5-crossed-transfer-inference-v1"
-    ],
-    "blocked_protocol_ids": {
-      "dd-n1-identical-input-decomposition-v1": "fail-closed audit found zero exact stored-prior matches; replacement needs a new decision rule",
-      "dd-n1-matched-list-joint-sensitivity-v1": "numerical output retained; interpretation label superseded by v2",
-      "dd-n2-cross-inference-v1": "separate job, not included in this local launch",
-      "dd-n3-pool-specific-selection-v1": "separate validation/training job",
-      "dd-n4-morgan-atom-transfer-v1": "separate feature/training job"
-    },
-    "execution_policy": {
-      "background": true,
-      "frozen_predictions_only": true,
-      "machine": "local Windows workstation",
-      "single_log": "logs/dd_final_round/run.log",
-      "streaming": false
-    },
-    "git_commit": "1ba2a3d03e14a90f044833d195b1f89f2a694d6d",
-    "runner_path": "src/rerank/analysis/analyze_dd_submission_checks.py",
-    "runner_sha256": "f1ddc8ee8244eba81bc2742c85f05373a63baece6effd3df05168c90b2733d56",
-    "schema_version": 1,
-    "status": "approved",
-    "test_path": "tests/test_dd_submission_checks.py",
-    "test_sha256": "5d3dd46a0d6abe3d9687675e7775ded1f5a39869da197fa6ec2a1da6e67433f1"
-  },
   "baseline_top1_candidate_agreement": {
     "new_inference_performed": false,
     "reason": "final-K1 reaction summaries retain reference ranks but not top-predicted candidate identities",
@@ -311,12 +274,6 @@
         "size_bytes": 5159765
       }
     ],
-    "approval_record": {
-      "mtime_ns": 1790104825887539600,
-      "path": "docs/dd_final_round_approval.json",
-      "sha256": "a2b886da43c370d821431c1e274cec0b78b6f0e41b390a220233fbddc5c5c02b",
-      "size_bytes": 1519
-    },
     "historical_feature_cache": {
       "mtime_ns": 1786321818716626700,
       "path": "outputs/jcheminform_revision/conformers/seed_42/features/official_3d_prior_schema1.pkl",

@@ -72,7 +72,7 @@ def test_owner_override_requires_separate_quote_and_exact_runner(tmp_path: Path)
     approval.write_text(json.dumps(payload), encoding="utf-8")
     with pytest.raises(PermissionError, match="override"):
         require_approval(approval, plan, runner, "dd-n3-pool-specific-selection-v1")
-    payload["authorization_quotes"]["dd-n3-pool-specific-selection-v1"] = "giờ chạy N3 N4 đã"
+    payload["authorization_quotes"]["dd-n3-pool-specific-selection-v1"] = "synthetic authorization for N3 and N4"
     approval.write_text(json.dumps(payload), encoding="utf-8")
     assert (
         require_approval(approval, plan, runner, "dd-n3-pool-specific-selection-v1")[

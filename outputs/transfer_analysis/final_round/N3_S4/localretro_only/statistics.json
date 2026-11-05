@@ -74,7 +74,7 @@
   },
   "pool": "localretro_only",
   "predictions": {
-    "path": "/workspace/dd_s4_finish/results/localretro_only/test_results/reaction_ranks.jsonl",
+    "path": "external-artifact:a18fdfbb6099/reaction_ranks.jsonl",
     "sha256": "6e466c89b897b88143118aa92a8ad3e3db7f478a77080ca1e46c7c2e0cc3454b",
     "size_bytes": 5883763
   },

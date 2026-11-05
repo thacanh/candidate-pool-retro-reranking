@@ -198,7 +198,7 @@ def run(output):
         rng_seeds=[2026092701, 2026092702],
         pointwise_intervals=True,
         test_access="post-freeze post-hoc analysis only",
-        approval_quote="thế cứ chạy đi",
+        execution_scope="Post-freeze exploratory analysis of frozen predictions",
         approval_date="2026-09-27",
         git_commit=subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
