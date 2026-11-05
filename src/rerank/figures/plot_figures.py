@@ -150,122 +150,6 @@ def panel_label(ax: plt.Axes, label: str) -> None:
     )
 
 
-def figure_design(output_dir: Path) -> None:
-    """Conceptual diagram: glyphs are illustrative, not measured candidate lists."""
-    fig, ax = plt.subplots(figsize=(FULL_WIDTH_IN, 4.8))
-    ax.set(xlim=(0, 1), ylim=(0, 1))
-    ax.axis("off")
-
-    def text(x, y, label, size=7.4, **kw):
-        return ax.text(x, y, label, fontsize=size, color=INK, va="center", **kw)
-
-    def box(x, y, w, h, color=LIGHT, fill=WHITE):
-        ax.add_patch(
-            FancyBboxPatch(
-                (x, y),
-                w,
-                h,
-                boxstyle="round,pad=0.007,rounding_size=0.01",
-                edgecolor=color,
-                facecolor=fill,
-                linewidth=0.8,
-            )
-        )
-
-    def arrow(a, b, color=GREY):
-        ax.add_patch(FancyArrowPatch(a, b, arrowstyle="-|>", mutation_scale=9, lw=0.9, color=color))
-
-    text(0.015, 0.965, "A", 11, fontweight="bold")
-    text(0.065, 0.965, "Candidate pools define the ranking problem", 9, fontweight="bold")
-    text(0.065, 0.925, "One official split  ·  5,004 test reactions  ·  cap 10 throughout", 7.5)
-    pools = [
-        ("Historical anchor", "original probabilities", NAVY),
-        ("Anchored AiZ", "historical-first construction", BLUE),
-        ("LocalRetro", "separate frozen generator", ORANGE),
-        ("Merged union", "maximum rank-based prior", PURPLE),
-    ]
-    for i, (name, detail, color) in enumerate(pools):
-        x = 0.025 + 0.245 * i
-        box(x, 0.676, 0.215, 0.195, color)
-        text(x + 0.1075, 0.844, name, 7.8, ha="center", fontweight="bold")
-        # Ranked-list glyph: a filled marker denotes the recorded reference.
-        for j in range(4):
-            y = 0.811 - 0.026 * j
-            ax.plot(
-                [x + 0.05, x + 0.177], [y, y], color=color if j == (i + 1) % 4 else LIGHT, lw=2.0
-            )
-            ax.plot(
-                x + 0.034,
-                y,
-                marker="o",
-                ms=3.2,
-                mfc=color if j == (i + 1) % 4 else WHITE,
-                mec=color,
-                mew=0.7,
-            )
-        text(x + 0.1075, 0.696, detail, 5.9, ha="center")
-    text(
-        0.025,
-        0.645,
-        "Filled dot: reference candidate (schematic). Coverage is measured before reranking.",
-        6.7,
-    )
-    arrow((0.50, 0.624), (0.50, 0.588))
-
-    text(0.015, 0.565, "B", 11, fontweight="bold")
-    text(0.065, 0.565, "Paired comparison within each frozen pool", 9, fontweight="bold")
-    box(0.027, 0.393, 0.285, 0.125, BLUE, PANEL_FILL)
-    text(0.17, 0.474, "Prior + 2D", 9, ha="center", fontweight="bold")
-    text(0.17, 0.43, "baseline arm", 7.1, ha="center")
-    box(0.345, 0.393, 0.285, 0.125, ORANGE, PANEL_FILL)
-    text(0.487, 0.474, "+ Uni-Mol scalars", 9, ha="center", fontweight="bold")
-    text(0.487, 0.43, "augmented arm", 7.1, ha="center")
-    text(0.328, 0.455, "vs", 7.4, ha="center")
-    text(0.675, 0.512, "20 paired seeds", 8, fontweight="bold")
-    text(
-        0.675,
-        0.438,
-        "same lists and negatives\ntraining-only normalization\nvalidation-selected checkpoints",
-        6.7,
-        linespacing=1.4,
-    )
-    text(
-        0.027,
-        0.357,
-        "Pool effect  =  augmented − baseline     |     Conditional Top-1 and MRR",
-        7.4,
-    )
-    arrow((0.50, 0.333), (0.50, 0.303))
-
-    text(0.015, 0.28, "C", 11, fontweight="bold")
-    text(0.065, 0.28, "Evidence hierarchy: primary result, then sensitivity", 9, fontweight="bold")
-    box(0.027, 0.116, 0.58, 0.125, NAVY, PANEL_FILL)
-    text(0.046, 0.216, "PRIMARY  ·  same 3,814 covered reactions", 7.7, fontweight="bold")
-    text(
-        0.046, 0.174, r"Transfer loss = $\Delta_{\mathrm{pool}} - \Delta_{\mathrm{historical}}$", 9
-    )
-    text(0.046, 0.133, "Original frozen ranking procedure; paired uncertainty", 6.7)
-    box(0.637, 0.116, 0.335, 0.125, GREY)
-    text(0.655, 0.216, "SECONDARY  ·  post hoc", 7.4, fontweight="bold")
-    text(
-        0.655,
-        0.167,
-        "Fixed checkpoints / prior re-selection\nFull-grid adaptation / Morgan control",
-        6.7,
-        linespacing=1.5,
-    )
-    text(
-        0.50,
-        0.055,
-        "Separate coverage, conditional ranking and end-to-end performance",
-        7.7,
-        ha="center",
-        fontweight="bold",
-    )
-    fig.subplots_adjust(left=0.015, right=0.985, top=0.99, bottom=0.01)
-    save(fig, output_dir, "figure1_dd_design")
-
-
 def adaptation_frame(repo: Path) -> pd.DataFrame:
     compact = repo / "outputs/transfer_analysis/figure_inputs/adaptation.csv"
     if compact.exists():
@@ -894,19 +778,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", type=Path, default=Path(__file__).resolve().parents[3])
     parser.add_argument("--output-dir", type=Path)
-    parser.add_argument(
-        "--legacy-design",
-        action="store_true",
-        help="Explicitly regenerate the retired code-only conceptual layout",
-    )
     args = parser.parse_args()
     repo = args.repo_root.resolve()
     output_dir = args.output_dir or repo / "paper/digital_discovery/figures"
     configure_style()
-    # Fig. 1 is an independently edited conceptual diagram. Never overwrite it
-    # when regenerating the five data-driven figures.
-    if args.legacy_design:
-        figure_design(output_dir)
+    # Figure 1 is authored in PowerPoint and exported separately.
     figure_coverage_effects(repo, output_dir)
     figure_transfer_shift(repo, output_dir)
     figure_adaptation(repo, output_dir)
