@@ -1,0 +1,217 @@
+{
+  "absolute_tolerance": 1e-12,
+  "bootstrap_draws": 10000,
+  "ci_and_p_recomputed": true,
+  "model_inference_performed": false,
+  "numpy": "1.26.4",
+  "protocol_id": "dd-n3-s4-validation-grid-v1",
+  "python": "3.10.14 | packaged by Anaconda, Inc. | (main, May  6 2024, 19:44:50) [MSC v.1916 64 bit (AMD64)]",
+  "relative_tolerance": 0,
+  "results": {
+    "localretro_only": {
+      "common_transfer": [
+        {
+          "common_reactions": 3814,
+          "crossed_ci95_high": -0.001769795490298899,
+          "crossed_ci95_low": -0.012755964866282119,
+          "expanded_effect": -0.0001966439433665443,
+          "historical_effect": 0.007039853172522286,
+          "metric": "top1",
+          "pool": "localretro_only",
+          "product_ci95_high": -0.0019398925013109638,
+          "product_ci95_low": -0.012611431567907706,
+          "sign_flip_p": 0.007769922300776992,
+          "transfer_loss": -0.00723649711588883
+        },
+        {
+          "common_reactions": 3814,
+          "crossed_ci95_high": -0.0022130089592645313,
+          "crossed_ci95_low": -0.0083900487239993,
+          "expanded_effect": -6.030934485313093e-05,
+          "historical_effect": 0.005241648354849717,
+          "metric": "mrr",
+          "pool": "localretro_only",
+          "product_ci95_high": -0.0023171523459934577,
+          "product_ci95_low": -0.008252773694034508,
+          "sign_flip_p": 0.0004199958000419996,
+          "transfer_loss": -0.005301957699702849
+        }
+      ],
+      "own_pool_effects": {
+        "mrr": {
+          "crossed": {
+            "ci95_high": 0.0003214211231706188,
+            "ci95_low": -0.0003485152175691731,
+            "effect": -9.853934103149713e-06,
+            "method": "independent canonical-product-cluster and paired-seed resampling",
+            "n_bootstrap": 10000,
+            "n_product_clusters": 4462,
+            "n_seeds": 20,
+            "rng_seed": 2421
+          },
+          "negative_seeds": 7,
+          "positive_seeds": 13,
+          "product": {
+            "ci95_high": 0.0002661767269286319,
+            "ci95_low": -0.0003103254421819528,
+            "effect": -9.853934103149757e-06
+          },
+          "sign_flip_p": 0.950910490895091,
+          "zero_seeds": 0
+        },
+        "top1": {
+          "crossed": {
+            "ci95_high": 0.00035858359480053786,
+            "ci95_low": -0.000761990138951143,
+            "effect": -0.00017929179740026893,
+            "method": "independent canonical-product-cluster and paired-seed resampling",
+            "n_bootstrap": 10000,
+            "n_product_clusters": 4462,
+            "n_seeds": 20,
+            "rng_seed": 2420
+          },
+          "negative_seeds": 10,
+          "positive_seeds": 5,
+          "product": {
+            "ci95_high": 0.00029134917077543697,
+            "ci95_low": -0.000705961452263559,
+            "effect": -0.00017929179740026896
+          },
+          "sign_flip_p": 0.5227647723522765,
+          "zero_seeds": 5
+        }
+      },
+      "status": "pass"
+    },
+    "merged": {
+      "common_transfer": [
+        {
+          "common_reactions": 3814,
+          "crossed_ci95_high": 0.00626671473518615,
+          "crossed_ci95_low": -0.012860841636077609,
+          "expanded_effect": 0.003828002097535396,
+          "historical_effect": 0.007039853172522286,
+          "metric": "top1",
+          "pool": "merged",
+          "product_ci95_high": 0.004824331410592553,
+          "product_ci95_low": -0.011562663869952803,
+          "sign_flip_p": 0.44707552924470756,
+          "transfer_loss": -0.0032118510749868903
+        },
+        {
+          "common_reactions": 3814,
+          "crossed_ci95_high": 0.0018084790735469136,
+          "crossed_ci95_low": -0.008431928681715651,
+          "expanded_effect": 0.0018959129273104101,
+          "historical_effect": 0.005241648354849717,
+          "metric": "mrr",
+          "pool": "merged",
+          "product_ci95_high": 0.000945659943316603,
+          "product_ci95_low": -0.007626866296684728,
+          "sign_flip_p": 0.12891871081289188,
+          "transfer_loss": -0.003345735427539308
+        }
+      ],
+      "own_pool_effects": {
+        "mrr": {
+          "crossed": {
+            "ci95_high": 0.004759748365605695,
+            "ci95_low": -0.0020287674606637306,
+            "effect": 0.001304269162580681,
+            "method": "independent canonical-product-cluster and paired-seed resampling",
+            "n_bootstrap": 10000,
+            "n_product_clusters": 4584,
+            "n_seeds": 20,
+            "rng_seed": 2421
+          },
+          "negative_seeds": 4,
+          "positive_seeds": 16,
+          "product": {
+            "ci95_high": 0.004330509177020139,
+            "ci95_low": -0.001760834030201668,
+            "effect": 0.0013042691625806805
+          },
+          "sign_flip_p": 0.40472595274047257,
+          "zero_seeds": 0
+        },
+        "top1": {
+          "crossed": {
+            "ci95_high": 0.008453315881326353,
+            "ci95_low": -0.0048434773123909244,
+            "effect": 0.0019415357766143107,
+            "method": "independent canonical-product-cluster and paired-seed resampling",
+            "n_bootstrap": 10000,
+            "n_product_clusters": 4584,
+            "n_seeds": 20,
+            "rng_seed": 2420
+          },
+          "negative_seeds": 5,
+          "positive_seeds": 14,
+          "product": {
+            "ci95_high": 0.008104275741710297,
+            "ci95_low": -0.004101221640488656,
+            "effect": 0.0019415357766143107
+          },
+          "sign_flip_p": 0.5375446245537545,
+          "zero_seeds": 1
+        }
+      },
+      "status": "pass"
+    }
+  },
+  "runtime_seconds": 257.1710000000021,
+  "scope": "frozen-rank numerical replay",
+  "sign_flip_draws": 100000,
+  "sources": {
+    "data\\uspto_reaction_metadata.csv": "c9f3c5f01e64cc9192f20f9889694b85d83986f4e991d2ee5bb52b5db8e08e52",
+    "data\\uspto_smiles.csv": "688c5b8ea7c3269b53ae15ffca9ec98f51fd29ea3fc25edc8fa66cabe9042d6a",
+    "outputs\\dd_final_round\\N3_S4_final\\localretro_only\\statistics.json": "3842a5008050ffebca0ba70b6dc33535fd2a48a8efb1b6ae7695f8a89ad2abd2",
+    "outputs\\dd_final_round\\N3_S4_final\\localretro_only\\test_results\\reaction_ranks.jsonl": "6e466c89b897b88143118aa92a8ad3e3db7f478a77080ca1e46c7c2e0cc3454b",
+    "outputs\\dd_final_round\\N3_S4_final\\merged\\statistics.json": "bf9b512095effa8a51d94771e1d9738696ad2a0ab524ddd7f503d95c9a4f3d39",
+    "outputs\\dd_final_round\\N3_S4_final\\merged\\test_results\\reaction_ranks.jsonl": "26fa19c501e4e0de02cf792475fdf11fbe3ee6b38f7f6a01a927bc4238f74a21",
+    "outputs\\digital_discovery_round_jk\\reanalysis\\m2_pool_shift\\m2_transfer_loss_reactions.csv": "d87ca6528763afcbf0cc6830ac2127050bf32857863d944d50c348648082b284",
+    "release\\dd_s4_finish_20260924\\FINISH_INPUTS.json": "b5afcdf63f8834fb42f649b0ff55f9e3f51fe03e4e2363c684fd722752a13e9d",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_42.csv": "3620641edde4477a92419c75cef536eb966709441dbce70b7424cb6da085e13b",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_43.csv": "b99902cb20387a01d81e9d7834e719a16b2622762c7f4942dcf14e870f0f4cc8",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_44.csv": "9bc591ff89a7e4e9c26a137a777c619cb52f14d960400ca9ca4653388ca6939c",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_45.csv": "42333e3ced11a9acbed941bfc2b9f5e1c8af5929829bd8bcf6c420cc2db1c1ea",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_46.csv": "517dd37f4b675a21d9cc03e756af57bfd1576288d1a6d8b3a7a11d2d98d5d6b4",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_47.csv": "93a26677600450f1f84e225c2167f77c56d7e4af34c5e8db75217a0534086a08",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_48.csv": "73262b00c525551d4388a99d0219c74d02eba98a6d3d91a08496225aa9d1304c",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_49.csv": "494abbe686c5ed26e7508f8ab788d28e89f3ee315aca82acc58a4552da89af47",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_50.csv": "f2f028e18ca6b14060ea82f8e6a384851727f5f0fa118d6cc1e62b65348fcf6b",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_51.csv": "c0d63a4b805de9c6598578b185e6373ef6db2ed1e04ff07b327fa28f6f59aaa9",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_52.csv": "b7d995a4eeed38da44967cf67209da5d66a3730ec3153a8b18a9b738b20c2a19",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_53.csv": "f0b2cd31320c9054f9c197aa588fbc8966d38c96d5604daf889f105b53b8d72c",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_54.csv": "2188d184035e234e0991c21b612c02f1ef294515d4ebd1c694f71b901c64efaf",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_55.csv": "3ff516dc7100839d060ab09ff1380fa2e713d6290b70dd07c5320491172100b7",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_56.csv": "cd1f18455c7caa98b3a9ffb504ffdef4a98b47d313f872ec94bf1729849404d1",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_57.csv": "bd94985efd847c89670b2a3d3cf841a5523d4ae3e2a0c6cded1b22bda6c4b29a",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_58.csv": "678714fe5bdce09ee420c82b395cf15c890e55401a965e88feb895481c1691b3",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_59.csv": "15ed7e1799e95202671a7aaf2e98484c9c7c5a3cdc2f0f444f2bd64ee16b1921",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_60.csv": "42d995000785a1184fb143b27854a75cf82af9cd08456325bbfa10c6eed7b016",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\augmented_seed_61.csv": "e0fe86b8127e499359b3faa0b40fa44212b9418d001adba224a53e3b1372c8c0",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_42.csv": "356e5a17424647e6fde75fa4a6150ac7725fbf78ed4f595fb9e0fe2a5b1cf423",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_43.csv": "54ab6399bf4c5127a1077043cd8e7e994d2a45c1f2e7a5f10745835181855383",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_44.csv": "b1afa70b590e4de8b613d41429d41476431ce5ea970a7f2ab9755531d3b37f69",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_45.csv": "96f6d26def786714731bc6b639ac08583aa5966c387244cf26fa8bb531f6330a",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_46.csv": "572d084eb87b96c55fcf2dbcc4ce5618562e170c155b4268b149bdf286cc40f2",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_47.csv": "e15909e400469e600dfc1de2293374a0dcb5f55d06b70a9a1c788706460f53cc",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_48.csv": "ca3ea5c012f39aa4ee7b2834463b58cbb309bfd7dca34bf1c8820d76d7284570",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_49.csv": "5c9ceee734282a4edb2e7b424bbb5bf8250ff597b9c5892f89e64ebe9aa22c72",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_50.csv": "1ea0ab412e5eec4c54be22fa820621383f0332e376d94ddd4e0f1854f42f6240",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_51.csv": "63414f2909d0fc3a8f2b71a681fce92763d4a8583439f517ce842df4411789f2",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_52.csv": "0d95215e3993e7b172d45c4cf69276eb51a5a5d2ed745bfd28576f3eca69c844",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_53.csv": "d23844d0ff56bd4b2213d7b9b5398b6236b533deb8db610b522487173a08cada",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_54.csv": "3ea1ca9af2722ea5a1b55c12e1bfaad6c3d0682142bd325c08da23d52566ef63",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_55.csv": "8db30b3a7e66f6c07f570e8b0f9acb5ffc4715cd30dce3edd26af2b2274297d8",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_56.csv": "a4bc76237574cd36651357a6c49904e070a7bd3eb608f15d1424c282e1094db6",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_57.csv": "a5b8e2df429fd367653043a2044e3a5f3ffa09625fe0dadeb72016d256476509",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_58.csv": "36547e3782e6716e761db7ddc301752227f4bbe4068b92a99cda40b7a8df08ef",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_59.csv": "e558e08addd8ad592a32701dc5858e3d75b2967cf158fa2810f4441ba83f9b1b",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_60.csv": "dcbfe04b363d4ae2b9d07180e62662068d94fa59e9879a5ee95a35e6d134d179",
+    "release\\dd_s4_finish_20260924\\historical_predictions\\baseline_seed_61.csv": "6e6716b663e79c8049b44996fc03269b859dc7ab70e3ef0e58e332dd3eb48680"
+  },
+  "status": "pass",
+  "training_performed": false
+}

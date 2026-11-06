@@ -1,0 +1,88 @@
+{
+  "candidate_generation_performed": false,
+  "comparator": "expanded-pool effect minus matched historical effect",
+  "environment": {
+    "packages": {
+      "numpy": "2.2.6",
+      "rdkit": "2025.9.6",
+      "scipy": "1.15.3"
+    },
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]"
+  },
+  "inputs": {
+    "m2_manifest": {
+      "mtime_ns": 1787771868998897900,
+      "path": "predictions_and_statistics/reanalysis/m2_pool_shift/manifest.json",
+      "sha256": "cbf8a78b2387b9e661d6f59ebfd2aa401d42663622b77b5c937b41484ca4a350",
+      "size_bytes": 35939
+    },
+    "m2_transfer_loss_reactions": {
+      "mtime_ns": 1787771868675250000,
+      "path": "predictions_and_statistics/reanalysis/m2_pool_shift/m2_transfer_loss_reactions.csv",
+      "sha256": "d87ca6528763afcbf0cc6830ac2127050bf32857863d944d50c348648082b284",
+      "size_bytes": 1575558
+    }
+  },
+  "outputs": {
+    "transfer_loss_inference": {
+      "mtime_ns": 1787773417910006300,
+      "path": "predictions_and_statistics/reanalysis/m2b_transfer_inference/m2b_transfer_loss_inference.csv",
+      "sha256": "e9ab4bc0e6246d0d3b0b39dfb7ccffa877d15891cfcb1454b073590f70b5c709",
+      "size_bytes": 1191
+    }
+  },
+  "protocol_id": "dd-candidate-pool-transfer-inference-v1",
+  "record_kind": "dd_exploratory_direct_transfer_loss_inference",
+  "retuning_performed": false,
+  "runtime_seconds": 58.02532172203064,
+  "schema_version": 1,
+  "settings": {
+    "bootstrap_rng_seeds": [
+      2050,
+      2051,
+      2052,
+      2053,
+      2054,
+      2055
+    ],
+    "bootstrap_samples": 10000,
+    "claim_status": "exploratory_post_hoc",
+    "common_covered_reactions": 3814,
+    "inference_unit": "unique canonical product/reaction after averaging 20 paired seeds",
+    "seeds_already_averaged_in_frozen_m2": [
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61
+    ],
+    "sign_flip_draws": 100000,
+    "sign_flip_rng_seeds": [
+      2060,
+      2061,
+      2062,
+      2063,
+      2064,
+      2065
+    ]
+  },
+  "single_intended_change": "add direct paired frozen-reaction inference to the approved M2 transfer-loss estimand",
+  "test_partition_loaded_from_frozen_m2_only": true,
+  "training_performed": false
+}

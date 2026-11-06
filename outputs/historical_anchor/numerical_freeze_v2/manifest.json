@@ -1,0 +1,226 @@
+{
+  "approved_b1_strata": [
+    "all",
+    "rigid_zero",
+    "intermediate_1_4",
+    "flexible_ge5"
+  ],
+  "created_at_utc": "2026-08-21T09:01:13.000555+00:00",
+  "headline_policy": "G1 seed-marginal Top-1 and MRR are the revised-primary headline effects",
+  "input_sources": {
+    "b1_cv": {
+      "path": "outputs/jcheminform_revision/conformer_aggregate/b1_cv_summary.csv",
+      "sha256": "5bcb1887ce47313a3b2f4d4bcbe1f17a7fc255537ef7d228b81530d67eda79a1",
+      "size_bytes": 3106
+    },
+    "b1_pairwise": {
+      "path": "outputs/jcheminform_revision/conformer_aggregate/b1_pairwise_stability.csv",
+      "sha256": "56593c8f4e51e6f85a1a1b47d329c3b92d63b4726a77bb56ca7f70c420304898",
+      "size_bytes": 34789
+    },
+    "b2": {
+      "path": "outputs/jcheminform_revision/conformer_aggregate/b2_analysis.json",
+      "sha256": "804bbbb2196d25556cadcc299fb325bc78af44539576fbff03728186465bd3ff",
+      "size_bytes": 2709
+    },
+    "b3": {
+      "path": "outputs/jcheminform_revision/conformer_aggregate/b3_ranking/analysis/clustered_inference.json",
+      "sha256": "d75942f81197393d286b37cb724984b71f132b5923ae84a49c550ac8c3ec19c3",
+      "size_bytes": 7576
+    },
+    "b_manifest": {
+      "path": "outputs/jcheminform_revision/conformer_aggregate/manifest.json",
+      "sha256": "e0313e3acdae3580f4d6ac3b32666f3e954bf6afc71021b35fd9318eb1fc5408",
+      "size_bytes": 16069
+    },
+    "c2": {
+      "path": "outputs/jcheminform_revision/projected_probe/c2_primary/test_results/manifest.json",
+      "sha256": "e4aad581a75628ac1a6533761aa9298847ac89fc1bc3489437e7ef377c1253b4",
+      "size_bytes": 5477
+    },
+    "d1": {
+      "path": "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/test_results/manifest.json",
+      "sha256": "555d5c41714ea4ae985b733c0be2a3c9836b2c789ddbd1ecf37560e3265452f1",
+      "size_bytes": 8182
+    },
+    "d3": {
+      "path": "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/capacity_test_results/manifest.json",
+      "sha256": "419041d199f0a1a29bed63e84367fd9a9fb0b772b1c8211e1c7a76352f80695d",
+      "size_bytes": 8633
+    },
+    "d4": {
+      "path": "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/lightgbm/test_results/manifest.json",
+      "sha256": "bcbc87e94b1d09c72522f6bf1124fccf50939ba2af6931763d35c62083ae012f",
+      "size_bytes": 1316
+    },
+    "d5": {
+      "path": "outputs/jcheminform_revision/external_rerankers/rxn_ebm_ff_cap10/analysis/paired_inference.json",
+      "sha256": "dc013a663d49d98b354746112887fd2982411e2b0fc51e63c2e9657dfcfc8d1a",
+      "size_bytes": 5187
+    },
+    "encoder_manifest": {
+      "path": "outputs/jcheminform_revision/encoder_attribution/manifest.json",
+      "sha256": "c8e41392ac14f0ca6f8c7e252c766f8d8435f20c7e355729a5bc81fdff6ff069",
+      "size_bytes": 10610
+    },
+    "encoder_summary": {
+      "path": "outputs/jcheminform_revision/encoder_attribution/encoder_attribution_summary.csv",
+      "sha256": "cc1fa21defaa9dc7bdd9594e496ae8808a76f1b12670be563783dd638a6365b4",
+      "size_bytes": 2501
+    },
+    "f1_manifest": {
+      "path": "outputs/jcheminform_revision/f1_roundtrip/results/manifest.json",
+      "sha256": "ab650b416bb320ab22bdef7ac7bbf0de998dcbfffc5750049b0ea21cd51984e7",
+      "size_bytes": 2403
+    },
+    "f1_stats": {
+      "path": "outputs/jcheminform_revision/f1_roundtrip/results/paired_statistics.json",
+      "sha256": "af53630005020255322e3f86db509d93987db1ed3eff362e1567afc8b6762c7b",
+      "size_bytes": 1243
+    },
+    "f1_systems": {
+      "path": "outputs/jcheminform_revision/f1_roundtrip/results/system_metrics.csv",
+      "sha256": "65bd4885c37e99f4bc3cc5b391a01394993afe16b3f5d47b3197d30ce5261069",
+      "size_bytes": 527
+    },
+    "f2_manifest": {
+      "path": "outputs/jcheminform_revision/chirality_sensitivity/analysis/manifest.json",
+      "sha256": "828800814bcc17e029aabdc96d795f9a8852475f6ad31244a6b028e669e5be47",
+      "size_bytes": 8598
+    },
+    "f2_stats": {
+      "path": "outputs/jcheminform_revision/chirality_sensitivity/analysis/paired_statistics.json",
+      "sha256": "a83157633177ff70539f8cdfb1af743bb30ef31484468af5daf7e2d6e70714e3",
+      "size_bytes": 1748
+    },
+    "f3_manifest": {
+      "path": "outputs/jcheminform_revision/salt_sensitivity/analysis/manifest.json",
+      "sha256": "21d07f499f8cb033601ccaa351f16f9b05117c0a56ccb4062572cb587e852517",
+      "size_bytes": 8238
+    },
+    "f3_stats": {
+      "path": "outputs/jcheminform_revision/salt_sensitivity/analysis/paired_statistics.json",
+      "sha256": "728b7735691cb1bf7459f01fc8624474429f816b2e95fa1db7b4a490012c898a",
+      "size_bytes": 1757
+    },
+    "g1": {
+      "path": "outputs/jcheminform_revision/final_statistics_20seed/g1_seed_marginal.json",
+      "sha256": "50dd4ebdb8b24eafed27d1cdf7e1ba83404f47734b09370677de5db70e8e03d7",
+      "size_bytes": 1043
+    },
+    "g2": {
+      "path": "outputs/jcheminform_revision/final_statistics_20seed/g2_class_tests.csv",
+      "sha256": "0efb58b803001c025491fb47043660b2b7cebb63c6722f307d658e8010ed97fa",
+      "size_bytes": 1783
+    },
+    "g3": {
+      "path": "outputs/jcheminform_revision/final_statistics_20seed/g3_net_flips.csv",
+      "sha256": "881402ef3bf6e4e698913502223a3fc8ca5030354045481917a8771de46572f6",
+      "size_bytes": 421
+    },
+    "g_manifest": {
+      "path": "outputs/jcheminform_revision/final_statistics_20seed/manifest.json",
+      "sha256": "89eace8281d2fd2044c39a324b6ab5aba1af333d50ae4474da680a657f8a3be7",
+      "size_bytes": 8085
+    },
+    "grover": {
+      "path": "outputs/jcheminform_revision/encoder_controls/grover_concatenation/ranking/test_results/manifest.json",
+      "sha256": "52bff13f828a961277aabe542e396791954a6cc22748c846b430eb155ce298d3",
+      "size_bytes": 3174
+    },
+    "h2": {
+      "path": "outputs/jcheminform_revision/final_statistics_20seed/h2_logistic_models.csv",
+      "sha256": "ac0e2121a313cd6394cc6b1d9cf5f472539ae990fb7530d1aefe2864df5d126d",
+      "size_bytes": 2532
+    },
+    "legacy_controls": {
+      "path": "outputs/revision_analysis/table5_feature_controls.csv",
+      "sha256": "49687ae9d778c011469fffd80078cb8146c54fccbc5050993df656cc226d3999",
+      "size_bytes": 1102
+    },
+    "legacy_systems": {
+      "path": "outputs/revision_analysis/table2_main_results.csv",
+      "sha256": "645bc2b282e7c4dd4091384804f2d903bd0bb64611a4863a0133298e162a0fe2",
+      "size_bytes": 2357
+    },
+    "morgan": {
+      "path": "outputs/jcheminform_revision/encoder_controls/morgan_atom/ranking/test_results/manifest.json",
+      "sha256": "e9c63c7b6b16b3f49145e45276ba44a1ac11328ffa2f69f7a62867fa736fa07e",
+      "size_bytes": 3139
+    },
+    "wse_manifest": {
+      "path": "outputs/jcheminform_revision/ws_e_analysis_canonical_identity/manifest.json",
+      "sha256": "b7b46dd2d52d19ba875e0fa15f2fed4ecd07c531e71c620b76bebff386b8e23a",
+      "size_bytes": 2602
+    },
+    "wse_stats": {
+      "path": "outputs/jcheminform_revision/ws_e_analysis_canonical_identity/ws_e_paired_statistics.json",
+      "sha256": "3363c70895cd590b67b74249adaeaa60b89e3261ca0dd9996704f99940c975c7",
+      "size_bytes": 7273
+    }
+  },
+  "legacy_policy": "legacy-cap10-fixed50-v1 is retained only as explicitly labeled sensitivity evidence",
+  "outputs": {
+    "b1_conformer_stability_summary.csv": {
+      "path": "outputs/jcheminform_revision/numerical_freeze_v2/b1_conformer_stability_summary.csv",
+      "sha256": "83198bc8430aaf3a3b730ce6e462acc72b86284a553c6b85d031ac93ba38902f",
+      "size_bytes": 4539
+    },
+    "h2_posthoc_models.csv": {
+      "path": "outputs/jcheminform_revision/numerical_freeze_v2/h2_posthoc_models.csv",
+      "sha256": "d2e82dbead0fef08db8ba59977b994f59ecb04522be805ec631a31ccbb0aea65",
+      "size_bytes": 6318
+    },
+    "paired_effects.csv": {
+      "path": "outputs/jcheminform_revision/numerical_freeze_v2/paired_effects.csv",
+      "sha256": "2d90b6de802c0e9d101e92a74f3274161e8bcae41ef0f97af794fea0f65631a1",
+      "size_bytes": 29983
+    },
+    "promotion_degradation_counts.csv": {
+      "path": "outputs/jcheminform_revision/numerical_freeze_v2/promotion_degradation_counts.csv",
+      "sha256": "b3e6f3a4a3974a08081a2b4ab6ef7fcab4eb8351c5d6d9e61722beefb02485b7",
+      "size_bytes": 2680
+    },
+    "system_performance.csv": {
+      "path": "outputs/jcheminform_revision/numerical_freeze_v2/system_performance.csv",
+      "sha256": "6d0be5bff46e3d619727542d29d150287fdb185b58b6165e6488e2bb5243d5f8",
+      "size_bytes": 20094
+    }
+  },
+  "paper_gate": {
+    "identity_funding_doi_placeholders_resolved": false,
+    "latex_updated": false,
+    "numerical_sources_frozen": true
+  },
+  "protocol_id": "jcheminform-revision-numerical-freeze-v2",
+  "record_kind": "paper_facing_numerical_freeze",
+  "row_counts": {
+    "b1_conformer_stability_summary": 12,
+    "h2_posthoc_models": 17,
+    "paired_effects": 87,
+    "promotion_degradation_counts": 12,
+    "system_performance": 71
+  },
+  "schema_version": 1,
+  "single_intended_change": "consolidate already-frozen B--H results without recomputation",
+  "source_policy": "every numerical row identifies its immutable source file and field/row locator",
+  "supersedes": {
+    "path": "outputs/jcheminform_revision/numerical_freeze_v1",
+    "reason": "v1 used an inferred D3 protocol label and a synthetic D4 seed count; values were unchanged"
+  },
+  "validation_checks": [
+    "B2 crossed 5x5 robustness gate passed",
+    "B3 primary-manifest fingerprint matches D1",
+    "D1--D5 post-freeze official-test gates passed",
+    "C1 exact pairing and C2 post-freeze test gates passed",
+    "WS-E and F1--F3 protocol gates passed",
+    "G1 seeds 42--61 and all G/H output fingerprints verified",
+    "C1 Uni-Mol-minus-2D Top-1 equals the D1 five-seed delta",
+    "F1 exact-match Top-1 equals the G1 20-seed point estimate",
+    "G2 BH q=0.05 significance is restricted to reaction class 3",
+    "All F2/F3 chemistry-side sensitivity intervals include zero",
+    "All three WS-E pool assessments are no-clear-difference",
+    "Both D5 conditional intervals are strictly negative",
+    "Exactly two paper headline effects are designated: G1 Top-1 and MRR"
+  ]
+}

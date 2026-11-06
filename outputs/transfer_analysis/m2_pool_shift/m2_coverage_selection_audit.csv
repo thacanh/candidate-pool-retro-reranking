@@ -1,0 +1,7 @@
+scope,pool,denominator,covered_reactions,excluded_reactions,coverage_fraction
+own_top10_coverage,historical_cap10,5004,3985,1019,0.7963629096722622
+own_top10_coverage,aizynthfinder_only,5004,4012,992,0.8017585931254996
+own_top10_coverage,localretro_only,5004,4462,542,0.8916866506794564
+own_top10_coverage,merged,5004,4584,420,0.9160671462829736
+four_pool_common_top10_coverage,all_four,5004,3814,1190,0.7621902478017586
+common_within_historical_anchor,all_four,3985,3814,171,0.9570890840652446

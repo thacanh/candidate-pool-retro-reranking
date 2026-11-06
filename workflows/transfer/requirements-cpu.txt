@@ -1,0 +1,7 @@
+# CPU runtime for experiments using already computed features.
+numpy==1.26.4
+pandas==1.5.3
+scipy==1.12.0
+rdkit==2025.9.6
+tqdm==4.66.5
+pytest==8.3.3

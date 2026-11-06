@@ -1,0 +1,92 @@
+{
+  "candidate_generation_performed": false,
+  "comparator": "frozen historical cap-10 baseline versus augmented predictions",
+  "environment": {
+    "packages": {
+      "numpy": "2.2.6",
+      "rdkit": "2025.9.6",
+      "scipy": "1.15.3"
+    },
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]"
+  },
+  "input_prediction_root": "external-artifact:b71b338461a5/predictions",
+  "outputs": {
+    "omnibus": {
+      "mtime_ns": 1787760583124264400,
+      "path": "predictions_and_statistics/reanalysis/m1_heterogeneity/m1_omnibus.csv",
+      "sha256": "94972471afbf077268851adc94e3102437df3dd6af695a88ec7dc8d5b4a894fc",
+      "size_bytes": 379
+    },
+    "pairwise_contrasts": {
+      "mtime_ns": 1787760583124264400,
+      "path": "predictions_and_statistics/reanalysis/m1_heterogeneity/m1_pairwise_contrasts.csv",
+      "sha256": "50e99e78d0fd149902f11d418842571012c51e42acc792779b6b4a661cd0ddfe",
+      "size_bytes": 597
+    },
+    "primary_contrast": {
+      "mtime_ns": 1787760583124264400,
+      "path": "predictions_and_statistics/reanalysis/m1_heterogeneity/m1_primary_contrast.csv",
+      "sha256": "35cc651ccba847efbf835a8950947891f63fd562454778b4860db92165443ffe",
+      "size_bytes": 383
+    },
+    "reaction_effects": {
+      "mtime_ns": 1787760583124264400,
+      "path": "predictions_and_statistics/reanalysis/m1_heterogeneity/m1_reaction_effects.csv",
+      "sha256": "0f64bff23463829ebc5e774e4bf5512aed79ac4aae63dcc3ff447c901e04b33e",
+      "size_bytes": 277963
+    }
+  },
+  "protocol_id": "dd-mechanism-heterogeneity-v1",
+  "record_kind": "dd_exploratory_mechanism_heterogeneity",
+  "retuning_performed": false,
+  "runtime_seconds": 312.53698205947876,
+  "schema_version": 1,
+  "settings": {
+    "bootstrap_rng_seeds": [
+      2040,
+      2041
+    ],
+    "bootstrap_samples": 10000,
+    "candidate_count_bins": [
+      "1",
+      "2-3",
+      "4-6",
+      "7-9",
+      "10"
+    ],
+    "claim_status": "exploratory_post_hoc",
+    "multiplicity": "Holm within endpoint for three secondary pairwise contrasts",
+    "permutation_rng_seeds": [
+      2030,
+      2031
+    ],
+    "permutations": 100000,
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61
+    ]
+  },
+  "single_intended_change": "formal exploratory inference across frozen J3 candidate-count bins",
+  "singleton_structural_audit": "pass",
+  "test_partition_loaded_from_frozen_predictions_only": true,
+  "training_performed": false
+}

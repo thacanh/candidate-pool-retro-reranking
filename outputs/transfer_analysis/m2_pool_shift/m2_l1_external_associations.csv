@@ -1,0 +1,7 @@
+feature,outcome,n_reactions,spearman_rho
+l1_spearman_vs_prior,mean_external_minus_prior_rank,3895,-0.07485721924009128
+l1_spearman_vs_prior,mean_external_minus_prior_top1,3895,0.05912282218737038
+l1_score_sd,mean_external_minus_prior_rank,3985,-0.12762729932951786
+l1_score_sd,mean_external_minus_prior_top1,3985,0.09451004843002045
+l1_score_range,mean_external_minus_prior_rank,3985,-0.12158364037081171
+l1_score_range,mean_external_minus_prior_top1,3985,0.0971758723689541

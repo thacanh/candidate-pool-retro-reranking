@@ -1,0 +1,90 @@
+{
+  "candidate_generation_performed": false,
+  "comparator": "six frozen M2b expanded-minus-historical transfer contrasts",
+  "environment": {
+    "numpy": "2.2.6",
+    "pid": 5376,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.5"
+  },
+  "inputs": {
+    "analysis_plan": {
+      "mtime_ns": 1790087389375301500,
+      "path": "docs/analysis_plan.md",
+      "sha256": "1ae270784501af2c393d98fe012ae8a8e62b984d0e886c0b29b7dfa54cfc047c",
+      "size_bytes": 68834
+    },
+    "anchor_prediction_root": "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions",
+    "k1_manifests": [
+      {
+        "mtime_ns": 1787751672215264100,
+        "path": "outputs/digital_discovery_round_jk/k1/aizynthfinder_only/test_results/manifest.json",
+        "sha256": "f740a8ae7933c1c5606db941ccc0028dde364fbc2ed794ea0c4b7af079de7c46",
+        "size_bytes": 31842
+      },
+      {
+        "mtime_ns": 1787752832939789500,
+        "path": "outputs/digital_discovery_round_jk/k1/localretro_only/test_results/manifest.json",
+        "sha256": "c371f626052b39e4725f2668015e50eb722c9bb4e3e24afe0bb3c03563bd9a05",
+        "size_bytes": 31849
+      },
+      {
+        "mtime_ns": 1787753995005461500,
+        "path": "outputs/digital_discovery_round_jk/k1/merged/test_results/manifest.json",
+        "sha256": "37cc5b5d2bcf95bbe4d3099012ab60166381e5978c820a3f9dea311e077f230b",
+        "size_bytes": 31798
+      }
+    ],
+    "m2_transfer_reactions": {
+      "mtime_ns": 1787771868675250000,
+      "path": "outputs/digital_discovery_round_jk/reanalysis/m2_pool_shift/m2_transfer_loss_reactions.csv",
+      "sha256": "d87ca6528763afcbf0cc6830ac2127050bf32857863d944d50c348648082b284",
+      "size_bytes": 1575558
+    }
+  },
+  "outputs": {
+    "crossed_intervals": {
+      "mtime_ns": 1790087566829310500,
+      "path": "outputs/digital_discovery_final_round/n5_crossed_transfer/n5_crossed_transfer_intervals.csv",
+      "sha256": "f2a7d84eb503be03e2208be8232479f0852767608ca98c220890e04e8aa9770d",
+      "size_bytes": 858
+    }
+  },
+  "protocol_id": "dd-n5-crossed-transfer-inference-v1",
+  "record_kind": "dd_secondary_crossed_transfer_inference",
+  "retuning_performed": false,
+  "runtime_seconds": 5.742417097091675,
+  "schema_version": 1,
+  "settings": {
+    "bootstrap_samples": 10000,
+    "primary_holm_family_changed": false,
+    "product_resampling": "joint across pools",
+    "rng_seed": 2070,
+    "seed_resampling": "paired historical/expanded seed index; independent by pool",
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61
+    ]
+  },
+  "single_intended_change": "add seed-marginal uncertainty to frozen transfer losses",
+  "test_partition_loaded_from_frozen_predictions_only": true,
+  "training_performed": false
+}

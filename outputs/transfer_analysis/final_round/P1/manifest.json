@@ -1,0 +1,72 @@
+{
+  "candidate_generation_performed": false,
+  "comparator": "frozen 20-seed prior+2D and augmented own-pool metrics",
+  "inputs": {
+    "expanded_manifests": [
+      {
+        "mtime_ns": 1787751672215264100,
+        "path": "outputs/digital_discovery_round_jk/k1/aizynthfinder_only/test_results/manifest.json",
+        "sha256": "f740a8ae7933c1c5606db941ccc0028dde364fbc2ed794ea0c4b7af079de7c46",
+        "size_bytes": 31842
+      },
+      {
+        "mtime_ns": 1787752832939789500,
+        "path": "outputs/digital_discovery_round_jk/k1/localretro_only/test_results/manifest.json",
+        "sha256": "c371f626052b39e4725f2668015e50eb722c9bb4e3e24afe0bb3c03563bd9a05",
+        "size_bytes": 31849
+      },
+      {
+        "mtime_ns": 1787753995005461500,
+        "path": "outputs/digital_discovery_round_jk/k1/merged/test_results/manifest.json",
+        "sha256": "37cc5b5d2bcf95bbe4d3099012ab60166381e5978c820a3f9dea311e077f230b",
+        "size_bytes": 31798
+      }
+    ],
+    "historical_manifest": {
+      "mtime_ns": 1786680432000000000,
+      "path": "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/manifest.json",
+      "sha256": "fdc89a0e20a29076ce28c3d5d826ccea513458d19303d7ee2e78e253a466d20b",
+      "size_bytes": 14015
+    }
+  },
+  "outputs": {
+    "corrected_headroom": {
+      "mtime_ns": 1790085833757447700,
+      "path": "outputs/digital_discovery_final_round/p1_headroom_corrected/p1_corrected_headroom.csv",
+      "sha256": "3da4ffc71fa0a4c751cf4c36b4190f1aecee50a03cc34d9644e3ee0eb492a855",
+      "size_bytes": 916
+    }
+  },
+  "protocol_id": "dd-p1-corrected-headroom-v1",
+  "record_kind": "dd_final_submission_numeric_correction",
+  "retuning_performed": false,
+  "runtime_seconds": 0.00811004638671875,
+  "schema_version": 1,
+  "settings": {
+    "denominator": "1 - prior+2D within-pool Top-1",
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61
+    ]
+  },
+  "single_intended_change": "use headroom after the matched prior+2D baseline rather than headroom after the raw prior",
+  "training_performed": false
+}

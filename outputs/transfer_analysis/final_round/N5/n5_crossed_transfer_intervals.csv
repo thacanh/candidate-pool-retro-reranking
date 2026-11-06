@@ -1,0 +1,7 @@
+pool,metric,n_reactions,n_seeds,mean_transfer_loss,crossed_product_seed_ci95_low,crossed_product_seed_ci95_high,interval_relation_to_zero
+aizynthfinder_only,top1,3814,20,-0.007105401153644468,-0.01297850061795409,-0.0014420556177598327,negative_ci_excludes_zero
+aizynthfinder_only,mrr,3814,20,-0.004659062060412349,-0.007807271871885746,-0.0015634904230608184,negative_ci_excludes_zero
+localretro_only,top1,3814,20,-0.0071971683272155215,-0.012847404704116976,-0.0018484531619879418,negative_ci_excludes_zero
+localretro_only,mrr,3814,20,-0.005338893466843126,-0.00851916290582579,-0.002276955348786499,negative_ci_excludes_zero
+merged,top1,3814,20,-0.016098584163607762,-0.026088424901747766,-0.006358154421384066,negative_ci_excludes_zero
+merged,mrr,3814,20,-0.009769661273004219,-0.014989581816637643,-0.004763119120847894,negative_ci_excludes_zero

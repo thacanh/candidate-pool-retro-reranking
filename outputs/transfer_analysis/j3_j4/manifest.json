@@ -1,0 +1,27 @@
+{
+  "bootstrap_samples": 10000,
+  "comparator": "frozen 20-seed historical cap-10 paired predictions",
+  "input_prediction_root": "external-artifact:b71b338461a5/predictions",
+  "j3_singleton_gate": "pass",
+  "j4_bin_assignment": "ceil of median prior+2D reference rank across seeds",
+  "outputs": {
+    "j3": {
+      "mtime_ns": 1787733918160303800,
+      "path": "predictions_and_statistics/reanalysis/j3_j4/j3_candidate_count_strata.csv",
+      "sha256": "dfbf19ee0adfffb8da7e54f2c81f82c2cb14bf0cce82897ef15dc6a32e3774e9",
+      "size_bytes": 793
+    },
+    "j4": {
+      "mtime_ns": 1787733918160303800,
+      "path": "predictions_and_statistics/reanalysis/j3_j4/j4_baseline_rank_strata.csv",
+      "sha256": "b04076fb694af9c5a85d56d04b106ce125e427bfeec85b7c02daf0f8d5e9ae8e",
+      "size_bytes": 339
+    }
+  },
+  "protocol_id": "dd-round-jk-reanalysis-v1",
+  "record_kind": "dd_round_j3_j4",
+  "rng_seed": 2026,
+  "schema_version": 1,
+  "single_intended_change": "prespecified diagnostic stratum",
+  "test_partition_loaded_from_frozen_predictions_only": true
+}

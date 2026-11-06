@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/thacanh/candidate-pool-retro-reranking",
+  "version": "0.1.0",
+  "scope": "code and compact numerical data; heavy artifacts archived separately",
+  "provenance": "Original-source and public-file hashes are distinguished in data/provenance/."
+}

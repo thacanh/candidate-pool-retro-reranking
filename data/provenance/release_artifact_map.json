@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "release_rule": "Numerical CSV artifacts retain their recorded values. Public metadata copies may be redacted as declared per artifact; frozen protocol IDs are retained.",
+  "artifacts": [
+    {
+      "role": "historical paired effects",
+      "source_path": "outputs/jcheminform_revision/numerical_freeze_v2/paired_effects.csv",
+      "public_path": "outputs/historical_anchor/numerical_freeze_v2/paired_effects.csv",
+      "size_bytes": 29983,
+      "sha256": "2d90b6de802c0e9d101e92a74f3274161e8bcae41ef0f97af794fea0f65631a1"
+    },
+    {
+      "role": "historical numerical manifest",
+      "source_path": "outputs/jcheminform_revision/numerical_freeze_v2/manifest.json",
+      "public_path": "outputs/historical_anchor/numerical_freeze_v2/manifest.json",
+      "size_bytes": 10331,
+      "sha256": "e41727fdb0dbfaf7768e25899df18111dc9edafad2e1f50abb71e5acbe911b5f"
+    },
+    {
+      "role": "expanded-pool K1 manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reanalysis/k1/manifest.json",
+      "public_path": "outputs/transfer_analysis/k1/manifest.json",
+      "size_bytes": 1662,
+      "sha256": "80bd48c0c974ae4eb3513bf0681c71dd44383f46098ccd3c1fe292a9c01ba400",
+      "transformation": "public metadata copy"
+    },
+    {
+      "role": "prior and headroom manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reanalysis/j1_j2_filtered_v2/manifest.json",
+      "public_path": "outputs/transfer_analysis/j1_j2_filtered_v2/manifest.json",
+      "size_bytes": 2342,
+      "sha256": "fc373aae781406ff1c339b131ba20ad22a50db3dbd93c5a0ad3730665cd13c8e",
+      "transformation": "public metadata copy"
+    },
+    {
+      "role": "pool-shift diagnostic manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reanalysis/m2_pool_shift/manifest.json",
+      "public_path": "outputs/transfer_analysis/m2_pool_shift/manifest.json",
+      "size_bytes": 28210,
+      "sha256": "9e794de4384a87d188624fbd0b33cbeace01a84d3a280022035d52da2fac2dd4",
+      "transformation": "public metadata copy"
+    },
+    {
+      "role": "direct-transfer inference manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reanalysis/m2b_transfer_inference/manifest.json",
+      "public_path": "outputs/transfer_analysis/m2b_transfer_inference/manifest.json",
+      "size_bytes": 2518,
+      "sha256": "dda4a856190a968fbcf3f6e84adf0b4a28bfa0a9f6b50688ecc5599671deed28",
+      "transformation": "public metadata copy"
+    },
+    {
+      "role": "M1 heterogeneity manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reanalysis/m1_heterogeneity/manifest.json",
+      "public_path": "outputs/transfer_analysis/m1_heterogeneity/manifest.json",
+      "size_bytes": 2767,
+      "sha256": "650967180da52f13ad66a7e7cf2a37e55e9fed9f6dc5449b6e1d439e161ba110",
+      "transformation": "public metadata copy"
+    },
+    {
+      "role": "K2 complete reporting manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reanalysis/k2_full_reporting_v2/manifest.json",
+      "public_path": "outputs/transfer_analysis/k2_full_reporting_v2/manifest.json",
+      "size_bytes": 1527,
+      "sha256": "4e80c3f71a367c149955f20adc5d868bfcb70426ec5ee8fdbf071bf2d7a28182",
+      "transformation": "public metadata copy"
+    },
+    {
+      "role": "shared-hyperparameter sensitivity manifest",
+      "source_path": "outputs/digital_discovery_round_jk/reviewer_sensitivity/shared_hyperparameters/analysis/manifest.json",
+      "public_path": "outputs/transfer_analysis/shared_hyperparameter_sensitivity/manifest.json",
+      "size_bytes": 6908,
+      "sha256": "885c0550ff8604ce9e3c985e1882300e76bc6770406c4f76bf3c5549ef4af7a0",
+      "transformation": "public metadata copy"
+    },
+    {
+      "role": "shared-hyperparameter within-pool effects",
+      "source_path": "outputs/digital_discovery_round_jk/reviewer_sensitivity/shared_hyperparameters/analysis/within_pool_effects.csv",
+      "public_path": "outputs/transfer_analysis/shared_hyperparameter_sensitivity/within_pool_effects.csv",
+      "size_bytes": 3137,
+      "sha256": "78e04d596a09b04fccf3dc44a482329863adb8c63ee57a16c1811eca2f6b95e3"
+    },
+    {
+      "role": "shared-hyperparameter direct-transfer effects",
+      "source_path": "outputs/digital_discovery_round_jk/reviewer_sensitivity/shared_hyperparameters/analysis/direct_transfer_effects.csv",
+      "public_path": "outputs/transfer_analysis/shared_hyperparameter_sensitivity/direct_transfer_effects.csv",
+      "size_bytes": 2004,
+      "sha256": "02b4609c33b68897e00fb6e84a6e01f6638c3b5bdd12bb7309ef575ffe3bdfa0"
+    }
+  ]
+}

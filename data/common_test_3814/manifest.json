@@ -1,0 +1,266 @@
+{
+  "protocol_id": "common-covered-cap10-inspection-export-v1",
+  "comparator": "historical_cap10, aizynthfinder_only, localretro_only, merged",
+  "single_intended_change": "export frozen common-test lists and ranks for inspection",
+  "scientific_run": false,
+  "training_performed": false,
+  "candidate_generation_performed": false,
+  "created_at_utc": "2026-10-26T08:46:57.856587+00:00",
+  "environment": {
+    "python": "3.13.5",
+    "rdkit": "2025.09.6"
+  },
+  "reactions": 3814,
+  "product_clusters": 3814,
+  "pools": [
+    "historical_cap10",
+    "aizynthfinder_only",
+    "localretro_only",
+    "merged"
+  ],
+  "candidate_cap": 10,
+  "candidate_lists": 15256,
+  "candidate_records": 140386,
+  "rank_rows": 305120,
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
+  ],
+  "split": "test",
+  "selection": "intersection of reference-covered reactions across the four frozen cap-10 pools",
+  "prior_note": "historical raw prior; alternative pools retain generator-normalized prior from full frozen pool before cap-10 truncation",
+  "inputs": {
+    "outputs/digital_discovery_round_jk/reanalysis/m2_pool_shift/m2_reaction_pool_descriptors.csv": {
+      "size_bytes": 2449287,
+      "sha256": "bee100a74bc439bc9eabffbaeb96357d568f463f8a1c2d991967468d40185239"
+    },
+    "data/uspto_smiles.csv": {
+      "size_bytes": 5269731,
+      "sha256": "688c5b8ea7c3269b53ae15ffca9ec98f51fd29ea3fc25edc8fa66cabe9042d6a"
+    },
+    "data/uspto_reaction_metadata.csv": {
+      "size_bytes": 734709,
+      "sha256": "c9f3c5f01e64cc9192f20f9889694b85d83986f4e991d2ee5bb52b5db8e08e52"
+    },
+    "outputs/rerank_dataset.jsonl": {
+      "size_bytes": 68234466,
+      "sha256": "9ec1cf192c49eeb7d74a320dd721287fabdef9863cc06f95d0f13baab8c3ff85"
+    },
+    "outputs/jcheminform_revision/candidate_pools/ws_e_three_pools_filtered_v2/aizynthfinder_only.jsonl": {
+      "size_bytes": 357771009,
+      "sha256": "6868ec2ce83ca64aed14d7ed6ca3537e7e0b711c236e1d36dcc40d61a371f2c0"
+    },
+    "outputs/jcheminform_revision/candidate_pools/ws_e_three_pools_filtered_v2/localretro_only.jsonl": {
+      "size_bytes": 801998876,
+      "sha256": "621bfdaab072ca9050bf73b8d753c6cef521d982729f146b7d50eefeb9b728cc"
+    },
+    "outputs/jcheminform_revision/candidate_pools/ws_e_three_pools_filtered_v2/merged_canonical_union.jsonl": {
+      "size_bytes": 976252284,
+      "sha256": "57c2a055871e3639a1e1cc4b0aa346e2581a3bad8073294ded2646f22cf57a79"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_42.csv": {
+      "size_bytes": 5150836,
+      "sha256": "356e5a17424647e6fde75fa4a6150ac7725fbf78ed4f595fb9e0fe2a5b1cf423"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_42.csv": {
+      "size_bytes": 5159967,
+      "sha256": "3620641edde4477a92419c75cef536eb966709441dbce70b7424cb6da085e13b"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_43.csv": {
+      "size_bytes": 5151144,
+      "sha256": "54ab6399bf4c5127a1077043cd8e7e994d2a45c1f2e7a5f10745835181855383"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_43.csv": {
+      "size_bytes": 5160420,
+      "sha256": "b99902cb20387a01d81e9d7834e719a16b2622762c7f4942dcf14e870f0f4cc8"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_44.csv": {
+      "size_bytes": 5148100,
+      "sha256": "b1afa70b590e4de8b613d41429d41476431ce5ea970a7f2ab9755531d3b37f69"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_44.csv": {
+      "size_bytes": 5160878,
+      "sha256": "9bc591ff89a7e4e9c26a137a777c619cb52f14d960400ca9ca4653388ca6939c"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_45.csv": {
+      "size_bytes": 5154089,
+      "sha256": "96f6d26def786714731bc6b639ac08583aa5966c387244cf26fa8bb531f6330a"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_45.csv": {
+      "size_bytes": 5160652,
+      "sha256": "42333e3ced11a9acbed941bfc2b9f5e1c8af5929829bd8bcf6c420cc2db1c1ea"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_46.csv": {
+      "size_bytes": 5150484,
+      "sha256": "572d084eb87b96c55fcf2dbcc4ce5618562e170c155b4268b149bdf286cc40f2"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_46.csv": {
+      "size_bytes": 5159845,
+      "sha256": "517dd37f4b675a21d9cc03e756af57bfd1576288d1a6d8b3a7a11d2d98d5d6b4"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_47.csv": {
+      "size_bytes": 5153484,
+      "sha256": "e15909e400469e600dfc1de2293374a0dcb5f55d06b70a9a1c788706460f53cc"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_47.csv": {
+      "size_bytes": 5159610,
+      "sha256": "93a26677600450f1f84e225c2167f77c56d7e4af34c5e8db75217a0534086a08"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_48.csv": {
+      "size_bytes": 5149295,
+      "sha256": "ca3ea5c012f39aa4ee7b2834463b58cbb309bfd7dca34bf1c8820d76d7284570"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_48.csv": {
+      "size_bytes": 5160463,
+      "sha256": "73262b00c525551d4388a99d0219c74d02eba98a6d3d91a08496225aa9d1304c"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_49.csv": {
+      "size_bytes": 5154061,
+      "sha256": "5c9ceee734282a4edb2e7b424bbb5bf8250ff597b9c5892f89e64ebe9aa22c72"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_49.csv": {
+      "size_bytes": 5158923,
+      "sha256": "494abbe686c5ed26e7508f8ab788d28e89f3ee315aca82acc58a4552da89af47"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_50.csv": {
+      "size_bytes": 5153445,
+      "sha256": "1ea0ab412e5eec4c54be22fa820621383f0332e376d94ddd4e0f1854f42f6240"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_50.csv": {
+      "size_bytes": 5160236,
+      "sha256": "f2f028e18ca6b14060ea82f8e6a384851727f5f0fa118d6cc1e62b65348fcf6b"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_51.csv": {
+      "size_bytes": 5149364,
+      "sha256": "63414f2909d0fc3a8f2b71a681fce92763d4a8583439f517ce842df4411789f2"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_51.csv": {
+      "size_bytes": 5160121,
+      "sha256": "c0d63a4b805de9c6598578b185e6373ef6db2ed1e04ff07b327fa28f6f59aaa9"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_52.csv": {
+      "size_bytes": 5153385,
+      "sha256": "0d95215e3993e7b172d45c4cf69276eb51a5a5d2ed745bfd28576f3eca69c844"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_52.csv": {
+      "size_bytes": 5160284,
+      "sha256": "b7d995a4eeed38da44967cf67209da5d66a3730ec3153a8b18a9b738b20c2a19"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_53.csv": {
+      "size_bytes": 5152832,
+      "sha256": "d23844d0ff56bd4b2213d7b9b5398b6236b533deb8db610b522487173a08cada"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_53.csv": {
+      "size_bytes": 5160445,
+      "sha256": "f0b2cd31320c9054f9c197aa588fbc8966d38c96d5604daf889f105b53b8d72c"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_54.csv": {
+      "size_bytes": 5154357,
+      "sha256": "3ea1ca9af2722ea5a1b55c12e1bfaad6c3d0682142bd325c08da23d52566ef63"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_54.csv": {
+      "size_bytes": 5159488,
+      "sha256": "2188d184035e234e0991c21b612c02f1ef294515d4ebd1c694f71b901c64efaf"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_55.csv": {
+      "size_bytes": 5152232,
+      "sha256": "8db30b3a7e66f6c07f570e8b0f9acb5ffc4715cd30dce3edd26af2b2274297d8"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_55.csv": {
+      "size_bytes": 5159726,
+      "sha256": "3ff516dc7100839d060ab09ff1380fa2e713d6290b70dd07c5320491172100b7"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_56.csv": {
+      "size_bytes": 5152165,
+      "sha256": "a4bc76237574cd36651357a6c49904e070a7bd3eb608f15d1424c282e1094db6"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_56.csv": {
+      "size_bytes": 5159535,
+      "sha256": "cd1f18455c7caa98b3a9ffb504ffdef4a98b47d313f872ec94bf1729849404d1"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_57.csv": {
+      "size_bytes": 5153409,
+      "sha256": "a5b8e2df429fd367653043a2044e3a5f3ffa09625fe0dadeb72016d256476509"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_57.csv": {
+      "size_bytes": 5160403,
+      "sha256": "bd94985efd847c89670b2a3d3cf841a5523d4ae3e2a0c6cded1b22bda6c4b29a"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_58.csv": {
+      "size_bytes": 5153733,
+      "sha256": "36547e3782e6716e761db7ddc301752227f4bbe4068b92a99cda40b7a8df08ef"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_58.csv": {
+      "size_bytes": 5159581,
+      "sha256": "678714fe5bdce09ee420c82b395cf15c890e55401a965e88feb895481c1691b3"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_59.csv": {
+      "size_bytes": 5151467,
+      "sha256": "e558e08addd8ad592a32701dc5858e3d75b2967cf158fa2810f4441ba83f9b1b"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_59.csv": {
+      "size_bytes": 5160576,
+      "sha256": "15ed7e1799e95202671a7aaf2e98484c9c7c5a3cdc2f0f444f2bd64ee16b1921"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_60.csv": {
+      "size_bytes": 5155394,
+      "sha256": "dcbfe04b363d4ae2b9d07180e62662068d94fa59e9879a5ee95a35e6d134d179"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_60.csv": {
+      "size_bytes": 5160776,
+      "sha256": "42d995000785a1184fb143b27854a75cf82af9cd08456325bbfa10c6eed7b016"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/baseline_seed_61.csv": {
+      "size_bytes": 5151708,
+      "sha256": "6e6716b663e79c8049b44996fc03269b859dc7ab70e3ef0e58e332dd3eb48680"
+    },
+    "outputs/jcheminform_revision/tuned_primary/conformer_seed_42/g1_20seed/test_results/predictions/augmented_seed_61.csv": {
+      "size_bytes": 5159765,
+      "sha256": "e0fe86b8127e499359b3faa0b40fa44212b9418d001adba224a53e3b1372c8c0"
+    },
+    "outputs/digital_discovery_round_jk/k1/aizynthfinder_only/test_results/reaction_ranks.jsonl": {
+      "size_bytes": 5383882,
+      "sha256": "39fb677d75dc97b11fff1647e41495359340233d8a647a6ae109ac6423fe72c9"
+    },
+    "outputs/digital_discovery_round_jk/k1/localretro_only/test_results/reaction_ranks.jsonl": {
+      "size_bytes": 5883849,
+      "sha256": "2f8a26897f0db5fd92d793fba27a6dde131ea02b704095c17c58b79eb5a1d68e"
+    },
+    "outputs/digital_discovery_round_jk/k1/merged/test_results/reaction_ranks.jsonl": {
+      "size_bytes": 5977164,
+      "sha256": "31da412347a144058d47aab49a2e216b2be1962eebaa3d0c2681ea624b6201c4"
+    }
+  },
+  "files": {
+    "candidate_pools.jsonl": {
+      "size_bytes": 23206313,
+      "sha256": "4a07c09bc8ebeaf785b44c95466b4b8a71048a2596cd56c06f307240de8aef5d"
+    },
+    "reactions.csv": {
+      "size_bytes": 792271,
+      "sha256": "3031383fb6337ff8c108fc7cec24749ff83426446c491a731c6460f115def503"
+    },
+    "reference_ranks.csv": {
+      "size_bytes": 9920685,
+      "sha256": "3b2070b049ba52a45061a3b5fc6ee1b186d7c9f79fde9bd9f6af0bd9ecad7091"
+    }
+  }
+}
